@@ -38,6 +38,7 @@ import CoinInfoVerify from '@src/screens/Wallet/features/CoinInfo/CoinInfo.verif
 import FrequentReceivers, {
   FrequentReceiversForm,
 } from '@src/screens/SendCrypto/FrequentReceivers';
+import { PoolV2 } from '@src/screens/PoolV2';
 import routeNames from './routeNames';
 
 const routes = [
@@ -192,6 +193,12 @@ const routes = [
   {
     screen: FrequentReceiversForm,
     name: routeNames.FrequentReceiversForm,
+    screen: PoolV2.Home,
+    name: routeNames.PoolV2,
+  },
+  {
+    screen: PoolV2.Help,
+    name: routeNames.PoolV2Help,
   },
 ];
 
