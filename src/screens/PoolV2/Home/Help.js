@@ -5,7 +5,7 @@ import { withLayout_2 } from '@components/Layout';
 import Section from '@components/HelpScreen/Section';
 import { StyleSheet } from 'react-native';
 import { UTILS } from '@src/styles';
-import { Header } from '@components/';
+import { Header } from '@src/components/';
 
 const sections = [
   {

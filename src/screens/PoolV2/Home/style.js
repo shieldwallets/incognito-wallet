@@ -36,7 +36,6 @@ export default StyleSheet.create({
   actionButton: {
     marginTop: UTILS.heightScale(37),
     marginHorizontal: 4,
-    backgroundColor: COLORS.green2,
     flex: 1,
   },
   coinContainer: {
@@ -62,6 +61,8 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     paddingVertical: UTILS.heightScale(15),
     bottom: 0,
+    left: 0,
+    right: 0,
   },
   rateStyle: {
     fontFamily: FONT.NAME.medium,
