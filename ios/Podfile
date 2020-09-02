@@ -3,15 +3,6 @@ platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # Required by RNFirebase
-pod 'Firebase/Analytics'
-pod 'Firebase/Core', '~> 6.3.0'
-pod 'Firebase/Messaging', '~> 6.3.0'
-pod 'Firebase/Auth', '~> 6.3.0'
-pod 'Firebase/Database', '~> 6.3.0'
-pod 'Fabric', '~> 1.10.2'
-pod 'Crashlytics', '~> 3.13.2'
-pod 'GoogleIDFASupport', '~> 3.14.0'
-pod 'lottie-ios', '~> 3.1.3'
 target 'Incognito' do
   # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
@@ -46,55 +37,20 @@ target 'Incognito' do
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
-  pod 'NMSSH', '~> 2.2.5'
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
-  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
-#  pod 'Permission-BluetoothPeripheral', :path => "#{permissions_path}/BluetoothPeripheral.podspec"
-  pod 'Permission-Calendars', :path => "#{permissions_path}/Calendars.podspec"
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-  pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts.podspec"
   pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
-  pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways.podspec"
-  pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse.podspec"
-  pod 'Permission-MediaLibrary', :path => "#{permissions_path}/MediaLibrary.podspec"
-  # pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone.podspec"
-  pod 'Permission-Motion', :path => "#{permissions_path}/Motion.podspec"
-  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications.podspec"
-  pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary.podspec"
-  pod 'Permission-Reminders', :path => "#{permissions_path}/Reminders.podspec"
-  pod 'Permission-Siri', :path => "#{permissions_path}/Siri.podspec"
-  pod 'Permission-SpeechRecognition', :path => "#{permissions_path}/SpeechRecognition.podspec"
-  pod 'Permission-StoreKit', :path => "#{permissions_path}/StoreKit.podspec"
 
-
-  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
-  pod 'RNLocalize', :path => '../node_modules/react-native-localize'
-  pod 'react-native-network-info', :path => '../node_modules/react-native-network-info'
-  pod 'RNWifi', :path => '../node_modules/react-native-wifi-reborn'
-  pod 'RNOS', :path => '../node_modules/react-native-os'
   pod 'TcpSockets', :path => '../node_modules/react-native-tcp'
-#  pod 'RNZmqService', :path => '../node_modules/react-native-zmq-service'
-  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
   pod 'RCTRestart', :path => '../node_modules/react-native-restart/ios'
-  pod 'TouchID', :path => "../node_modules/react-native-touch-id"
-
-  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
-  pod 'RNFS', :path => '../node_modules/react-native-fs'
-  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
-
-  # React-Native is not great about React double-including from the Podfile
-  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
-
-  pod 'react-native-settings', :path => '../node_modules/react-native-settings'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
@@ -123,19 +79,6 @@ target 'Incognito' do
           end
       end
     end
-
-#    rnfirebase = installer.pods_project.targets.find { |target| target.name == 'RNFirebase' }
-#    rnfirebase.build_configurations.each do |config|
-#      config.build_settings['HEADER_SEARCH_PATHS'] = '$(inherited) ${PODS_ROOT}/Headers/Public/**'
-#    end
   end
   # use_native_modules!
 end
-
-#post_install do |installer|
-#  installer.pods_project.targets.each do |target|
-#    target.build_configurations.each do |config|
-#      config.build_settings['ENABLE_BITCODE'] = 'NO'
-#    end
-#  end
-#end

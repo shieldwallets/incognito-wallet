@@ -2,13 +2,10 @@ import {
   Wallet
 } from 'incognito-chain-web-js/build/wallet';
 import _ from 'lodash';
-import tokenModel from '@src/models/token';
 import storage from '@src/services/storage';
 import { CONSTANT_KEYS } from '@src/constants';
-import { getTokenInfo } from '@services/api/token';
 import {PRIORITY_LIST} from '@screens/Dex/constants';
 import { saveWallet, updateStatusHistory } from './WalletService';
-import { listCustomTokens } from './RpcClientService';
 
 export const PRV = {
   id: '0000000000000000000000000000000000000000000000000000000000000004',
@@ -201,10 +198,6 @@ export default class Token {
     return response;
   }
 
-  static getPrivacyTokens() {
-    return getTokenInfo();
-  }
-
   static getFollowingTokens({ account, wallet }) {
     try {
       const accountWallet = wallet.getAccountByName(account.name);
@@ -263,8 +256,8 @@ export default class Token {
     }
   }
 
-  static mergeTokens(chainTokens, pTokens) {
-    return [PRV, ..._([...chainTokens, ...pTokens])
+  static mergeTokens(pTokens) {
+    return [PRV, ..._([...pTokens])
       .uniqBy(item => item.tokenId || item.id)
       .map(item => {
         const pToken = pTokens.find(token => token.tokenId === (item.tokenId || item.id ));

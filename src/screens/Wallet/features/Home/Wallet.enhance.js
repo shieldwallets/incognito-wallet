@@ -1,31 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { useSelector, useDispatch } from 'react-redux';
 import { CustomError, ErrorCode, ExHandler } from '@src/services/exception';
-import { accountSeleclor, tokenSeleclor } from '@src/redux/selectors';
 import {
   getPTokenList,
-  getInternalTokenList,
   actionRemoveFollowToken,
 } from '@src/redux/actions/token';
 import { actionReloadFollowingToken } from '@src/redux/actions/account';
-import storageService from '@src/services/storage';
-import { CONSTANT_KEYS, CONSTANT_COMMONS } from '@src/constants';
-import { countFollowToken } from '@src/services/api/token';
+import { CONSTANT_COMMONS } from '@src/constants';
 import { useNavigation } from 'react-navigation-hooks';
 import { setSelectedPrivacy } from '@src/redux/actions/selectedPrivacy';
 import routeNames from '@src/router/routeNames';
 import { Toast } from '@src/components/core';
-import { actionInit as actionInitEstimateFee } from '@components/EstimateFee/EstimateFee.actions';
 import { isGettingBalance as isGettingBalanceSelector } from '@src/redux/selectors/shared';
+import { accountSeleclor } from '@src/redux/selectors';
+import accountService from '@services/wallet/accountService';
+import formatUtil from '@utils/format';
 
 export const WalletContext = React.createContext({});
 
 const enhance = (WrappedComp) => (props) => {
-  const account = useSelector(accountSeleclor.defaultAccount);
-  const tokens = useSelector(tokenSeleclor.tokensFollowedSelector);
   const wallet = useSelector((state) => state?.wallet);
   const isGettingBalance = useSelector(isGettingBalanceSelector);
+  const [rewards, setRewards] = useState(null);
   const dispatch = useDispatch();
   const [state, setState] = React.useState({
     isReloading: false,
@@ -44,15 +41,29 @@ const enhance = (WrappedComp) => (props) => {
       await setState({ isReloading: false });
     }
   };
+
+  const account = useSelector(accountSeleclor.defaultAccountSelector);
+
+  const loadRewards = async () => {
+    await setState({
+      isReloading: true,
+    });
+
+    const newRewards = await accountService.getRewardAmount('', account.PaymentAddress);
+    setRewards(formatUtil.amountFull(newRewards || 0, 9, true));
+    await setState({
+      isReloading: false,
+    });
+  };
+
   const fetchData = async (reload = false) => {
     try {
       await setState({ isReloading: true });
-      let tasks = [getFollowingToken(), handleCountFollowedToken()];
+      let tasks = [getFollowingToken(), loadRewards()];
       if (reload) {
         tasks = [
           ...tasks,
           dispatch(getPTokenList()),
-          dispatch(getInternalTokenList()),
         ];
       }
       await Promise.all(tasks);
@@ -60,23 +71,6 @@ const enhance = (WrappedComp) => (props) => {
       new ExHandler(error).showErrorToast();
     } finally {
       await setState({ isReloading: false });
-    }
-  };
-  const handleCountFollowedToken = async () => {
-    try {
-      const isChecked = !!JSON.parse(
-        await storageService.getItem(CONSTANT_KEYS.IS_CHECK_FOLLOWED_TOKEN),
-      );
-      const tokenIds = tokens.map((t) => t.id);
-      if (!isChecked) {
-        countFollowToken(tokenIds, account?.PublicKey).catch(null);
-        storageService.setItem(
-          CONSTANT_KEYS.IS_CHECK_FOLLOWED_TOKEN,
-          JSON.stringify(true),
-        );
-      }
-    } catch (e) {
-      new ExHandler(e);
     }
   };
   const handleExportKey = async () => {
@@ -88,13 +82,18 @@ const enhance = (WrappedComp) => (props) => {
     await dispatch(setSelectedPrivacy(tokenId));
     navigation.navigate(routeNames.WalletDetail);
   };
-  const clearWallet = async () => await dispatch(actionInitEstimateFee());
+  const clearWallet = async () => null;
   const handleRemoveToken = async (tokenId) => {
     await dispatch(actionRemoveFollowToken(tokenId));
     Toast.showSuccess('Add coin again to restore balance.', {
       duration: 500,
     });
   };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <ErrorBoundary>
       <WalletContext.Provider
@@ -103,6 +102,7 @@ const enhance = (WrappedComp) => (props) => {
             ...props,
             wallet,
             isReloading,
+            rewards,
             fetchData,
             handleExportKey,
             handleSelectToken,

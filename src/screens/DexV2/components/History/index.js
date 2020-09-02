@@ -12,18 +12,12 @@ import ROUTE_NAMES from '@routers/routeNames';
 import withPairs from '@screens/DexV2/components/pdexPair.enhance';
 import withAccount from '@screens/DexV2/components/account.enhance';
 import LoadingContainer from '@components/LoadingContainer/LoadingContainer';
-import { LIMIT } from '@screens/DexV2/constants';
 import withOldHistories from '@screens/DexV2/components/oldHistories.enhance';
 import { ArrowRightGreyIcon } from '@components/Icons';
 import styles from './style';
-import withHistories from '../histories.enhance';
 
 const History = ({
-  histories,
   oldHistories,
-  isLoadingHistories,
-  onReloadHistories,
-  onLoadMoreHistories,
 }) => {
   const navigation = useNavigation();
   const viewDetail = (item) => {
@@ -44,7 +38,7 @@ const History = ({
     </TouchableOpacity>
   );
 
-  const allHistories = histories.concat(oldHistories);
+  const allHistories = [].concat(oldHistories);
 
   return (
     <View style={styles.wrapper}>
@@ -57,10 +51,6 @@ const History = ({
             renderItem={renderHistoryItem}
             getItem={(data, index) => data[index]}
             getItemCount={data => data.length}
-            refreshing={isLoadingHistories}
-            onRefresh={onReloadHistories}
-            onEndReached={(histories || []).length >= LIMIT ? onLoadMoreHistories : _.noop}
-            onEndReachedThreshold={0.1}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
           />
@@ -71,21 +61,16 @@ const History = ({
 };
 
 History.propTypes = {
-  histories: PropTypes.array,
   oldHistories: PropTypes.array,
-  isLoadingHistories: PropTypes.bool,
 };
 
 History.defaultProps = {
-  histories: null,
   oldHistories: null,
-  isLoadingHistories: false,
 };
 
 export default compose(
   withLayout_2,
   withPairs,
   withAccount,
-  withHistories,
   withOldHistories,
 )(History);

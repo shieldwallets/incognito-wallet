@@ -7,7 +7,6 @@ import { CustomError, ErrorCode, ExHandler } from '@services/exception';
 import convertUtil from '@utils/convert';
 import { PRIORITY_LIST } from '@screens/Dex/constants';
 import { MESSAGES } from '@src/constants';
-import { getAllTradingTokens } from '@services/trading';
 
 const withPairs = WrappedComp => (props) => {
   const [loading, setLoading] = useState(false);
@@ -21,12 +20,9 @@ const withPairs = WrappedComp => (props) => {
     try {
       setLoading(true);
       const pTokens = await getTokenList();
-      const chainTokens = await tokenService.getPrivacyTokens();
       const chainPairs = await getPDEState();
-      const tokens = tokenService.mergeTokens(chainTokens, pTokens);
-      const erc20Tokens = await getAllTradingTokens();
-
-      // const erc20Tokens = [];
+      const tokens = tokenService.mergeTokens(pTokens);
+      const erc20Tokens = [];
 
       if (!_.has(chainPairs, 'PDEPoolPairs')) {
         throw new CustomError(ErrorCode.FULLNODE_DOWN);

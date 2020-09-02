@@ -3,7 +3,6 @@ import AccountModel from '@models/account';
 import { COINS, CONSTANT_COMMONS, CONSTANT_KEYS } from '@src/constants';
 import tokenModel from '@src/models/token';
 import storage from '@src/services/storage';
-import { countFollowToken, countUnfollowToken } from '@src/services/api/token';
 import { AccountWallet, KeyWallet, Wallet } from 'incognito-chain-web-js/build/wallet';
 import _ from 'lodash';
 import { STACK_TRACE } from '@services/exception/customError/code/webjsCode';
@@ -321,9 +320,6 @@ export default class Account {
     const prevList = await getUserUnfollowTokenIDs();
     const newList = _.difference(prevList, followList);
 
-    // track then token
-    countFollowToken(followList, account?.PublicKey).catch(null);
-
     setUserUnfollowTokenIDs(newList);
   }
 
@@ -339,9 +335,6 @@ export default class Account {
     prevList.push(tokenId);
     setUserUnfollowTokenIDs(prevList);
 
-    // track then token
-    countUnfollowToken(tokenId, account?.PublicKey).catch(null);
-
     return wallet;
   }
 
@@ -352,9 +345,9 @@ export default class Account {
    * @param {bool} isGetAll
    * @returns {object}
    */
-  static async getRewardAmount(tokenID, paymentAddrStr, isGetAll = false) {
+  static getRewardAmount(tokenID, paymentAddrStr, isGetAll = false) {
     if(_.isEmpty(paymentAddrStr)) throw new CustomError(ErrorCode.payment_address_empty,{name:'payment address is empty'});
-    return await AccountWallet?.getRewardAmount(paymentAddrStr,isGetAll,tokenID);
+    return AccountWallet?.getRewardAmount(paymentAddrStr,isGetAll,tokenID);
   }
 
   /**

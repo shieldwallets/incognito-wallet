@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { Image, TouchableOpacity, View, RoundCornerButton, Text, RefreshControl, ScrollView } from '@components/core';
 import withFilter from '@screens/DexV2/components/Trade/filter.enhance';
-import {Divider} from 'react-native-elements';
 import downArrow from '@assets/images/icons/circle_arrow_down.png';
 import withSwap from '@screens/DexV2/components/Trade/swap.enhance';
 import Balance from '@screens/DexV2/components/Balance';
@@ -15,13 +14,13 @@ import withChangeInputToken from '@screens/DexV2/components/Trade/inputToken.enh
 import { useNavigation } from 'react-navigation-hooks';
 import ROUTE_NAMES from '@routers/routeNames';
 import withWarning from '@screens/DexV2/components/Trade/warning.enhance';
-import withHistories from '@screens/DexV2/components/histories.enhance';
 import withParams from '@screens/DexV2/components/Trade/params.enhance';
 import withAccount from '@screens/DexV2/components/account.enhance';
 import withERC20 from '@screens/DexV2/components/Trade/with.erc20';
 import PoolSize from '@screens/DexV2/components/PoolSize';
 import Powered from '@screens/DexV2/components/Powered';
 import { ArrowRightGreyIcon } from '@components/Icons';
+import withOldHistories from '@screens/DexV2/components/oldHistories.enhance';
 import NewInput from '../NewInput';
 import withPair from './pair.enhance';
 import withChangeInput  from './input.enhance';
@@ -53,7 +52,7 @@ const Trade = ({
   feeToken,
   pair,
 
-  histories,
+  oldHistories,
 
   error,
   warning,
@@ -115,11 +114,9 @@ const Trade = ({
           />
           <Text style={styles.error}>{error}</Text>
           <View style={styles.arrowWrapper}>
-            <Divider style={styles.divider} />
             <TouchableOpacity onPress={onSwapTokens}>
               <Image source={downArrow} style={styles.arrow} />
             </TouchableOpacity>
-            <Divider style={styles.divider} />
           </View>
           <NewInput
             tokens={outputList}
@@ -163,7 +160,7 @@ const Trade = ({
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        {!!histories.length && (
+        {!!oldHistories.length && (
           <TouchableOpacity onPress={navigateHistory} style={styles.bottomFloatBtn}>
             <Text style={styles.bottomText}>Order history</Text>
             <ArrowRightGreyIcon style={{ marginLeft: 10 }} />
@@ -210,7 +207,7 @@ Trade.propTypes = {
 
 export default compose(
   withAccount,
-  withHistories,
+  withOldHistories,
   withChangeInputToken,
   withFilter,
   withERC20,

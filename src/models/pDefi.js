@@ -93,7 +93,6 @@ export class PDexTradeHistoryModel {
 
     if (networkFeeToken) {
       this.networkFeeTokenSymbol = networkFeeToken.symbol;
-      this.networkFee = Math.round(this.networkFee / 3 * 4);
       this.networkFee = formatUtil.amountFull(this.networkFee, networkFeeToken.pDecimals);
       this.tradingFee = formatUtil.amountFull(this.tradingFee, networkFeeToken.pDecimals);
     }

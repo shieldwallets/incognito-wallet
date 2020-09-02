@@ -24,8 +24,6 @@ const Form = createForm(formImportAccount.formName);
 
 const ImportAccount = (props) => {
   const {
-    getAccountValidator,
-    getPrivateKeyValidator,
     handleImportAccount,
     toggle,
     randomName,
@@ -64,7 +62,6 @@ const ImportAccount = (props) => {
                 name="accountName"
                 placeholder="Keychain name"
                 label="Keychain name"
-                validate={getAccountValidator()}
               />
             )}
             <Field
@@ -72,7 +69,6 @@ const ImportAccount = (props) => {
               name="privateKey"
               placeholder="Enter private key"
               label="Private Key"
-              validate={getPrivateKeyValidator()}
             />
             <ButtonBasic
               title={submitting ? 'Importing keychain...' : 'Import keychain'}
@@ -91,8 +87,6 @@ ImportAccount.defaultProps = {};
 
 ImportAccount.propTypes = {
   disabledForm: PropTypes.bool.isRequired,
-  getAccountValidator: PropTypes.func.isRequired,
-  getPrivateKeyValidator: PropTypes.func.isRequired,
   handleImportAccount: PropTypes.func.isRequired,
   toggle: PropTypes.bool.isRequired,
   randomName: PropTypes.string.isRequired,

@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { THEME } from '@src/styles';
-import {useDispatch} from 'react-redux';
-import {getSettings} from '@src/redux/actions/settings';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,12 +12,6 @@ const styles = StyleSheet.create({
 });
 
 const AppScreen = ({ children }) => {
-  const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    dispatch(getSettings());
-  }, []);
-
   if (!children) {
     return null;
   }

@@ -1,17 +1,26 @@
 import React from 'react';
 import { MESSAGES } from '@screens/Dex/constants';
 import { PRV } from '@services/wallet/tokenService';
-import { COINS } from '@src/constants';
+import { COINS, CONSTANT_COMMONS } from '@src/constants';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
 import { deposit as depositAPI, trade as tradeAPI, tradePKyber as TradeKyberAPI } from '@services/api/pdefi';
 import { MAX_PDEX_TRADE_STEPS } from '@screens/DexV2/constants';
 import convertUtil from '@utils/convert';
-import { DEFI_TRADING_FEE } from '@components/EstimateFee/EstimateFee.utils';
+import { DEFI_TRADING_FEE, MAX_FEE_PER_TX } from '@components/EstimateFee/EstimateFee.utils';
+import { TradeHistory } from '@models/dexHistory';
+import { useDispatch } from 'react-redux';
+import { addHistory } from '@src/redux/actions/dex';
 
 const withTrade = WrappedComp => (props) => {
   const [error, setError] = React.useState('');
   const [trading, setTrading] = React.useState(false);
+  const dispatch = useDispatch();
+
+  const onAddHistory = (history) => {
+    dispatch(addHistory(history));
+  };
+
   const {
     inputValue,
     inputToken,
@@ -69,53 +78,48 @@ const withTrade = WrappedComp => (props) => {
         return setError(MESSAGES.NOT_ENOUGH_PRV_NETWORK_FEE);
       }
 
-      if (inputToken?.id === PRV.id) {
-        spendingCoin = spendingPRV = await accountService.hasSpendingCoins(account, wallet, inputValue + prvFee + (isErc20 ? DEFI_TRADING_FEE : 0));
-      } else {
-        if (prvFee) {
-          spendingPRV = await accountService.hasSpendingCoins(account, wallet, prvFee + (isErc20 ? DEFI_TRADING_FEE : 0));
-          spendingCoin = await accountService.hasSpendingCoins(account, wallet, inputValue, inputToken.id);
-        } else {
-          spendingCoin = await accountService.hasSpendingCoins(account, wallet, inputValue + tokenFee, inputToken.id);
-        }
-      }
-
-      if (spendingCoin || spendingPRV) {
-        return setError(MESSAGES.PENDING_TRANSACTIONS);
-      }
-
-      const depositObject = await deposit();
-      const serverFee = tokenFee / MAX_PDEX_TRADE_STEPS * (MAX_PDEX_TRADE_STEPS - 1);
-      const tokenNetworkFee = tokenFee / MAX_PDEX_TRADE_STEPS;
-      const prvNetworkFee = prvFee / MAX_PDEX_TRADE_STEPS;
-      let prvAmount = prvFee / MAX_PDEX_TRADE_STEPS * (MAX_PDEX_TRADE_STEPS - 1);
-
-      if (isErc20) {
-        await tradeKyber(depositObject.depositId);
-        prvAmount = prvAmount + DEFI_TRADING_FEE;
-      } else {
-        await tradeAPI({
-          depositId: depositObject.depositId,
-          buyTokenId: outputToken.id,
-          buyAmount: outputValue,
-          buyExpectedAmount: outputValue,
-          tradingFee: 0,
+      if (inputToken.id === COINS.PRV_ID) {
+        const result = await accountService.createAndSendNativeTokenTradeRequestTx(
+          wallet,
+          account,
+          MAX_FEE_PER_TX,
+          outputToken.id,
+          inputValue,
           minimumAmount,
-        });
-      }
+          0,
+        );
 
-      const result = await accountService.createAndSendToken(
-        account,
-        wallet,
-        depositObject.walletAddress,
-        inputValue + serverFee,
-        inputToken.id,
-        prvNetworkFee,
-        tokenNetworkFee,
-        prvAmount,
-      );
-      if (result && result.txId) {
-        onTradeSuccess(true);
+        if (result && result.txId) {
+          onTradeSuccess(true);
+
+          onAddHistory(new TradeHistory(result, inputToken, outputToken, inputValue, outputValue, MAX_FEE_PER_TX, 'PRV', 0));
+        }
+      } else {
+        const tokenObject = {
+          Privacy: true,
+          TokenID: inputToken.id,
+          TokenName: 'Name',
+          TokenSymbol: 'Symbol',
+          TokenTxType: CONSTANT_COMMONS.TOKEN_TX_TYPE.SEND,
+          TokenAmount: inputValue,
+        };
+        const result = await accountService.createAndSendPTokenTradeRequestTx(
+          wallet,
+          account,
+          tokenObject,
+          0,
+          MAX_FEE_PER_TX,
+          outputToken.id,
+          inputValue,
+          minimumAmount,
+          0,
+        );
+
+        if (result && result.txId) {
+          onTradeSuccess(true);
+
+          onAddHistory(new TradeHistory(result, inputToken, outputToken, inputValue, outputValue, MAX_FEE_PER_TX, outputToken.symbol, 0));
+        }
       }
     } catch (error) {
       setError(new ExHandler(error).getMessage(MESSAGES.TRADE_ERROR));

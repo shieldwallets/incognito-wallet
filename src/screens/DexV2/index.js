@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import Header from '@components/Header';
 import { withLayout_2 } from '@components/Layout';
-import { RefreshControl, ScrollView, View } from '@components/core';
+import { View } from '@components/core';
 import Trade from '@screens/DexV2/components/Trade';
 import _ from 'lodash';
 import LoadingContainer from '@components/LoadingContainer/index';

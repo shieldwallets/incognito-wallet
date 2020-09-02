@@ -1,12 +1,9 @@
 import lowerCase from 'lodash/lowerCase';
 import { useSelector } from 'react-redux';
 import { accountSeleclor } from '@src/redux/selectors';
-import { validator } from '@src/components/core/reduxForm';
 import { formValueSelector, isValid } from 'redux-form';
 import trim from 'lodash/trim';
 import PropTypes from 'prop-types';
-
-const isRequired = validator.required();
 
 const useAccount = (props) => {
   const { form } = props;
@@ -25,18 +22,8 @@ const useAccount = (props) => {
   const isAccountExist = accountList.find(
     (account) => lowerCase(account?.accountName) === accountNameToLowercase,
   );
-  const getAccountValidator = () => {
-    const validate = [...validator.combinedAccountName];
-    return validate;
-  };
-  const getPrivateKeyValidator = () => {
-    const validate = [isRequired];
-    return validate;
-  };
   return {
     isFormValid,
-    getAccountValidator,
-    getPrivateKeyValidator,
     isAccountExist,
     isPrivateKeyExist,
   };

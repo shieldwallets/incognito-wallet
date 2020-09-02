@@ -118,7 +118,6 @@ const TextInput = ({
           <TouchableOpacity onPress={handleClear}>
             <Icon
               name="ios-close-circle"
-              type="ionicon"
               color={COLORS.lightGrey3}
               size={20}
             />

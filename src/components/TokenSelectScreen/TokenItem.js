@@ -2,12 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Text } from '@components/core';
 import VerifiedText from '@components/VerifiedText/index';
-import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import styles from './style';
 
-const TokenItem = ({ name, id, symbol, verified }) => {
-  const token = useSelector(state => selectedPrivacySeleclor.getPrivacyDataByTokenID(state)(id));
+const TokenItem = ({ name, symbol, verified }) => {
   return (
     <View style={styles.tokenItem}>
       <View style={{ marginTop: 8 }}>
@@ -15,7 +12,6 @@ const TokenItem = ({ name, id, symbol, verified }) => {
       </View>
       <View style={styles.row}>
         <Text style={styles.networkName}>{symbol}</Text>
-        <Text style={styles.networkName}>({token.networkName})</Text>
       </View>
     </View>
   );
@@ -23,7 +19,6 @@ const TokenItem = ({ name, id, symbol, verified }) => {
 
 TokenItem.propTypes = {
   name: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
   symbol: PropTypes.string.isRequired,
   verified: PropTypes.bool,
 };

@@ -6,6 +6,7 @@ import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
 import { Text, View } from '@components/core/index';
 import Help from '@components/Help/index';
 import styles from './style';
+import convertUtil from '@utils/convert';
 
 const ExchangeRate = ({
   inputToken,

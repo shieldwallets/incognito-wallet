@@ -1,14 +1,10 @@
 import React from 'react';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 import withToken, { TokenContext } from '@src/components/Token/Token.enhance';
 import { TokenVerifiedIcon } from '@src/components/Icons';
 import format from '@src/utils/format';
 import floor from 'lodash/floor';
-import round from 'lodash/round';
-import Swipeout from 'react-native-swipeout';
-import { BtnDelete } from '@src/components/Button';
-import replace from 'lodash/replace';
 import convert from '@src/utils/convert';
 import trim from 'lodash/trim';
 import { TouchableOpacity } from '@src/components/core';
@@ -78,28 +74,6 @@ export const AmountBasePRV = (props) => {
       text={`${_amount}`}
       style={[styled.rightText, customStyle]}
       stylePSymbol={[customPSymbolStyle]}
-    />
-  );
-};
-
-export const ChangePrice = (props) => {
-  const { change = '0', customStyle = null } = props;
-  const isTokenDecrease = change[0] === '-';
-  const changeToNumber = Number(replace(change, '-', ''));
-  if (changeToNumber === 0) {
-    return null;
-  }
-  return (
-    <NormalText
-      text={` ${isTokenDecrease ? '-' : '+'}${round(changeToNumber, 2)}%`}
-      style={[
-        {
-          marginLeft: 5,
-        },
-        styled.bottomText,
-        isTokenDecrease ? styled.redText : styled.greenText,
-        customStyle,
-      ]}
     />
   );
 };
@@ -209,40 +183,13 @@ export const Follow = (props) => {
 };
 
 const Token = (props) => {
-  const { handleRemoveToken = null, swipable = false, pricePrv, isMainCrypto } = props;
+  const { pricePrv, isMainCrypto } = props;
   const pairWithPrv = pricePrv !== 0 && !isMainCrypto;
-  let TokenComponent = pairWithPrv ? (
+  return pairWithPrv ? (
     <TokenPairPRV {...props} />
   ) : (
     <TokenDefault {...props} />
   );
-  if (swipable === true) {
-    return (
-      <Swipeout
-        autoClose
-        style={{
-          backgroundColor: 'transparent',
-        }}
-        right={[
-          {
-            component: (
-              <BtnDelete
-                showIcon={false}
-                onPress={
-                  typeof handleRemoveToken === 'function'
-                    ? handleRemoveToken
-                    : null
-                }
-              />
-            ),
-          },
-        ]}
-      >
-        {TokenComponent}
-      </Swipeout>
-    );
-  }
-  return TokenComponent;
 };
 
 Name.defaultProps = {

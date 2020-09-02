@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {CONSTANT_CONFIGS} from '@src/constants';
-import Log from '@src/services/log';
 import {CustomError, ErrorCode, ExHandler} from './exception';
 
 const HEADERS = {'Content-Type': 'application/json'};
@@ -64,8 +63,6 @@ instance.interceptors.response.use(
 
     // Unauthorized
     if (errResponse?.status === 401) {
-      Log.log('Token was expired');
-
       if (!isAlreadyFetchingAccessToken) {
         isAlreadyFetchingAccessToken = true;
         if (typeof global.login === 'function') {

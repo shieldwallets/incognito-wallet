@@ -1,36 +1,11 @@
 import { Text, View, Button } from '@src/components/core';
-import { ActivityIndicator, Animated } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { UTILS } from '@src/styles';
 import style from './style';
 
 class GetStarted extends Component {
-  state = {
-    moveAni: new Animated.Value(0),
-  };
-
-  componentDidMount() {
-    const { moveAni } = this.state;
-    this.animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(moveAni, {
-          toValue:
-            UTILS.deviceWidth() -
-            (100 /* bar size */ + 60) /* container padding */,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(moveAni, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-  }
-
   render() {
     const { isInitialing, errorMsg, isCreating, onRetry } = this.props;
     return (

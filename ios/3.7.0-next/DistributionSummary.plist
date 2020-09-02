@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Incognito.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>842A7878F3FE53A0A76A3CBFC7038EFB75411279</string>
+				<key>dateExpires</key>
+				<string>7/17/21</string>
+				<key>type</key>
+				<string>Apple Distribution</string>
+			</dict>
+			<key>embeddedBinaries</key>
+			<array>
+				<dict>
+					<key>architectures</key>
+					<array>
+						<string>i386</string>
+						<string>x86_64</string>
+						<string>armv7</string>
+						<string>arm64</string>
+					</array>
+					<key>certificate</key>
+					<dict>
+						<key>SHA1</key>
+						<string>842A7878F3FE53A0A76A3CBFC7038EFB75411279</string>
+						<key>dateExpires</key>
+						<string>7/17/21</string>
+						<key>type</key>
+						<string>Apple Distribution</string>
+					</dict>
+					<key>name</key>
+					<string>AutonomousZMQ.framework</string>
+					<key>team</key>
+					<dict>
+						<key>id</key>
+						<string>G63A8CY3DS</string>
+						<key>name</key>
+						<string>Incognito Core Team LLC</string>
+					</dict>
+				</dict>
+			</array>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>G63A8CY3DS.com.incognito.wallet.next</string>
+				<key>aps-environment</key>
+				<string>production</string>
+				<key>com.apple.developer.networking.HotspotConfiguration</key>
+				<true/>
+				<key>com.apple.developer.networking.wifi-info</key>
+				<true/>
+				<key>com.apple.developer.team-identifier</key>
+				<string>G63A8CY3DS</string>
+				<key>get-task-allow</key>
+				<false/>
+			</dict>
+			<key>name</key>
+			<string>Incognito.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>e66fbbe2-13d4-46f4-8434-26df39d5fd14</string>
+				<key>name</key>
+				<string>iOS Team Ad Hoc Provisioning Profile: com.incognito.wallet.next</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>G63A8CY3DS</string>
+				<key>name</key>
+				<string>Incognito Core Team LLC</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

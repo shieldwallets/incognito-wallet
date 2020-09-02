@@ -3,6 +3,7 @@ import { FONT, COLORS, UTILS } from '@src/styles';
 
 export const styled = StyleSheet.create({
   container: {
+    marginTop: 30,
     flex: 1,
   },
   groupButtonContainer: {
@@ -143,5 +144,6 @@ export const rightHeaderStyled = StyleSheet.create({
   },
   btnExportKey: {
     marginRight: 15,
+    flex: 1,
   },
 });

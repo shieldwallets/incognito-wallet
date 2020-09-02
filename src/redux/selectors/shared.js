@@ -33,14 +33,12 @@ export const isGettingBalance = createSelector(
 
 export const availableTokensSelector = createSelector(
   pTokensSelector,
-  internalTokensSelector,
   tokensFollowedSelector,
   selectedPrivacySeleclor.getPrivacyDataByTokenID,
-  (pTokens, internalTokens, followedTokens, getPrivacyDataByTokenID) => {
+  (pTokens, followedTokens, getPrivacyDataByTokenID) => {
     const followedTokenIds = followedTokens.map(t => t?.id) || [];
     const allTokenIds = Object.keys(
       fromPairs([
-        ...internalTokens?.map(t => [t?.id]),
         ...pTokens?.map(t => [t?.tokenId]),
       ]),
     );

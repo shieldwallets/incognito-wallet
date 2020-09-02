@@ -15,7 +15,6 @@ export const HeaderContext = React.createContext({});
 export const HeaderTitle = () => {
   const { headerProps } = React.useContext(HeaderContext);
   const {
-    onHandleSearch,
     title,
     titleStyled,
     canSearch,
@@ -42,17 +41,7 @@ export const HeaderTitle = () => {
       {customHeaderTitle && customHeaderTitle}
     </View>
   );
-  if (!canSearch) {
-    return <Title />;
-  }
-  return (
-    <TouchableOpacity
-      style={styledHeaderTitle.container}
-      onPress={onHandleSearch}
-    >
-      <Title />
-    </TouchableOpacity>
-  );
+  return <Title />;
 };
 const Header = ({
   title,
@@ -65,11 +54,9 @@ const Header = ({
   onGoBack,
   onHandleSearch,
   style,
-  onSubmit,
-  isNormalSearch,
-  onTextSearchChange,
   customHeaderTitle,
   styledContainerHeaderTitle,
+  root,
 }) => {
   const { goBack } = useNavigation();
   const handleGoBack = () =>
@@ -88,20 +75,6 @@ const Header = ({
   });
 
   const renderHeaderTitle = () => {
-    if (toggleSearch) {
-      if (isNormalSearch) {
-        return (
-          <SearchBox
-            onSubmit={isNormalSearch ? onSubmit : () => {}}
-            onChange={(text) =>
-              isNormalSearch ? onTextSearchChange(text) : () => {}
-            }
-            isNormalSearch={isNormalSearch}
-          />
-        );
-      }
-      return <SearchBox title={title} />;
-    }
     return <HeaderTitle />;
   };
   return (
@@ -121,7 +94,7 @@ const Header = ({
       }}
     >
       <View style={[styled.container, style]}>
-        <BtnCircleBack onPress={_handleGoBack} />
+        {!root && <BtnCircleBack onPress={_handleGoBack} />}
         {renderHeaderTitle()}
         {!!rightHeader && rightHeader}
         {accountSelectable && (
@@ -141,11 +114,9 @@ Header.defaultProps = {
   accountSelectable: false,
   onGoBack: null,
   style: null,
-  onSubmit: () => {},
-  onTextSearchChange: () => {},
-  isNormalSearch: false,
   customHeaderTitle: null,
   styledContainerHeaderTitle: null,
+  root: false,
 };
 Header.propTypes = {
   title: PropTypes.string.isRequired,
@@ -158,10 +129,8 @@ Header.propTypes = {
   onGoBack: PropTypes.func,
   onHandleSearch: PropTypes.func.isRequired,
   style: PropTypes.any,
-  onSubmit: PropTypes.func,
-  onTextSearchChange: PropTypes.func,
-  isNormalSearch: PropTypes.bool,
   customHeaderTitle: PropTypes.element,
   styledContainerHeaderTitle: PropTypes.any,
+  root: PropTypes.bool,
 };
 export default withHeader(React.memo(Header));
