@@ -35,7 +35,7 @@ const initialState = {
   nextPin: false,
   bioSupportedType: null,
   action: null,
-  appState: '',
+  appState: ''
 };
 
 class AddPIN extends React.Component {
@@ -76,6 +76,9 @@ class AddPIN extends React.Component {
     ) {
       this.setState({ pin1: '', pin2: '' });
     }
+    if(appState === '' && nextAppState === 'active') {
+      this.handleBioAuth();
+    }
     await this.setState({ appState: nextAppState });
   };
 
@@ -105,11 +108,14 @@ class AddPIN extends React.Component {
 
   checkTouchSupported() {
     const { action } = this.state;
+    const {currentScreen, prevScreen} = this.props;
     if (action === 'login' || action === 'remove') {
       TouchID.isSupported(optionalConfigObject)
         .then((biometryType) => {
           this.setState({ bioSupportedType: biometryType });
-          this.handleBioAuth();
+          if(currentScreen === '' && prevScreen === '') {
+            this.handleBioAuth();
+          }
         })
         .catch(() => null);
     }
@@ -340,14 +346,20 @@ AddPIN.propTypes = {
   navigation: PropTypes.object.isRequired,
   updatePin: PropTypes.func.isRequired,
   pin: PropTypes.string,
+  currentScreen: PropTypes.string,
+  prevScreen: PropTypes.string
 };
 
 AddPIN.defaultProps = {
   pin: '',
+  currentScreen: '',
+  prevScreen: ''
 };
 
 const mapStateToProps = (state) => ({
   pin: state.pin.pin,
+  currentScreen: state.navigation.currentScreen,
+  prevScreen: state.navigation.prevScreen
 });
 
 const mapDispatchToProps = { updatePin };
