@@ -422,6 +422,8 @@ export default class Account {
 
       return followedTokens.filter(item => item?.id !== PRV_ID);
     }
+
+    return followedTokens;
   }
 
   static async addFollowingTokens(tokens, account, wallet) {
