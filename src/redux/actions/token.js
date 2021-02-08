@@ -31,6 +31,7 @@ import {
   receiveHistorySelector,
 } from '@src/redux/selectors/token';
 import { MAX_LIMIT_RECEIVE_HISTORY_ITEM } from '@src/redux/reducers/token';
+import { PRV_ID } from '@screens/DexV2/constants';
 import { setWallet } from './wallet';
 
 export const setToken = (
@@ -204,7 +205,7 @@ export const actionAddFollowTokenSuccess = (payload) => ({
 export const actionAddFollowToken = (tokenId) => async (dispatch, getState) => {
   const state = getState();
   let wallet = state.wallet;
-  if(!tokenId){
+  if(!tokenId || tokenId === PRV_ID){
     return;
   }
   try {
