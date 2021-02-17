@@ -69,7 +69,7 @@ const Trade = ({
         <Balance
           token={inputToken}
           balance={inputValue}
-          title="Purchase"
+          title="Sell"
           style={styles.extra}
         />
         <FeeViewTradeConfirm />

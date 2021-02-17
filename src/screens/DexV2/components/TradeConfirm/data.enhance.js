@@ -20,9 +20,11 @@ const withData = WrappedComp => (props) => {
   const isErc20 = useNavigationParam('isErc20');
   const quote = useNavigationParam('quote');
 
-  const inputText = formatUtil.toFixed(convertUtil.toNumber(rawText), inputToken.pDecimals);
-
   const { tradingFee } = useSelector(tradingFeeSelector)();
+
+  const inputOriginal = convertUtil.toOriginalAmount(convertUtil.toNumber(rawText, true), inputToken.pDecimals);
+  const inputText = formatUtil.amountFull(inputOriginal, inputToken.pDecimals);
+
   const {
     priority,
     slippage
