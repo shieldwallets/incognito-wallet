@@ -6,6 +6,8 @@ import {
 } from '@src/resources/separator';
 import Section, { sectionStyle } from '@screens/Setting/features/Section';
 import { Text, View } from 'react-native';
+import { generateTestId } from '@utils/misc';
+import { TEST_SETTING } from '@src/constants/elements';
 
 const SeparatorSection = () => {
   const [decimalSeparator, setDecimalSeparator] = useState(
@@ -31,7 +33,10 @@ const SeparatorSection = () => {
           onPress={togglePin}
           style={[sectionStyle.subItem]}
         >
-          <Text style={[sectionStyle.desc]}>
+          <Text
+            {...generateTestId(TEST_SETTING.LBL_DESC)}
+            style={[sectionStyle.desc]}
+          >
             {'Use decimal comma\ninstead of point'}
           </Text>
           <Switch onValueChange={togglePin} value={decimalSeparator === ','} />

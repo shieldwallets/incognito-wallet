@@ -3,12 +3,15 @@ import { Text, TouchableOpacity, View } from '@src/components/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 import isEqual from 'lodash/isEqual';
+import { generateTestId } from '@utils/misc';
+import { TEST_NETWORK } from '@src/constants/elements';
 import { networkItemStyle } from './NetworkSetting.styled';
 
 const NetworkItem = ({ active, network, onActive }) => {
   const [clickTime, setClickTime] = React.useState(0);
   return (
     <TouchableOpacity
+      accessible={false}
       onPress={() => {
         const currClickTime = clickTime + 1;
         setClickTime(currClickTime);
@@ -27,13 +30,15 @@ const NetworkItem = ({ active, network, onActive }) => {
           networkItemStyle.container,
           active && networkItemStyle.activeItem,
         ]}
+        accessible={false}
       >
         <View style={networkItemStyle.circle} />
-        <View style={networkItemStyle.textInfoContainer}>
+        <View accessible={false} style={networkItemStyle.textInfoContainer}>
           <Text
             style={networkItemStyle.networkName}
             numberOfLines={1}
             ellipsizeMode="tail"
+            {...generateTestId(TEST_NETWORK.LBL_NETWORK)}
           >
             {network?.name}
           </Text>
@@ -41,6 +46,7 @@ const NetworkItem = ({ active, network, onActive }) => {
             style={networkItemStyle.networkAddr}
             numberOfLines={1}
             ellipsizeMode="tail"
+            {...generateTestId(TEST_NETWORK.LBL_NETWORK_URL)}
           >
             {network?.address}
           </Text>

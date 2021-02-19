@@ -15,6 +15,9 @@ import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import routeNames from '@routers/routeNames';
 import { useNavigation } from 'react-navigation-hooks';
+import { generateTestId } from '@utils/misc';
+import { TEST_SHIELD } from '@src/constants/elements';
+import { Row } from '@src/components';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
 import { useCountDown } from './GenQRCode.useEffect';
@@ -64,19 +67,24 @@ const Extra = () => {
           <QrCodeGenerate value={address} size={175} />
         </View>
         <View style={styled.hook}>
-          <NormalText text="Expires in: ">
-            <Text style={[styled.boldText, styled.countdown]}>
+          <Row style={{ alignmentItem: 'center' }}>
+            <NormalText text="Expires in: " />
+            <Text {...generateTestId(TEST_SHIELD.LBL_EXPIRE)} style={[styled.text, styled.boldText, styled.countdown]}>
               {remainTime}
             </Text>
-          </NormalText>
+          </Row>
           {min && (
             <>
-              <NormalText text="Minimum: ">
-                <Text style={[styled.boldText]}>
+              <Row>
+                <NormalText text="Minimum: " />
+                <Text
+                  {...generateTestId(TEST_SHIELD.LBL_MIN_AMOUNT)}
+                  style={[styled.text, styled.boldText]}
+                >
                   {`${min} ${selectedPrivacy?.externalSymbol ||
-                    selectedPrivacy?.symbol}`}
+                  selectedPrivacy?.symbol}`}
                 </Text>
-              </NormalText>
+              </Row>
               <NormalText
                 text="Smaller amounts will not be processed."
                 style={styled.smallText}

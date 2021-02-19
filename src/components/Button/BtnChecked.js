@@ -10,7 +10,7 @@ const styled = StyleSheet.create({
 const BtnBack = (props) => {
   const { btnStyle, checked, hook, ...rest } = props;
   return (
-    <TouchableOpacity style={[styled.btnStyle, btnStyle]} {...rest}>
+    <TouchableOpacity accessible={false} style={[styled.btnStyle, btnStyle]} {...rest}>
       <CheckedIcon checked={checked} />
       {hook}
     </TouchableOpacity>

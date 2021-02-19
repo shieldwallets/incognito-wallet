@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { TextInput } from '@src/components/core';
 import formatUtil from '@src/utils/format';
 import { generateTestId } from '@utils/misc';
-import { SEND } from '@src/constants/elements';
+import { TEST_SEND } from '@src/constants/elements';
 import { BtnInfinite } from '@src/components/Button';
 import createField from './createField';
 
@@ -50,7 +50,7 @@ const renderCustomField = ({
             );
             inputRef?.current?.focus?.();
           }}
-          {...generateTestId(SEND.MAX_BUTTON)}
+          {...generateTestId(TEST_SEND.BTN_MAX_AMOUNT)}
         />
       )}
     />

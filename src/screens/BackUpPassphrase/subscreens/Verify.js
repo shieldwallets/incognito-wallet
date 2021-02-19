@@ -10,6 +10,8 @@ import { CustomError, ErrorCode } from '@services/exception';
 import { createMasterKey, initMasterKey } from '@src/redux/actions/masterKey';
 import { useDispatch } from 'react-redux';
 import routeNames from '@routers/routeNames';
+import { generateTestId } from '@utils/misc';
+import { TEST_HD_WALLET } from '@src/constants/elements';
 
 const styles = StyleSheet.create({
   desc: {
@@ -129,6 +131,8 @@ const VerifyPassphrase = () => {
       <View style={styles.words}>
         {displayWords.map((word, index) => (
           <TouchableOpacity
+            accessible={false}
+            {...generateTestId(TEST_HD_WALLET.BTN_WORD)}
             key={`${word}-${index}`}
             style={[
               styles.word,
@@ -137,6 +141,7 @@ const VerifyPassphrase = () => {
             onPress={() => handleToggleWord(index)}
           >
             <Text
+              {...generateTestId(TEST_HD_WALLET.LBL_WORD)}
               key={word}
               style={[
                 wordsIndex.includes(index) && styles.selectedText,
@@ -148,7 +153,10 @@ const VerifyPassphrase = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <Text style={[styles.desc, styles.userWords]}>
+      <Text
+        {...generateTestId(TEST_HD_WALLET.LBL_USER_WORD)}
+        style={[styles.desc, styles.userWords]}
+      >
         {userWords}
       </Text>
       {!!error && (
@@ -157,6 +165,7 @@ const VerifyPassphrase = () => {
         </Text>
       )}
       <Button
+        {...generateTestId(TEST_HD_WALLET.BTN_CREATE)}
         label={creating ? 'Creating...' : 'Create master key'}
         onPress={handleNext}
         disabled={creating || wordsIndex.length !== displayWords.length}

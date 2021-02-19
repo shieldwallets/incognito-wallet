@@ -8,7 +8,7 @@ import {
   InputField,
   InputMaxValueField,
 } from '@components/core/reduxForm';
-import { SEND } from '@src/constants/elements';
+import { TEST_SEND } from '@src/constants/elements';
 import { generateTestId } from '@src/utils/misc';
 import EstimateFee from '@components/EstimateFee/EstimateFee.input';
 import PropTypes from 'prop-types';
@@ -34,7 +34,7 @@ const Form = createForm(formName, {
   enableReinitialize: true,
 });
 
-const RightLabel = React.memo(() => {
+const RightLabel = React.memo((props) => {
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const amount = format.amount(
     selectedPrivacy?.amount,
@@ -42,7 +42,7 @@ const RightLabel = React.memo(() => {
     true,
   );
   return (
-    <Text style={styled.amount} numberOfLines={1} ellipsizeMode="tail">
+    <Text {...props} style={styled.amount} numberOfLines={1} ellipsizeMode="tail">
       {amount}
     </Text>
   );
@@ -121,7 +121,7 @@ const SendForm = (props) => {
         componentProps={{
           editable: editableInput,
         }}
-        {...generateTestId(SEND.MEMO_INPUT)}
+        {...generateTestId(TEST_SEND.TXT_MEMO)}
       />
     );
   };
@@ -148,7 +148,7 @@ const SendForm = (props) => {
                 name="amount"
                 placeholder="0.0"
                 label="Amount"
-                rightLabel={<RightLabel />}
+                rightLabel={<RightLabel {...generateTestId(TEST_SEND.LBL_TOKEN_BALANCE)} />}
                 componentProps={{
                   keyboardType: 'decimal-pad',
                   onPressMax,
@@ -158,7 +158,7 @@ const SendForm = (props) => {
                   editable: editableInput,
                 }}
                 validate={validateAmount}
-                {...generateTestId(SEND.AMOUNT_INPUT)}
+                {...generateTestId(TEST_SEND.TXT_AMOUNT)}
               />
               <Field
                 onChange={(value) => onChangeField(value, 'toAddress')}
@@ -174,7 +174,7 @@ const SendForm = (props) => {
                 componentProps={{
                   editable: editableInput,
                 }}
-                {...generateTestId(SEND.ADDRESS_INPUT)}
+                {...generateTestId(TEST_SEND.TXT_ADDRESS_BOOK)}
               />
               <EstimateFee
                 {...{
@@ -185,6 +185,7 @@ const SendForm = (props) => {
                   isIncognitoAddress,
                   isExternalAddress,
                 }}
+                {...generateTestId(TEST_SEND.LBL_FEE)}
               />
               {renderMemo()}
               <ButtonBasic
@@ -195,7 +196,7 @@ const SendForm = (props) => {
                 ]}
                 disabled={disabledForm || isDisabled}
                 onPress={handleSubmit(handlePressSend)}
-                {...generateTestId(SEND.SUBMIT_BUTTON)}
+                {...generateTestId(TEST_SEND.BTN_SUBMIT)}
               />
             </>
           )}

@@ -5,6 +5,8 @@ import { TouchableOpacity } from '@src/components/core';
 import theme from '@src/styles/theme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { COLORS, THEME } from '@src/styles';
+import { generateTestId } from '@utils/misc';
+import {TEST_ACCOUNT} from '@src/constants/elements';
 
 const styled = StyleSheet.create({
   title: {
@@ -23,9 +25,14 @@ const GroupItem = ({ name, child }) => {
   };
 
   return (
-    <View>
+    <View accessible={false}>
       <TouchableOpacity style={[theme.FLEX.rowSpaceBetweenCenter, styled.group]} onPress={toggleExpand}>
-        <Text style={styled.title}>{name}</Text>
+        <Text
+          {...generateTestId(TEST_ACCOUNT.LBL_WALLET_NAME)}
+          style={styled.title}
+        >
+          {name}
+        </Text>
         <Ionicons
           name={expand ? 'ios-arrow-up' : 'ios-arrow-down'}
           color={COLORS.newGrey}
@@ -34,7 +41,7 @@ const GroupItem = ({ name, child }) => {
         />
       </TouchableOpacity>
       {expand && (
-        <View>
+        <View accessible={false}>
           {child}
         </View>
       )}

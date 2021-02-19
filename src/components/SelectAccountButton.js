@@ -11,6 +11,8 @@ import { ButtonBasic } from '@src/components/Button';
 import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 import { switchMasterKey } from '@src/redux/actions/masterKey';
 import accountService from '@services/wallet/accountService';
+import { generateTestId } from '@utils/misc';
+import { TEST_HEADER } from '@src/constants/elements';
 
 const styled = StyleSheet.create({
   container: {
@@ -64,6 +66,7 @@ const SelectAccountButton = ({ ignoredAccounts }) => {
   return (
     <View style={styled.container}>
       <ButtonBasic
+        {...generateTestId(TEST_HEADER.BTN_SELECT_ACCOUNT)}
         onPress={onNavSelectAccount}
         customContent={(
           <View style={styled.hook}>

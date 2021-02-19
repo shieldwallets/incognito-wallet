@@ -2,7 +2,7 @@ import { View, Text } from '@src/components/core';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {generateTestId} from '@utils/misc';
+import { generateTestId } from '@utils/misc';
 import {WALLET} from '@src/constants/elements';
 import styleSheet from './style';
 

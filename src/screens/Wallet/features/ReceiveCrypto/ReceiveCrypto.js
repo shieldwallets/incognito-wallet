@@ -11,6 +11,8 @@ import { TouchableOpacity } from '@src/components/core';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
+import { generateTestId } from '@utils/misc';
+import { TEST_RECEIVE_CRYPTO } from '@src/constants/elements';
 import withReceiveCrypto from './ReceiveCrypto.enhance';
 
 export const homeStyle = StyleSheet.create({
@@ -48,7 +50,7 @@ const ReceiveCrypto = () => {
             marginTop: 50,
           }}
         />
-        <Text style={homeStyle.desc}>
+        <Text style={homeStyle.desc} {...generateTestId(TEST_RECEIVE_CRYPTO.LBL_CONTENT)}>
           {
             'This is your address.\nUse it to receive any cryptocurrency\nfrom another Incognito address.'
           }
@@ -57,6 +59,7 @@ const ReceiveCrypto = () => {
         {selectedPrivacy?.isDeposable && (
           <TouchableOpacity
             onPress={() => navigation.navigate(routeNames.Shield)}
+            {...generateTestId(TEST_RECEIVE_CRYPTO.BTN_MOVE_TO_SHIELD)}
           >
             <Text style={homeStyle.desc}>
               {'To receive from outside Incognito,\n please use '}

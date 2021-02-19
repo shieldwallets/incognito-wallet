@@ -9,6 +9,8 @@ import { sectionStyle } from '@screens/Setting/features/Section/Section.styled';
 import { CONSTANT_KEYS } from '@src/constants';
 import { useNavigation } from 'react-navigation-hooks';
 import Section from '@screens/Setting/features/Section';
+import { generateTestId } from '@utils/misc';
+import { TEST_SETTING } from '@src/constants/elements';
 
 const PINSection = ({ pin }) => {
   const [isBackedUpAccount, setBackupAccount] = useState(false);
@@ -57,11 +59,17 @@ const PINSection = ({ pin }) => {
       label="Security"
       customItems={[
         <View
+          accessible={false}
           key="PIN"
           onPress={handlePressToggle}
           style={[sectionStyle.subItem]}
         >
-          <Text style={[sectionStyle.desc]}>Passcode</Text>
+          <Text
+            {...generateTestId(TEST_SETTING.LBL_DESC)}
+            style={[sectionStyle.desc]}
+          >
+            Passcode
+          </Text>
           <Switch onValueChange={handlePressToggle} value={!!pin} />
         </View>,
       ]}

@@ -7,6 +7,8 @@ import {
   decimalDigitsSelector,
   actionToggleDecimalDigits,
 } from '@screens/Setting';
+import { generateTestId } from '@utils/misc';
+import { TEST_SETTING } from '@src/constants/elements';
 
 const DecimalDigitsSection = () => {
   const toggle = useSelector(decimalDigitsSelector);
@@ -21,7 +23,10 @@ const DecimalDigitsSection = () => {
           onPress={toggle}
           style={[sectionStyle.subItem]}
         >
-          <Text style={[sectionStyle.desc]}>
+          <Text
+            {...generateTestId(TEST_SETTING.LBL_DESC)}
+            style={[sectionStyle.desc]}
+          >
             {'Limit main asset\ndisplays to 5 decimal digits'}
           </Text>
           <Switch onValueChange={onToggleValue} value={toggle} />

@@ -20,6 +20,8 @@ import { useNavigation } from 'react-navigation-hooks';
 import { BtnExport } from '@src/components/Button';
 import Section, { sectionStyle } from '@screens/Setting/features/Section';
 import { settingSelector } from '@screens/Setting/Setting.selector';
+import { generateTestId } from '@utils/misc';
+import { TEST_KEYCHAIN } from '@src/constants/elements';
 import { accountSection } from './AccountSection.styled';
 
 function isNodeAccount(name, devices) {
@@ -51,6 +53,7 @@ const createItem = (
     ]}
   >
     <View
+      accessible={false}
       style={[
         sectionStyle.subItem,
         accountSection.subItem,
@@ -58,10 +61,12 @@ const createItem = (
       ]}
     >
       <TouchableOpacity
+        accessible={false}
         style={accountSection.name}
         onPress={() => onSwitch(account)}
       >
         <Text
+          {...generateTestId(TEST_KEYCHAIN.LBL_ACCOUNT_NAME)}
           numberOfLines={1}
           ellipsizeMode="middle"
           style={[

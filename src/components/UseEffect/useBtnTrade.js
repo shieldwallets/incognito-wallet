@@ -9,6 +9,8 @@ import routeNames from '@src/router/routeNames';
 import { COLORS, FONT } from '@src/styles';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import appConstant from '@src/constants/app';
+import { generateTestId } from '@utils/misc';
+import { TEST_HEADER } from '@src/constants/elements';
 
 const styled = StyleSheet.create({
   btnTrade: {
@@ -55,6 +57,7 @@ export const useBtnTrade = () => {
         btnStyle={[styled.btnTrade, isDisabled && styled.disableBtnTrade]}
         titleStyle={styled.titleBtnTrade}
         onPress={_onTradePress}
+        {...generateTestId(TEST_HEADER.BTN_TRADE)}
       />
     ) : null;
   return [BtnTrade, hasTradeBtn];

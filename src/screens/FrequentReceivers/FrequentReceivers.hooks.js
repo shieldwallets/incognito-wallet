@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux';
 import { CONSTANT_KEYS } from '@src/constants';
 import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 import accountService from '@services/wallet/accountService';
+import { generateTestId } from '@utils/misc';
+import { TEST_SEND_SUCCESS } from '@src/constants/elements';
 
 const styleSheet = StyleSheet.create({
   btnSaveReceivers: {
@@ -44,6 +46,7 @@ export const useBtnSaveReceiver = (props) => {
             title="Save this address"
             onPress={onSaveReceivers}
             titleStyle={styleSheet.titleReceivers}
+            {...generateTestId(TEST_SEND_SUCCESS.BTN_SAVE_ADDRESS)}
           />,
         );
       }

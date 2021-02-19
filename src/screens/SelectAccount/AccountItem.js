@@ -16,6 +16,8 @@ import { COLORS, FONT } from '@src/styles';
 import { SimpleCheckedIcon } from '@components/Icons';
 import Row from '@components/Row';
 import { switchMasterKey } from '@src/redux/actions/masterKey';
+import { generateTestId } from '@utils/misc';
+import { TEST_ACCOUNT  } from '@src/constants/elements';
 
 const itemStyled = StyleSheet.create({
   container: {
@@ -83,11 +85,23 @@ const AccountItem = ({ accountName, PrivateKey, PaymentAddress, MasterKeyName })
   };
 
   const Component = () => (
-    <View style={itemStyled.container}>
-      <Text style={itemStyled.name} numberOfLines={1}>
+    <View
+      accessible={false}
+      style={itemStyled.container}
+    >
+      <Text
+        style={itemStyled.name}
+        numberOfLines={1}
+        {...generateTestId(TEST_ACCOUNT.LBL_ACCOUNT_NAME)}
+      >
         {accountName}
       </Text>
-      <Text style={itemStyled.address} numberOfLines={1} ellipsizeMode="middle">
+      <Text
+        style={itemStyled.address}
+        numberOfLines={1}
+        ellipsizeMode="middle"
+        {...generateTestId(TEST_ACCOUNT.LBL_ACCOUNT_ADDRESS)}
+      >
         {PaymentAddress}
       </Text>
     </View>
@@ -100,7 +114,10 @@ const AccountItem = ({ accountName, PrivateKey, PaymentAddress, MasterKeyName })
 
   if (!switchingAccount) {
     return (
-      <TouchableOpacity onPress={debounce(onSelectAccount, 100)}>
+      <TouchableOpacity
+        accessible={false}
+        onPress={debounce(onSelectAccount, 100)}
+      >
         <Row>
           <View style={itemStyled.icon}>
             { isCurrentAccount && <SimpleCheckedIcon /> }

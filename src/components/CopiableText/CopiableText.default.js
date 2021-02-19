@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, Clipboard } from 'react-native';
 import { ButtonBasic } from '@src/components/Button';
 import { COLORS, FONT } from '@src/styles';
 import PropTypes from 'prop-types';
+import { generateTestId } from '@utils/misc';
+import { TEST_RECEIVE_CRYPTO } from '@src/constants/elements';
 
 const styled = StyleSheet.create({
   container: {
@@ -39,8 +41,13 @@ const CopiableText = props => {
     setCopied(true);
   };
   return (
-    <View style={styled.container}>
-      <Text style={styled.text} numberOfLines={1} ellipsizeMode="middle">
+    <View accessible={false} style={styled.container}>
+      <Text
+        style={styled.text}
+        numberOfLines={1}
+        ellipsizeMode="middle"
+        {...generateTestId(TEST_RECEIVE_CRYPTO.LBL_ADDRESS)}
+      >
         {data}
       </Text>
       <ButtonBasic
@@ -48,6 +55,7 @@ const CopiableText = props => {
         titleStyle={styled.titleStyle}
         title={copied ? 'Copied' : 'Copy'}
         onPress={handleCopyText}
+        {...generateTestId(TEST_RECEIVE_CRYPTO.BTN_COPY)}
       />
     </View>
   );

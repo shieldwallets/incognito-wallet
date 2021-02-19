@@ -56,7 +56,6 @@ export const styled = StyleSheet.create({
     paddingTop: 42,
   },
   countdown: {
-    paddingHorizontal: 10,
   },
   errorContainer: {
     flex: 1,

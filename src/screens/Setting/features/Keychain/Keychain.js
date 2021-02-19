@@ -13,6 +13,8 @@ import {
 } from '@src/redux/selectors/masterKey';
 import MainLayout from '@components/MainLayout';
 import { THEME } from '@src/styles';
+import { TEST_HEADER, TEST_KEYCHAIN } from '@src/constants/elements';
+import { generateTestId } from '@utils/misc';
 import withKeychain from './Keychain.enhance';
 import RightBtn from './RightBtn';
 import BtnInfo from './BtnInfo';
@@ -43,6 +45,7 @@ const Keychain = () => {
       title: 'Create',
       desc: `Create a new keychain in ${masterKey?.name}`,
       handlePress: () => navigation.navigate(routeNames.CreateAccount),
+      testId: TEST_KEYCHAIN.LBL_CREATE,
     });
   }
 
@@ -51,24 +54,28 @@ const Keychain = () => {
       title: 'Import a keychain',
       desc: 'Using a private key',
       handlePress: () => navigation.navigate(routeNames.ImportAccount),
+      testId: TEST_KEYCHAIN.LBL_IMPORT,
     });
 
     sectionItemFactories.push({
       title: 'Back up',
       desc: 'Back up all masterless private keys',
       handlePress: () => navigation.navigate(routeNames.BackupKeys),
+      testId: TEST_KEYCHAIN.LBL_BACKUP,
     });
   } else {
     sectionItemFactories.push({
       title: `Reveal ${masterKey.name} recovery phrase`,
       desc: 'Back up this phrase so that even if you lose your device, you will always have access to your funds',
       handlePress: () => navigation.navigate(routeNames.MasterKeyPhrase, { data: { ...masterKey, isBackUp: true } }),
+      testId: TEST_KEYCHAIN.LBL_REVEAL,
     });
 
     sectionItemFactories.push({
       title: 'Import a keychain',
       desc: 'Using a private key',
       handlePress: () => navigation.navigate(routeNames.ImportAccount),
+      testId: TEST_KEYCHAIN.LBL_IMPORT,
     });
   }
 
@@ -76,7 +83,7 @@ const Keychain = () => {
     <MainLayout
       header="Keychain"
       scrollable
-      rightHeader={<RightBtn title={masterKey.name} />}
+      rightHeader={<RightBtn title={masterKey.name} {...generateTestId(TEST_HEADER.BTN_SELECT_ACCOUNT)} />}
       customHeaderTitle={<BtnInfo />}
       noPadding
     >
@@ -89,6 +96,7 @@ const Keychain = () => {
           <SectionItem
             data={item}
             key={item.title}
+            testId={item.testId}
           />
         ))}
       </View>

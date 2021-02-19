@@ -23,6 +23,8 @@ import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import { useStreamLine } from '@src/screens/Streamline';
 import { PRV } from '@services/wallet/tokenService';
 import SelectAccountButton from '@components/SelectAccountButton';
+import { generateTestId } from '@utils/misc';
+import { TEST_TOKEN } from '@src/constants/elements';
 import {
   styled,
   styledHook,
@@ -78,6 +80,7 @@ const GroupButton = React.memo(() => {
           titleStyle={[styled.titleStyle]}
           onPress={onFeaturePress}
           disabled={isDisabled}
+          {...generateTestId(TEST_TOKEN.BTN_UNSHIELD)}
         />
       </View>
     </View>
@@ -116,7 +119,7 @@ const Balance = React.memo(() => {
     totalShielded = 0;
   }
   return (
-    <View style={[styledBalance.container, styled.hook]}>
+    <View accessible={false} style={[styledBalance.container, styled.hook]}>
       <Amount
         amount={totalShielded}
         pDecimals={PRV.pDecimals}
@@ -127,6 +130,7 @@ const Balance = React.memo(() => {
         stylePSymbol={styledBalance.pSymbol}
         containerStyle={styledBalance.balanceContainer}
         size="large"
+        testId={generateTestId(TEST_TOKEN.LBL_TOTAL_BALANCE)}
       />
       <Text style={styledBalance.title}>Shielded Balance</Text>
     </View>
@@ -188,7 +192,7 @@ const AddToken = React.memo(() => {
   const navigation = useNavigation();
   const handleFollowToken = () => navigation.navigate(routeNames.FollowToken);
   return (
-    <TouchableOpacity onPress={handleFollowToken}>
+    <TouchableOpacity {...generateTestId(TEST_TOKEN.BTN_ADD_TOKEN)} onPress={handleFollowToken}>
       <View style={[styledAddToken.container, styled.hook]}>
         <Text style={styledAddToken.title}>Add a coin +</Text>
       </View>
@@ -238,7 +242,10 @@ const Wallet = () => {
   const navigation = useNavigation();
   const onGoBack = () => navigation.navigate(routeNames.Home);
   return (
-    <View style={[styled.container]}>
+    <View
+      style={[styled.container]}
+      accessible={false}
+    >
       <Header
         title="Assets"
         rightHeader={<RightHeader />}

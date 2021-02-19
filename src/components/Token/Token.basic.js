@@ -9,7 +9,7 @@ import { styled } from './Token.styled';
 const TokenBasic = (props) => {
   const { onPress, style, showBalance, shouldShowFollowed } = props;
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity accessible={false} onPress={onPress}>
       <View style={[styled.container, style]}>
         <View style={[styled.extra, styled.extraTop]}>
           <Name {...props} />

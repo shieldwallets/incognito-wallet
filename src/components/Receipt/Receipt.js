@@ -5,17 +5,23 @@ import { TouchableOpacity } from '@src/components/core';
 import linkingService from '@src/services/linking';
 import IconOpenUrl from '@src/components/Icons/icon.openUrl';
 import Header from '@src/components/Header';
+import { generateTestId } from '@utils/misc';
 import { styled } from './Receipt.styled';
 import withReceipt from './Receipt.enhance';
 
-const Hook = ({ label, desc, renderTx = false }) => {
+const Hook = ({ label, desc, renderTx = false, testId = {} }) => {
   const handleOpenUrl = () => linkingService.openUrl(desc);
   let renderComponent = () => (
-    <View style={styled.hook}>
+    <View accessible={false} style={styled.hook}>
       <Text style={styled.label} ellipsizeMode="middle" numberOfLines={1}>
         {`${label}:`}
       </Text>
-      <Text style={styled.desc} ellipsizeMode="middle" numberOfLines={1}>
+      <Text
+        style={styled.desc}
+        ellipsizeMode="middle"
+        numberOfLines={1}
+        {...generateTestId(testId)}
+      >
         {desc}
       </Text>
       {renderTx && <IconOpenUrl />}
@@ -23,7 +29,10 @@ const Hook = ({ label, desc, renderTx = false }) => {
   );
   if (renderTx) {
     return (
-      <TouchableOpacity onPress={handleOpenUrl}>
+      <TouchableOpacity
+        accessible={false}
+        onPress={handleOpenUrl}
+      >
         {renderComponent()}
       </TouchableOpacity>
     );

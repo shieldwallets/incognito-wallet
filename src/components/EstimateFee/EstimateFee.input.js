@@ -3,7 +3,7 @@ import React from 'react';
 import { View, TouchableWithoutFeedback, Text } from 'react-native';
 import { Field, change, focus } from 'redux-form';
 import { InputField, createForm, validator } from '@components/core/reduxForm';
-import { GENERAL } from '@src/constants/elements';
+import { TEST_SEND } from '@src/constants/elements';
 import { generateTestId } from '@src/utils/misc';
 import { useSelector, useDispatch } from 'react-redux';
 import convert from '@src/utils/convert';
@@ -131,11 +131,14 @@ const SupportFeeItem = (props) => {
   }
   return (
     <TouchableWithoutFeedback
-      {...generateTestId(GENERAL.SELECTED_NETWORK_FEE_UNIT)}
       {...rest}
+      accessible={false}
     >
       <View style={[styled.spFeeItem, tail ? styled.tail : null]}>
-        <Text style={[styled.symbol, isActived ? styled.isActived : null]}>
+        <Text
+          {...generateTestId(TEST_SEND.LBL_FEE_TYPE)}
+          style={[styled.symbol, isActived ? styled.isActived : null]}
+        >
           {symbol}
         </Text>
       </View>

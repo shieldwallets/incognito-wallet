@@ -6,9 +6,8 @@ import { TouchableOpacity } from '@src/components/core';
 import { THEME } from '@src/styles';
 
 import chevronLeft from '@src/assets/images/icons/chevron-left-icon.png';
-import {generateTestId} from '@utils/misc';
-import {HEADER} from '@src/constants/elements';
-import {CircleBack} from '@components/Icons/index';
+import { generateTestId } from '@utils/misc';
+import { HEADER } from '@src/constants/elements';
 
 const BackButton = ({ onPress, width, height, size, navigation, style }) => {
   const back = () => navigation?.pop();

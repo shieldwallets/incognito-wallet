@@ -10,6 +10,7 @@ import { receiversSelector } from '@src/redux/selectors/receivers';
 import { useBtnSaveReceiver } from '@screens/FrequentReceivers';
 import { compose } from 'redux';
 import { withLayout_2 } from '@src/components/Layout';
+import { TEST_SEND_SUCCESS } from '@src/constants/elements';
 
 const enhance = (WrappedComp) => (props) => {
   const navigation = useNavigation();
@@ -26,7 +27,7 @@ const enhance = (WrappedComp) => (props) => {
     txId,
     title,
   } = params || props;
-  const { receivers } = useSelector(receiversSelector)[keySaveAddressBook];
+  const { receivers } = useSelector(receiversSelector)[keySaveAddressBook] || [];
   const time = formatUtil.formatDateTime(lockTime * 1000);
   const amount = `${formatUtil.amount(
     originalAmount,
@@ -37,27 +38,32 @@ const enhance = (WrappedComp) => (props) => {
       label: 'To',
       desc: toAddress,
       disabled: !toAddress,
+      testId: TEST_SEND_SUCCESS.LBL_TO
     },
     {
       label: 'Time',
       desc: time,
       disabled: !lockTime,
+      testId: TEST_SEND_SUCCESS.LBL_TIME
     },
     {
       label: 'Amount',
       desc: amount,
       disabled: !amount,
+      testId: TEST_SEND_SUCCESS.LBL_AMOUNT
     },
     {
       label: 'Fee',
       desc: `${fee} ${feeUnit}`,
       disabled: !fee,
+      testId: TEST_SEND_SUCCESS.LBL_FEE
     },
     {
       label: 'TxID',
       desc: `${CONSTANT_CONFIGS.EXPLORER_CONSTANT_CHAIN_URL}/tx/${txId}`,
       disabled: !txId,
       renderTx: true,
+      testId: TEST_SEND_SUCCESS.LBL_TRANSACTION_ID
     },
   ];
 

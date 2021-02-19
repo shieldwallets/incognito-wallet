@@ -6,6 +6,8 @@ import { useFocusEffect, useNavigation } from 'react-navigation-hooks';
 import debounce from 'lodash/debounce';
 import { TouchableOpacity } from '@src/components/core';
 import SelectAccountButton from '@src/components/SelectAccountButton';
+import { generateTestId } from '@utils/misc';
+import { TEST_HEADER } from '@src/constants/elements';
 import { styled, styledHeaderTitle } from './Header.styled';
 import SearchBox from './Header.searchBox';
 import withHeader from './Header.enhance';
@@ -34,6 +36,7 @@ export const HeaderTitle = () => {
             titleStyled,
           ]}
           numberOfLines={1}
+          {...generateTestId(TEST_HEADER.LBL_TITLE)}
         >
           {title}
         </Text>

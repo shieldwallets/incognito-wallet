@@ -1,5 +1,5 @@
 import { CONSTANT_COMMONS } from '@src/constants';
-import {isIOS} from '@utils/platform';
+import { isAndroid } from '@utils/platform';
 
 export const detectToken = {
   ispETH: tokenId => tokenId === CONSTANT_COMMONS.TOKEN_ID.pETH,
@@ -9,5 +9,8 @@ export const detectToken = {
 };
 
 export const generateTestId = (id) => {
-  return { accessibilityLabel: id, testID: id };
+  if (isAndroid()) {
+    return { accessibilityLabel: id };
+  }
+  return { testID: id };
 };

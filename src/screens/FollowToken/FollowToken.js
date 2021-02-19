@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import routeNames from '@src/router/routeNames';
 import { useNavigation } from 'react-navigation-hooks';
 import { TouchableOpacity } from '@src/components/core';
+import { generateTestId } from '@utils/misc';
+import { TEST_TOKEN } from '@src/constants/elements';
 import { styled } from './FollowToken.styled';
 import withFollowToken from './FollowToken.enhance';
 
@@ -17,7 +19,10 @@ const AddManually = () => {
   return (
     <View style={styled.addManually}>
       <Text style={styled.text}>{title}</Text>
-      <TouchableOpacity onPress={handleAddTokenManually}>
+      <TouchableOpacity
+        {...generateTestId(TEST_TOKEN.BTN_ADD_MANUAL)}
+        onPress={handleAddTokenManually}
+      >
         <Text style={[styled.text, styled.boldText, { marginTop: 5 }]}>
           Add manually +
         </Text>

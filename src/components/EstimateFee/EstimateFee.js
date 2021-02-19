@@ -5,7 +5,7 @@ import { createForm, InputField, validator } from '@src/components/core/reduxFor
 import { View, TouchableOpacity, Text, ActivityIndicator, Button, Modal } from '@src/components/core';
 import convert from '@src/utils/convert';
 import formatUtils from '@utils/format';
-import {generateTestId} from '@utils/misc';
+import { generateTestId } from '@utils/misc';
 import {GENERAL} from '@src/constants/elements';
 import styles from './styles';
 

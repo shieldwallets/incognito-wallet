@@ -31,6 +31,8 @@ import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
+import { generateTestId } from '@utils/misc';
+import { TEST_HISTORY } from '@src/constants/elements';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -73,8 +75,9 @@ export const Hook = (props) => {
 
   const renderComponent = () => (
     <>
-      <View style={[styled.rowText, !moreLines && { height: 30 }]}>
+      <View accessible={false} style={[styled.rowText, !moreLines && { height: 30 }]}>
         <Text
+          {...generateTestId(TEST_HISTORY.LBL_TITLE)}
           style={[styled.labelText]}
           numberOfLines={1}
           ellipsizeMode="middle"
@@ -83,6 +86,7 @@ export const Hook = (props) => {
         </Text>
         <View style={styled.extra}>
           <Text
+            {...generateTestId(TEST_HISTORY.LBL_CONTENT)}
             style={[
               styled.valueText,
               shouldShowMsg || showReload ? {} : { flex: 1 },
@@ -95,6 +99,7 @@ export const Hook = (props) => {
           </Text>
           {canRetryExpiredDeposit && (
             <BtnResume
+              {...generateTestId(TEST_HISTORY.BTN_RESUME)}
               style={styled.btnResume}
               onPress={
                 typeof handleRetryExpiredDeposit === 'function' &&
@@ -110,6 +115,7 @@ export const Hook = (props) => {
               </View>
             ) : (
               <BtnRetry
+                {...generateTestId(TEST_HISTORY.BTN_RETRY)}
                 style={styled.btnRetry}
                 onPress={
                   typeof handleRetryHistoryStatus === 'function' &&
@@ -127,6 +133,7 @@ export const Hook = (props) => {
           )}
           {copyable && (
             <TouchableOpacity
+              {...generateTestId(TEST_HISTORY.BTN_COPY)}
               style={styled.rowTextTouchable}
               onPress={handleCopyText}
             >
@@ -136,6 +143,7 @@ export const Hook = (props) => {
 
           {openUrl && (
             <TouchableOpacity
+              {...generateTestId(TEST_HISTORY.BTN_OPEN_URL)}
               style={styled.rowTextTouchable}
               onPress={handleOpenUrl}
             >

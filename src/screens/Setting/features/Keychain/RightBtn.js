@@ -17,13 +17,14 @@ const styled = StyleSheet.create({
   }
 });
 
-const RightBtn = ({ title }) => {
+const RightBtn = ({ title, ...props }) => {
   const navigation = useNavigation();
   const handlePress = React.useCallback(() => {
     navigation.navigate(routeNames.MasterKeys);
   }, []);
   return (
     <RoundCornerButton
+      {...props}
       style={styled.btn}
       title={title}
       titleStyle={styled.title}

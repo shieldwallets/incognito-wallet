@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Text } from '@src/components/core';
-import {generateTestId} from '@utils/misc';
-import {HEADER} from '@src/constants/elements';
+import { generateTestId } from '@utils/misc';
+import { HEADER } from '@src/constants/elements';
 import BackButton from '../BackButton';
 import styles from './style';
 

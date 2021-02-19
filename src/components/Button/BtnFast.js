@@ -4,6 +4,8 @@ import { Image } from 'react-native';
 import srcFast from '@src/assets/images/icons/fast.png';
 import srcFast2x from '@src/assets/images/icons/fast_2x.png';
 import PropTypes from 'prop-types';
+import { generateTestId } from '@utils/misc';
+import { TEST_SEND } from '@src/constants/elements';
 
 const BtnFast = (props) => {
   const { onPress, defaultValue, ...rest } = props;
@@ -18,7 +20,7 @@ const BtnFast = (props) => {
     }
   };
   return (
-    <TouchableOpacity onPress={handlePressBtnFast} {...rest}>
+    <TouchableOpacity {...generateTestId(TEST_SEND.BTN_FAST)} onPress={handlePressBtnFast} {...rest}>
       <Image
         source={fast2x ? srcFast2x : srcFast}
         style={{

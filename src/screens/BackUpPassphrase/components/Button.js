@@ -12,9 +12,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const Button = ({ label, onPress, style, disabled }) => {
+const Button = ({ label, onPress, style, disabled, ...rest }) => {
   return (
-    <RoundCornerButton style={[styles.btn, style]} title={label} onPress={onPress} disabled={disabled} />
+    <RoundCornerButton style={[styles.btn, style]} title={label} onPress={onPress} disabled={disabled} {...rest} />
   );
 };
 

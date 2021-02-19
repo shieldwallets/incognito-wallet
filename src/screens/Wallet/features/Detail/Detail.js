@@ -24,6 +24,8 @@ import { isGettingBalance as isGettingMainCryptoBalanceSelector } from '@src/red
 import { useBtnTrade } from '@src/components/UseEffect/useBtnTrade';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import { pTokenSelector } from '@src/redux/selectors/shared';
+import { generateTestId } from '@utils/misc';
+import { TEST_TOKEN } from '@src/constants/elements';
 import withDetail from './Detail.enhance';
 import {
   styled,
@@ -45,12 +47,14 @@ const GroupButton = React.memo(() => {
         titleStyle={groupBtnStyled.titleStyle}
         onPress={onPressSend}
         disabled={isSendDisabled}
+        {...generateTestId(TEST_TOKEN.BTN_SEND)}
       />
       <ButtonBasic
         title="Receive"
         btnStyle={groupBtnStyled.btnStyle}
         titleStyle={groupBtnStyled.titleStyle}
         onPress={handleReceive}
+        {...generateTestId(TEST_TOKEN.BTN_RECEIVE)}
       />
     </View>
   );
@@ -84,8 +88,11 @@ const Balance = React.memo(() => {
     ...tokenData,
   };
   return (
-    <View style={balanceStyled.container}>
-      <Amount {...amountProps} />
+    <View accessible={false} style={balanceStyled.container}>
+      <Amount
+        {...amountProps}
+        testId={generateTestId(TEST_TOKEN.LBL_TOKEN_TOTAL_BALANCE)}
+      />
       <View style={balanceStyled.hook}>
         { isToggleUSD
           ? (<AmountBaseUSDT {...amountBaseUSDTProps} />)

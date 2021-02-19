@@ -9,9 +9,8 @@ import routeNames from '@routers/routeNames';
 import { generateNewMnemonic } from '@services/wallet/mnemonicService';
 import QrCodeGenerate from '@components/QrCodeGenerate/index';
 import clipboard from '@services/clipboard';
-import storage from '@services/storage';
-import { loadWallet as loadWalletFromStorage } from '@services/wallet/WalletService';
-import { getPassphrase } from '@services/wallet/passwordService';
+import { generateTestId } from '@utils/misc';
+import { TEST_HD_WALLET } from '@src/constants/elements';
 
 const styles = StyleSheet.create({
   desc: {
@@ -118,6 +117,7 @@ const Passphrase = () => {
       <View style={styles.words}>
         {mnemonic.split(' ').map((word, index) => (
           <Text
+            {...generateTestId(TEST_HD_WALLET.LBL_WORD)}
             key={`${word}-${index}`}
             style={[styles.word]}
           >
@@ -126,7 +126,11 @@ const Passphrase = () => {
         ))}
       </View>
       <View style={styles.qrCodeContainer}>
-        <TouchableOpacity onPress={handleCopy} style={styles.qrCode}>
+        <TouchableOpacity
+          {...generateTestId(TEST_HD_WALLET.BTN_COPY)}
+          onPress={handleCopy}
+          style={styles.qrCode}
+        >
           <View style={styles.qrCodeContent}>
             <QrCodeGenerate value={data.mnemonic} size={80} />
           </View>
@@ -135,6 +139,7 @@ const Passphrase = () => {
       </View>
       {!data.isBackUp && (
         <Button
+          {...generateTestId(TEST_HD_WALLET.BTN_SAVED_PHRASE)}
           label="I've saved my phrase"
           onPress={handleNext}
         />

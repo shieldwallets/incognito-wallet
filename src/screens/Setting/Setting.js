@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import CurrencySection from '@screens/Setting/features/CurrencySection/CurrencySection';
 import MainLayout from '@components/MainLayout/index';
 import RemoveStorage from '@screens/Setting/features/RemoveStorage/RemoveStorage';
+import { generateTestId } from '@utils/misc';
+import { TEST_SETTING } from '@src/constants/elements';
 import PINSection from './features/PINSection';
 import SeparatorSection from './features/SeparatorSection';
 import DevSection from './features/DevSection';
@@ -49,7 +51,7 @@ const Setting = () => {
         {<RemoveStorage />}
         {global.isDebug() && <DevSection />}
       </View>
-      <Text style={settingStyle.textVersion}>
+      <Text {...generateTestId(TEST_SETTING.LBL_APP_VERSION)} style={settingStyle.textVersion}>
         {`v${AppUpdater.appVersion}`}
       </Text>
     </MainLayout>

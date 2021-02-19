@@ -8,13 +8,15 @@ import srcQrCodeLight from '@src/assets/images/icons/qr_code_light.png';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { ScrollView } from '@src/components/core';
+import { generateTestId } from '@utils/misc';
+import { TEST_SETTING } from '@src/constants/elements';
 import withExportAccount from './ExportAccount.enhance';
 import styleSheet from './ExportAccount.styled';
 
 const ExportItem = ({ label, data, onPress, onPressQRCode, itemShowFullAddress, itemPressAddress }) => (
   <View onPress={onPress} style={styleSheet.itemContainer}>
     <View style={styleSheet.extra}>
-      <Text style={styleSheet.label}>{label}</Text>
+      <Text {...generateTestId(TEST_SETTING.LBL_TITLE)} style={styleSheet.label}>{label}</Text>
       <View style={styleSheet.hook}>
         <BtnQRCode
           style={styleSheet.qrCode}
@@ -28,14 +30,14 @@ const ExportItem = ({ label, data, onPress, onPressQRCode, itemShowFullAddress, 
       itemShowFullAddress ? (
         <ScrollView horizontal nestedScrollEnabled={false}>
           <TouchableOpacity activeOpacity={1} onPress={itemPressAddress}>
-            <Text style={styleSheet.itemDataShowFull}>
+            <Text {...generateTestId(TEST_SETTING.LBL_DESC)} style={styleSheet.itemDataShowFull}>
               {data}
             </Text>
           </TouchableOpacity>
         </ScrollView>
       )
         : (
-          <Text onPress={itemPressAddress} numberOfLines={1} ellipsizeMode="middle" style={styleSheet.itemData}>
+          <Text {...generateTestId(TEST_SETTING.LBL_DESC)} onPress={itemPressAddress} numberOfLines={1} ellipsizeMode="middle" style={styleSheet.itemData}>
             {data}
           </Text>
         )

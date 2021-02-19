@@ -11,7 +11,7 @@ import formatUtil from '@src/utils/format';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { generateTestId } from '@utils/misc';
-import { TOKEN } from '@src/constants/elements';
+import { TEST_TOKEN } from '@src/constants/elements';
 import Swipeout from 'react-native-swipeout';
 import { useNavigation } from 'react-navigation-hooks';
 import trim from 'lodash/trim';
@@ -96,28 +96,32 @@ const HistoryItem = React.memo(({ history }) => {
     );
   };
   return (
-    <TouchableOpacity onPress={onPress} style={styleSheet.itemContainer}>
+    <TouchableOpacity
+      accessible={false}
+      onPress={onPress}
+      style={styleSheet.itemContainer}
+    >
       <View style={[styleSheet.row, styleSheet.rowTop]}>
         <NormalText
           text={typeText}
           style={styleSheet.title}
-          {...generateTestId(TOKEN.TRANSACTION_TYPE)}
+          {...generateTestId(TEST_TOKEN.LBL_TRANSACTION_TYPE)}
         />
         <NormalText
           text={renderAmount()}
           style={styleSheet.title}
-          {...generateTestId(TOKEN.TRANSACTION_CONTENT)}
+          {...generateTestId(TEST_TOKEN.LBL_TRANSACTION_CONTENT)}
         />
       </View>
       <View style={styleSheet.row}>
         <NormalText
           style={styleSheet.desc}
           text={formatUtil.formatDateTime(history.time)}
-          {...generateTestId(TOKEN.TRANSACTION_TIME)}
+          {...generateTestId(TEST_TOKEN.LBL_TRANSACTION_TIME)}
         />
         <NormalText
           style={[styleSheet.desc]}
-          {...generateTestId(TOKEN.TRANSACTION_STATUS)}
+          {...generateTestId(TEST_TOKEN.LBL_TRANSACTION_STATUS)}
           text={statusMessage}
         />
       </View>

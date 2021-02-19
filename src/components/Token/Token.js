@@ -9,7 +9,6 @@ import { BtnDelete, BtnInfo } from '@src/components/Button';
 import replace from 'lodash/replace';
 import trim from 'lodash/trim';
 import { TouchableOpacity, ActivityIndicator } from '@src/components/core';
-import { COLORS } from '@src/styles';
 import { useSelector } from 'react-redux';
 import {
   currencySelector,
@@ -23,15 +22,29 @@ import {
   formatAmount,
   formatPrice
 } from '@components/Token/Token.utils';
+import { generateTestId } from '@utils/misc';
+import { TEST_TOKEN } from '@src/constants/elements';
 import { styled } from './Token.styled';
 
 export const NormalText = (props) => {
   const prefix = useSelector(prefixCurrency);
-  const { style, stylePSymbol, containerStyle, text, hasPSymbol } = props;
+  const { style, stylePSymbol, containerStyle, text, hasPSymbol, ...rest } = props;
   return (
-    <View style={[styled.normalText, containerStyle]}>
-      {hasPSymbol && <Text style={[styled.pSymbol, stylePSymbol]}>{prefix}</Text>}
-      <Text numberOfLines={1} style={[styled.text, style]} ellipsizeMode="tail">
+    <View accessible={false} style={[styled.normalText, containerStyle]}>
+      {hasPSymbol && (
+        <Text
+          {...generateTestId(TEST_TOKEN.LBL_SYMBOL)}
+          style={[styled.pSymbol, stylePSymbol]}
+        >
+          {prefix}
+        </Text>
+      )}
+      <Text
+        {...rest}
+        numberOfLines={1}
+        style={[styled.text, style]}
+        ellipsizeMode="tail"
+      >
         {trim(text)}
       </Text>
     </View>
@@ -57,8 +70,12 @@ NormalText.defaultProps = {
 export const Name = (props) => {
   const { name, isVerified, tokenId, shouldShowFollowed } = props;
   return (
-    <View style={[styled.name, props?.styledContainerName]}>
-      <NormalText text={name} style={[styled.boldText, props?.styledName]} />
+    <View accessible={false} style={[styled.name, props?.styledContainerName]}>
+      <NormalText
+        text={name}
+        style={[styled.boldText, props?.styledName]}
+        {...generateTestId(TEST_TOKEN.LBL_TOKEN_NAME)}
+      />
       {isVerified && <TokenVerifiedIcon />}
       {shouldShowFollowed && <BtnInfo tokenId={tokenId} />}
     </View>
@@ -104,6 +121,7 @@ export const AmountBasePRV = (props) => {
       text={`${currentAmount}`}
       style={[styled.rightText, customStyle]}
       stylePSymbol={[customPSymbolStyle]}
+      {...generateTestId(TEST_TOKEN.LBL_TOKEN_AMOUNT_PAIR)}
     />
   );
 };
@@ -150,6 +168,7 @@ export const AmountBaseUSDT = React.memo((props) => {
       text={`${currentAmount}`}
       style={[styled.rightText, customStyle]}
       stylePSymbol={[customPSymbolStyle]}
+      {...generateTestId(TEST_TOKEN.LBL_TOKEN_AMOUNT_PAIR)}
     />
   );
 });
@@ -172,6 +191,7 @@ export const ChangePrice = (props) => {
         isTokenDecrease ? styled.redText : styled.greenText,
         customStyle,
       ]}
+      {...generateTestId(TEST_TOKEN.LBL_EXCHANGE_RATE)}
     />
   );
 };
@@ -191,11 +211,12 @@ const Price = (props) => {
   const { isToggleUSD } = useSelector(pTokenSelector);
 
   return (
-    <View style={styled.priceContainer}>
+    <View accessible={false} style={styled.priceContainer}>
       <NormalText
         text={formatPrice(isToggleUSD ? priceUsd : pricePrv)}
         hasPSymbol
         style={styled.bottomText}
+        {...generateTestId(TEST_TOKEN.LBL_TOKEN_PRICE)}
       />
     </View>
   );
@@ -226,6 +247,7 @@ export const Amount = (props) => {
     stylePSymbol,
     containerStyle,
     size,
+    testId
   } = props;
   const decimalDigits = useSelector(decimalDigitsSelector);
   const shouldShowGettingBalance = isGettingBalance || showGettingBalance;
@@ -249,6 +271,7 @@ export const Amount = (props) => {
       hasPSymbol={hasPSymbol}
       stylePSymbol={stylePSymbol}
       containerStyle={containerStyle}
+      {...testId}
     />
   );
 };
@@ -265,6 +288,7 @@ Amount.propTypes = {
   hasPSymbol: PropTypes.bool,
   stylePSymbol: PropTypes.any,
   containerStyle: PropTypes.any,
+  testId: PropTypes.object,
 };
 
 Amount.defaultProps = {
@@ -279,6 +303,7 @@ Amount.defaultProps = {
   hasPSymbol: false,
   stylePSymbol: null,
   containerStyle: null,
+  testId: {}
 };
 
 export const Symbol = (props) => {
@@ -291,6 +316,7 @@ export const Symbol = (props) => {
   } = props;
   return (
     <NormalText
+      {...generateTestId(TEST_TOKEN.LBL_SYMBOL)}
       allowFontScaling={false}
       style={[styled.bottomText, styledSymbol]}
       text={`${symbol} ${
@@ -317,11 +343,14 @@ Symbol.defaultProps = {
 };
 
 const TokenPairPRV = (props) => (
-  <TouchableOpacity onPress={props?.onPress}>
+  <TouchableOpacity accessible={false} onPress={props?.onPress}>
     <View style={[styled.container, props?.style]}>
       <View style={[styled.extra, styled.extraTop]}>
         <Name {...props} />
-        <Amount {...props} />
+        <Amount
+          {...props}
+          testId={generateTestId(TEST_TOKEN.LBL_TOKEN_AMOUNT)}
+        />
       </View>
       <View style={styled.extra}>
         <Price {...props} />
@@ -332,22 +361,28 @@ const TokenPairPRV = (props) => (
 );
 
 const TokenDefault = (props) => (
-  <TouchableOpacity onPress={props?.onPress}>
+  <TouchableOpacity accessible={false} onPress={props?.onPress}>
     <View style={[styled.container, props?.style]}>
       <View style={styled.extra}>
         <Name {...props} />
-        <Amount {...{ ...props, customStyle: styled.boldText }} />
+        <Amount
+          {...{ ...props, customStyle: styled.boldText }}
+          testId={generateTestId(TEST_TOKEN.LBL_TOKEN_AMOUNT)}
+        />
       </View>
     </View>
   </TouchableOpacity>
 );
 
 const TokenPairUSDT = (props) => (
-  <TouchableOpacity onPress={props?.onPress}>
+  <TouchableOpacity accessible={false} onPress={props?.onPress}>
     <View style={[styled.container, props?.style]}>
       <View style={[styled.extra, styled.extraTop]}>
         <Name {...props} />
-        <Amount {...props} />
+        <Amount
+          {...props}
+          testId={generateTestId(TEST_TOKEN.LBL_TOKEN_AMOUNT)}
+        />
       </View>
       <View style={styled.extra}>
         <Price {...props} />
@@ -363,7 +398,7 @@ export const Follow = (props) => {
     return null;
   }
   if (isFollowed) {
-    return <Text style={styled.followText}>Added</Text>;
+    return <Text {...generateTestId(TEST_TOKEN.LBL_ADDED)} style={styled.followText}>Added</Text>;
   }
   return null;
 };

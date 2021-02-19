@@ -5,6 +5,8 @@ import { BtnChecked } from '@src/components/Button';
 import { ListToken } from '@src/components/Token';
 import PropTypes from 'prop-types';
 import { COLORS, FONT } from '@src/styles';
+import { generateTestId } from '@utils/misc';
+import { TEST_TOKEN } from '@src/constants/elements';
 
 const styled = StyleSheet.create({
   hook: {
@@ -38,7 +40,7 @@ const ListAllToken = (props) => {
         ]}
         onPress={onToggleUnVerifiedTokens}
         checked={toggleUnVerified}
-        hook={<Text style={styled.hookText}>Show unverified coins</Text>}
+        hook={<Text {...generateTestId(TEST_TOKEN.LBL_UNVERIFIED_COIN)} style={styled.hookText}>Show unverified coins</Text>}
       />
       <ListToken {...tokensFactories[1]} renderItem={renderItem} />
     </KeyboardAwareScrollView>
