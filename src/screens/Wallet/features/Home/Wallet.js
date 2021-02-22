@@ -80,7 +80,7 @@ const GroupButton = React.memo(() => {
           titleStyle={[styled.titleStyle]}
           onPress={onFeaturePress}
           disabled={isDisabled}
-          {...generateTestId(TEST_TOKEN.BTN_UNSHIELD)}
+          {...generateTestId(TEST_TOKEN.BTN_SHIELD)}
         />
       </View>
     </View>

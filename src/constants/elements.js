@@ -82,7 +82,7 @@ export const TEST_TOKEN = {
   LBL_TOKEN_AMOUNT: 'lblTokenAmount',
   LBL_TOKEN_PRICE: 'lblTokenPrice',
   LBL_TOKEN_AMOUNT_PAIR: 'lblTokenAmountPair',
-  BTN_UNSHIELD: 'btnUnshield',
+  BTN_SHIELD: 'btnShield',
   LBL_SYMBOL: 'lblSymbol',
   BTN_ADD_TOKEN: 'btnAddToken',
   LBL_TOKEN_TOTAL_BALANCE: 'lblTokenTotalBalance',
