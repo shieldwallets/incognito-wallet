@@ -26,7 +26,7 @@ const GroupItem = ({ name, child }) => {
 
   return (
     <View accessible={false}>
-      <TouchableOpacity style={[theme.FLEX.rowSpaceBetweenCenter, styled.group]} onPress={toggleExpand}>
+      <TouchableOpacity accessible={false} style={[theme.FLEX.rowSpaceBetweenCenter, styled.group]} onPress={toggleExpand}>
         <Text
           {...generateTestId(TEST_ACCOUNT.LBL_WALLET_NAME)}
           style={styled.title}
