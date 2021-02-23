@@ -18,6 +18,8 @@ const TradeInfoSimple = ({ inputBalance, showPriceImpact }) => {
     minimumAmount,
 
     feeToken,
+    pair,
+    slippage,
   } = useSelector(tradeSelector);
 
 
@@ -38,10 +40,12 @@ const TradeInfoSimple = ({ inputBalance, showPriceImpact }) => {
       />
       {showPriceImpact && (
         <PriceImpact
+          pair={pair}
           inputValue={inputValue}
           minimumAmount={minimumAmount}
           inputToken={inputToken}
           outputToken={outputToken}
+          slippage={slippage}
         />
       )}
       <PDexFee

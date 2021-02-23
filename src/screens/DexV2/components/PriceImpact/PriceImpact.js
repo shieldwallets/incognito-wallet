@@ -1,4 +1,4 @@
-import React, {memo, useMemo} from 'react';
+import React, { memo } from 'react';
 import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
 import styles from '@screens/DexV2/components/ExchangeRate/style';
 import { View, Text } from '@components/core';
@@ -6,17 +6,18 @@ import Help from '@components/Help';
 import routeNames from '@routers/routeNames';
 import helperConst from '@src/constants/helper';
 import { useNavigation } from 'react-navigation-hooks';
-import {calculateSizeImpact} from '@screens/DexV2/components/Trade/utils';
+import { calculateSizeImpact } from '@screens/DexV2/components/Trade/utils';
 import stylesheet from '@screens/DexV2/components/ExtraInfo/style';
-import {COLORS} from '@src/styles';
+import { COLORS } from '@src/styles';
 import PropTypes from 'prop-types';
 
 const PriceImpact = (props) => {
   const {
-    inputValue,
+    pair,
     inputToken,
     minimumAmount,
-    outputToken
+    outputToken,
+    slippage,
   } = props;
   const navigation = useNavigation();
 
@@ -26,7 +27,7 @@ const PriceImpact = (props) => {
     const {
       impact,
       showWarning
-    } = calculateSizeImpact(inputValue, inputToken, minimumAmount, outputToken);
+    } = calculateSizeImpact(minimumAmount, outputToken, pair, slippage);
     impactValue = impact;
     if (impactValue !== null) {
       ImpactView = (
@@ -64,14 +65,16 @@ const PriceImpact = (props) => {
 
 PriceImpact.propTypes = {
   inputToken: PropTypes.object.isRequired,
-  inputValue: PropTypes.number,
   outputToken: PropTypes.object.isRequired,
   minimumAmount: PropTypes.number,
+  pair: PropTypes.object,
+  slippage: PropTypes.number
 };
 
 PriceImpact.defaultProps = {
   minimumAmount: 0,
-  inputValue: 0
+  pair: {},
+  slippage: 0
 };
 
 export default memo(PriceImpact);

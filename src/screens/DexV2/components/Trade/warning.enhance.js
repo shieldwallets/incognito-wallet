@@ -4,16 +4,16 @@ import { calculateSizeImpact } from './utils';
 const WARNING_STR = 'Do note that due to trade size, the price of this trade varies significantly from market price.';
 const withWarning = (WrappedComp) => (props) => {
   const {
-    inputToken,
-    inputValue,
     outputToken,
-    minimumAmount
+    minimumAmount,
+    pair,
+    slippage
   } = props;
 
   const {
     impact: impactValue,
     showWarning
-  } = calculateSizeImpact(inputValue, inputToken, minimumAmount, outputToken);
+  } = calculateSizeImpact(minimumAmount, outputToken, pair, slippage);
 
   const warning = useMemo(() => {
     return impactValue && showWarning ? WARNING_STR : '';

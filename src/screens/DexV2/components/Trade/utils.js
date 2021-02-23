@@ -1,10 +1,9 @@
+// eslint-disable-next-line import/no-cycle
+import { getSlippagePercent } from '@screens/DexV2/components/Trade/TradeV2/Trade.utils';
 import _ from 'lodash';
 import { COINS } from '@src/constants';
-import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import BigNumber from 'bignumber.js';
 import formatUtils from '@utils/format';
-import convertUtil from '@utils/convert';
 
 export const calculateOutputValueCrossPool = (pairs, inputToken, inputValue, outputToken) => {
   const firstPair = _.get(pairs, 0);
@@ -76,34 +75,34 @@ export const calculateInputValue = (pair, inputToken, outputValue, outputToken) 
   }
 };
 
-const getImpact = (input, output) => {
-  input   = BigNumber(input);
-  output  = BigNumber(output);
-  return output
-    .minus(input)
-    .dividedBy(input)
+const getImpact = (outputValue, poolOutput, slippage) => {
+  outputValue = new BigNumber(outputValue);
+  poolOutput = new BigNumber(poolOutput);
+  return outputValue
     .multipliedBy(100)
+    .dividedBy(getSlippagePercent(slippage))
+    .dividedBy(poolOutput)
     .toNumber();
 };
 
-export const calculateSizeImpact = (inputValue, inputToken, outputValue, outputToken) => {
-  const {
-    priceUsd:   inputPriceUsd,
-    pDecimals:  inputPDecimals
-  } = useSelector(selectedPrivacySeleclor.getPrivacyDataByTokenID)(inputToken?.id);
-  const {
-    priceUsd:   outputPriceUsd,
-    pDecimals:  outputPDecimals
-  } = useSelector(selectedPrivacySeleclor.getPrivacyDataByTokenID)(outputToken?.id);
-  const totalInputUsd   = convertUtil.toHumanAmount(inputValue * inputPriceUsd, inputPDecimals);
-  const totalOutputUsd  = convertUtil.toHumanAmount(outputValue * outputPriceUsd, outputPDecimals);
-  if (totalInputUsd && totalOutputUsd) {
-    const impact = formatUtils.fixedNumber(getImpact(totalInputUsd, totalOutputUsd), 3);
-    if (!isNaN(impact)) {
+export const calculateSizeImpact = (outputValue, outputToken, pair, slippage) => {
+  const outputTokenId = outputToken?.id;
+  let poolOutput = 0;
+  if (pair && outputTokenId) {
+    pair.forEach(pairItem => {
+      if (pairItem[outputTokenId]) {
+        poolOutput = pairItem[outputTokenId];
+      }
+    });
+  }
+  if (outputValue && poolOutput) {
+    let impact = getImpact(outputValue, poolOutput, slippage);
+    impact = formatUtils.fixedNumber(impact, 3) || 0.01;
+    if (!isNaN(impact) && impact > 0 && slippage >= 0) {
       const formatSeparator = formatUtils.amount(impact);
       return {
-        impact: impact > 0 ? `+${formatSeparator}` : formatSeparator,
-        showWarning: impact < -5
+        impact: formatSeparator,
+        showWarning: impact > 10
       };
     }
   }
