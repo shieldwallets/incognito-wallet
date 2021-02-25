@@ -94,7 +94,7 @@ export const calculateSizeImpact = (outputValue, outputToken, pair, slippage) =>
   const { quote } = useSelector(tradeSelector);
   if (pair && outputTokenId) {
     pair.forEach(pairItem => {
-      if (pairItem[outputTokenId]) {
+      if (pairItem && pairItem[outputTokenId]) {
         poolOutput = pairItem[outputTokenId];
       }
     });
