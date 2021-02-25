@@ -1,9 +1,12 @@
 // eslint-disable-next-line import/no-cycle
 import { getSlippagePercent } from '@screens/DexV2/components/Trade/TradeV2/Trade.utils';
+// eslint-disable-next-line import/no-cycle
+import { tradeSelector } from '@screens/DexV2/components/Trade/TradeV2/Trade.selector';
 import _ from 'lodash';
 import { COINS } from '@src/constants';
 import BigNumber from 'bignumber.js';
 import formatUtils from '@utils/format';
+import { useSelector } from 'react-redux';
 
 export const calculateOutputValueCrossPool = (pairs, inputToken, inputValue, outputToken) => {
   const firstPair = _.get(pairs, 0);
@@ -88,6 +91,7 @@ const getImpact = (outputValue, poolOutput, slippage) => {
 export const calculateSizeImpact = (outputValue, outputToken, pair, slippage) => {
   const outputTokenId = outputToken?.id;
   let poolOutput = 0;
+  const { quote } = useSelector(tradeSelector);
   if (pair && outputTokenId) {
     pair.forEach(pairItem => {
       if (pairItem[outputTokenId]) {
@@ -95,7 +99,7 @@ export const calculateSizeImpact = (outputValue, outputToken, pair, slippage) =>
       }
     });
   }
-  if (outputValue && poolOutput) {
+  if (outputValue && poolOutput && (!quote || quote?.protocol === 'PDex')) {
     let impact = getImpact(outputValue, poolOutput, slippage);
     impact = formatUtils.fixedNumber(impact, 3) || 0.01;
     if (!isNaN(impact) && impact > 0 && slippage >= 0) {
