@@ -5,10 +5,10 @@
 
 RCT_EXPORT_MODULE(PrivacyGo);
 
-//exports a method deriveSerialNumber to javascript
-RCT_EXPORT_METHOD(deriveSerialNumber:(NSString *)data callback:(RCTResponseSenderBlock)callback){
+//exports a method createTransaction to javascript
+RCT_EXPORT_METHOD(createTransaction:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileDeriveSerialNumber(data,nil);
+    NSString *rs = GomobileCreateTransaction(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -16,10 +16,9 @@ RCT_EXPORT_METHOD(deriveSerialNumber:(NSString *)data callback:(RCTResponseSende
   }
 }
 
-//exports a method randomScalars to javascript
-RCT_EXPORT_METHOD(randomScalars:(NSString *)data callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(getSignPublicKey:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileRandomScalars(data,nil);
+    NSString *rs = GomobileGetSignPublicKey(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -27,10 +26,9 @@ RCT_EXPORT_METHOD(randomScalars:(NSString *)data callback:(RCTResponseSenderBloc
   }
 }
 
-//exports a method initPrivacyTx to javascript
-RCT_EXPORT_METHOD(initPrivacyTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(signPoolWithdraw:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitPrivacyTx(data, time, nil);
+    NSString *rs = GomobileSignPoolWithdraw(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -38,11 +36,9 @@ RCT_EXPORT_METHOD(initPrivacyTx:(NSString *)data time:(NSInteger)time callback:(
   }
 }
 
-
-//exports a method initPrivacyTokenTx to javascript
-RCT_EXPORT_METHOD(initPrivacyTokenTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(createConvertTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitPrivacyTokenTx(data,time, nil);
+    NSString *rs = GomobileCreateConvertTx(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -50,10 +46,9 @@ RCT_EXPORT_METHOD(initPrivacyTokenTx:(NSString *)data time:(NSInteger)time callb
   }
 }
 
-//exports a method initBurningRequestTx to javascript
-RCT_EXPORT_METHOD(initBurningRequestTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(newKeySetFromPrivate:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitBurningRequestTx(data,time, nil);
+    NSString *rs = GomobileNewKeySetFromPrivate(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -61,10 +56,9 @@ RCT_EXPORT_METHOD(initBurningRequestTx:(NSString *)data time:(NSInteger)time cal
   }
 }
 
-//exports a method initBurningRequestTx to javascript
-RCT_EXPORT_METHOD(initWithdrawRewardTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(decryptCoin:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitWithdrawRewardTx(data,time, nil);
+    NSString *rs = GomobileDecryptCoin(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -72,10 +66,9 @@ RCT_EXPORT_METHOD(initWithdrawRewardTx:(NSString *)data time:(NSInteger)time cal
   }
 }
 
-//exports a method staking to javascript
-RCT_EXPORT_METHOD(staking:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(createCoin:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileStaking(data,time, nil);
+    NSString *rs = GomobileCreateCoin(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -83,10 +76,9 @@ RCT_EXPORT_METHOD(staking:(NSString *)data time:(NSInteger)time callback:(RCTRes
   }
 }
 
-//exports a method generateBLSKeyPairFromSeed to javascript
-RCT_EXPORT_METHOD(generateBLSKeyPairFromSeed:(NSString *)data callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(generateBLSKeyPairFromSeed:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileGenerateBLSKeyPairFromSeed(data);
+    NSString *rs = GomobileGenerateBLSKeyPairFromSeed(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -94,10 +86,9 @@ RCT_EXPORT_METHOD(generateBLSKeyPairFromSeed:(NSString *)data callback:(RCTRespo
   }
 }
 
-//exports a method initPRVContributionTx to javascript
-RCT_EXPORT_METHOD(initPRVContributionTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(hybridEncrypt:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitPRVContributionTx(data,time, nil);
+    NSString *rs = GomobileHybridEncrypt(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){
@@ -105,135 +96,9 @@ RCT_EXPORT_METHOD(initPRVContributionTx:(NSString *)data time:(NSInteger)time ca
   }
 }
 
-//exports a method initPTokenContributionTx to javascript
-RCT_EXPORT_METHOD(initPTokenContributionTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
+RCT_EXPORT_METHOD(hybridDecrypt:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
   @try{
-    NSString *rs = GomobileInitPTokenContributionTx(data,time, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-//exports a method initPRVTradeTx to javascript
-RCT_EXPORT_METHOD(initPRVTradeTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileInitPRVTradeTx(data,time, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(initPTokenTradeTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileInitPTokenTradeTx(data,time, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-//exports a method hybridDecryptionASM to javascript
-RCT_EXPORT_METHOD(hybridDecryptionASM:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileHybridDecryptionASM(data,nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-//exports a method hybridEncryptionASM to javascript
-RCT_EXPORT_METHOD(hybridEncryptionASM:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileHybridEncryptionASM(data,nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-//exports a method stopAutoStaking to javascript
-RCT_EXPORT_METHOD(stopAutoStaking:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileStopAutoStaking(data, time, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-//exports a method withdrawDexTx to javascript
-RCT_EXPORT_METHOD(withdrawDexTx:(NSString *)data time:(NSInteger)time callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileWithdrawDexTx(data, time, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(getSignPublicKey:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileGetSignPublicKey(data, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(signPoolWithdraw:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileSignPoolWithdraw(data, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(scalarMultBase:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileScalarMultBase(data, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(generateKeyFromSeed:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileGenerateKeyFromSeed(data, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(parseNativeRawTx:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileParseNativeRawTx(data, nil);
-    callback(@[[NSNull null], rs]);
-  }
-  @catch(NSException *exception){
-    callback(@[exception.reason, [NSNull null]]);
-  }
-}
-
-RCT_EXPORT_METHOD(parsePrivacyTokenRawTx:(NSString *)data callback:(RCTResponseSenderBlock)callback){
-  @try{
-    NSString *rs = GomobileParsePrivacyTokenRawTx(data, nil);
+    NSString *rs = GomobileHybridDecrypt(data, time, nil);
     callback(@[[NSNull null], rs]);
   }
   @catch(NSException *exception){

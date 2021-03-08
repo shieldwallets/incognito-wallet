@@ -2,75 +2,35 @@ import { NativeModules } from 'react-native';
 
 const PrivacyGo = NativeModules.PrivacyGo;
 const requiredTimeMethods = [
-  'initPrivacyTx',
-  'stopAutoStaking',
-  'staking',
-  'initPrivacyTokenTx',
-  'initBurningRequestTx',
-  'initWithdrawRewardTx',
-  'initPRVContributionTx',
-  'initPTokenContributionTx',
-  'initPRVTradeTx',
-  'initPTokenTradeTx',
-  'withdrawDexTx',
-];
-const asyncMethods = [
-  'deriveSerialNumber',
-  'randomScalars',
-  'initPrivacyTx',
-  'initPrivacyTokenTx',
-  'initBurningRequestTx',
-  'initWithdrawRewardTx',
-  'staking',
-  'generateBLSKeyPairFromSeed',
-  'initPRVContributionTx',
-  'initPTokenContributionTx',
-  'initPRVTradeTx',
-  'initPTokenTradeTx',
-  'withdrawDexTx',
-  'hybridDecryptionASM',
-  'hybridEncryptionASM',
-  'stopAutoStaking',
-  'generateIncognitoContractAddress',
-  'withdrawSmartContractBalance',
-  'sign0x',
-  'signKyber',
+  'createTransaction',
   'getSignPublicKey',
   'signPoolWithdraw',
-  'scalarMultBase',
-  'generateKeyFromSeed',
-  'parseNativeRawTx',
-  'parsePrivacyTokenRawTx',
+  'createConvertTx',
+  'newKeySetFromPrivate',
+  'decryptCoin',
+  'createCoin',
+  'generateBLSKeyPairFromSeed',
+  'hybridEncrypt',
+  'hybridDecrypt',
 ];
 
 const log = (...args) => null;
 
 try {
-  asyncMethods.forEach(methodName => {
-    global[methodName] = (data, time) => {
+  requiredTimeMethods.forEach(methodName => {
+    global[methodName] = (data, time = 0) => {
       return new Promise(async (resolve, reject) => {
         try {
           log(`${methodName} called with params`, data);
 
-          if (requiredTimeMethods.includes(methodName)) {
-            PrivacyGo[methodName](data, time, function(error, result) {
-              if (error) {
-                reject(error);
-              }
+          PrivacyGo[methodName](data, time, function(error, result) {
+            if (error) {
+              reject(error);
+            }
 
-              log(`${methodName} called successfully with result`, result);
-              return resolve(result);
-            });
-          } else {
-            PrivacyGo[methodName](data, function (error, result) {
-              if (error) {
-                reject(error);
-              }
-
-              log(`${methodName} called successfully with result`, result);
-              return resolve(result);
-            });
-          }
+            log(`${methodName} called successfully with result`, result);
+            return resolve(result);
+          });
         } catch (e) {
           log(`${methodName} called with error`, e);
           reject(e);
