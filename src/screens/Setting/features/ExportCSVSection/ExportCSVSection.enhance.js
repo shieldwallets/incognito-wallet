@@ -23,10 +23,11 @@ import withDefaultAccount from '@components/Hoc/withDefaultAccount';
 import { Share } from 'react-native';
 import { compose } from 'recompose';
 import moment from 'moment';
+import formatUtil from '@src/utils/format';
 import { getTokenList } from '@services/api/token';
 import tokenService from '@services/wallet/tokenService';
 import accountService from '@src/services/wallet/accountService';
-import { COINS , CONSTANT_COMMONS } from '@src/constants';
+import { COINS, CONSTANT_COMMONS } from '@src/constants';
 import { pTokens, internalTokens } from '@src/redux/selectors/token';
 import { ConfirmedTx } from '@src/services/wallet/WalletService';
 import { getpTokenHistory } from '@src/services/api/history';
@@ -34,7 +35,8 @@ import { accountSeleclor } from '@src/redux/selectors';
 import _ from 'lodash';
 
 const enhance = (WrappedComp) => (props) => {
-  const { account, accounts, wallet } = props;
+  const { accounts, wallet } = props;
+  const account = useSelector(accountSeleclor.defaultAccountSelector);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -123,9 +125,7 @@ const enhance = (WrappedComp) => (props) => {
         }
       }
       return transactionHistories.map((item) => ({
-        Date: moment(item.time, 'YYYY-MM-DDThh:mm:ss').format(
-          'MM/DD/YYYY hh:mm:ss',
-        ),
+        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
         'Received Quantity': `${item.amount /
           Math.pow(10, item.pDecimals || 9) || ''}`,
         'Received Currency': item.symbol || '',
@@ -133,10 +133,13 @@ const enhance = (WrappedComp) => (props) => {
         'Send Currency': '',
         'Fee Amount': '',
         'Fee Currency': '',
-        Tag: 'Receive',
+        Tag:
+          item.metaData && (item.metaData === 45 || item.metaData === '45')
+            ? 'Withdraw reward (vNode)'
+            : 'Receive',
       }));
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
@@ -149,7 +152,7 @@ const enhance = (WrappedComp) => (props) => {
       prvHistories =
         prvHistories && prvHistories.length > 0
           ? prvHistories.map((item) => ({
-            Date: moment(item.time).format('MM/DD/YYYY HH:MM:SS'),
+            Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
             'Received Quantity': '',
             'Received Currency': '',
             'Send Quantity': `${item.amountNativeToken /
@@ -162,7 +165,9 @@ const enhance = (WrappedComp) => (props) => {
           }))
           : [];
       return prvHistories || [];
-    } catch (error) {/*Ignore error*/}
+    } catch (error) {
+      /*Ignore error*/
+    }
   };
 
   const getSendAnotherCoinTransactionHistory = async () => {
@@ -214,9 +219,7 @@ const enhance = (WrappedComp) => (props) => {
                 ? COINS.PRV.symbol
                 : token?.symbol;
             return {
-              Date: moment(item.time, 'YYYY-MM-DDThh:mm:ss').format(
-                'MM/DD/YYYY hh:mm:ss',
-              ),
+              Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
               'Received Quantity': '',
               'Received Currency': '',
               'Send Quantity': sendQuantity,
@@ -233,7 +236,9 @@ const enhance = (WrappedComp) => (props) => {
         ];
       }
       return anotherHistories;
-    } catch (error) {/*Ignore error*/}
+    } catch (error) {
+      /*Ignore error*/
+    }
   };
 
   const getSendTransactionHistory = async () => {
@@ -247,7 +252,7 @@ const enhance = (WrappedComp) => (props) => {
         ...(anotherHistories ? anotherHistories : []),
       ];
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
@@ -300,7 +305,7 @@ const enhance = (WrappedComp) => (props) => {
         Tag: item.type,
       }));
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
@@ -335,7 +340,7 @@ const enhance = (WrappedComp) => (props) => {
       }
       return histories.map((item) => ({
         Date: moment(item.time, 'DD MMM YYYY hh:mm A').format(
-          'MM/DD/YYYY HH:mm:SS',
+          'MM/DD/YYYY HH:mm:ss',
         ),
         'Received Quantity': `${item.amount /
           Math.pow(10, item.coin.pDecimals || 9) || ''}`,
@@ -344,10 +349,13 @@ const enhance = (WrappedComp) => (props) => {
         'Send Currency': '',
         'Fee Amount': '',
         'Fee Currency': '',
-        Tag: item.type,
+        Tag:
+          item.type === 'Withdraw reward'
+            ? 'Withdraw reward (Provide)'
+            : item.type,
       }));
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
@@ -382,9 +390,7 @@ const enhance = (WrappedComp) => (props) => {
             const newData = data
               .filter((item) => item.statusText === 'SUCCESS')
               .map((item) => ({
-                Date: moment(item.createdAt, 'YYYY-MM-DDThh:mm:ss').format(
-                  'MM/DD/YYYY hh:mm:ss',
-                ),
+                Date: formatUtil.formatDateTime(item.createdAt, 'MM/DD/YYYY hh:mm:ss'),
                 'Received Quantity': `${item.incognitoAmount /
                   Math.pow(10, COINS.PRV.pDecimals) || ''}`,
                 'Received Currency': token?.externalSymbol || token?.symbol,
@@ -400,7 +406,7 @@ const enhance = (WrappedComp) => (props) => {
         return histories;
       }
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
@@ -424,22 +430,31 @@ const enhance = (WrappedComp) => (props) => {
           ...(provide ? provide : []),
           ...(shield ? shield : []),
           ...(trade ? trade : []),
-        ].sort((a, b) =>
-          new Date(a.Date).getTime() < new Date(b.Date).getTime() ? -1 : 1,
+        ].sort(
+          (a, b) =>
+            moment(a.Date, [
+              'MM/DD/YYYY hh:mm:ss',
+              'MM/DD/YYYY HH:mm:SS',
+              'MM/DD/YYYY HH:MM:SS'
+            ]).unix() -
+            moment(b.Date, [
+              'MM/DD/YYYY hh:mm:ss',
+              'MM/DD/YYYY HH:mm:SS',
+              'MM/DD/YYYY HH:MM:SS'
+            ]).unix(),
         );
 
         if (mergedData && mergedData.length > 0) {
           const path = await exportAndSaveCSVFile(mergedData);
-          console.log('path', path);
           setTimeout(() => {
             Share.share({
-              message: 'Export csv file',
+              message: 'Export balance changes of the current keychain',
               url: path,
-              title: 'csv',
+              title: 'Report',
             });
           }, 300);
         } else {
-          Toast.showWarning('Your account do not have histories');
+          Toast.showWarning('Your account does not have any transaction history.');
         }
       }
     } catch (error) {

@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-unused-styles */
 import React from 'react';
 import { SectionItem as Section } from '@screens/Setting/features/Section';
 import PropTypes from 'prop-types';
@@ -8,8 +7,8 @@ const ExportCSVSection = (props) => {
   return (
     <Section
       data={{
-        title: 'Export CSV',
-        desc: 'Export history to csv file',
+        title: 'Report',
+        desc: 'Export balance changes of the current keychain',
         handlePress: handlePress,
       }}
     />
