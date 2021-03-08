@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 export const MAINNET_FULLNODE = 'https://lb-fullnode.incognito.org/fullnode';
 export const TESTNET_FULLNODE = 'https://testnet.incognito.org/fullnode';
-export const TESTNET1_FULLNODE = 'http://51.83.36.184:20002/fullnode';
+export const TESTNET1_FULLNODE = 'http://139.162.55.124:8334';
 
 let cachedList = null;
 
