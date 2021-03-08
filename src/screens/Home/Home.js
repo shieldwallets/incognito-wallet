@@ -1,7 +1,7 @@
 import React from 'react';
 import { RefreshControl, View, StyleSheet, Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import { BottomBar, ScrollView } from '@src/components/core';
+import { ScrollView } from '@src/components/core';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import AppMaintain from '@components/AppMaintain/index';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import styles from './style';
 import withHome from './Home.enhance';
 import Category from './features/Category';
 import { homeSelector } from './Home.selector';
+import DialogUpdateApp from './features/DialogUpdateApp';
 
 export const styled = StyleSheet.create({
   container: {
@@ -44,12 +45,12 @@ const Home = (props) => {
   return (
     <View style={styled.container}>
       <ScrollView
-        refreshControl={
+        refreshControl={(
           <RefreshControl
             refreshing={isFetching}
             onRefresh={getHomeConfiguration}
           />
-        }
+        )}
       >
         <View style={styles.contentContainer}>
           {categories.map((category, index) => (
@@ -60,12 +61,16 @@ const Home = (props) => {
           ))}
         </View>
       </ScrollView>
-      {outdatedVersion && (
+      {/* {outdatedVersion && (
         <BottomBar
           text="Update your app to get full functionality"
           onPress={onUpdateApp}
         />
-      )}
+      )} */}
+      <DialogUpdateApp
+        visible={outdatedVersion}
+        onPress={onUpdateApp}
+      />
     </View>
   );
 };
