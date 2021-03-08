@@ -15,7 +15,8 @@ const TotalReward = ({ total, nativeToken }) => {
   const pDecimals = nativeToken?.pDecimals || 0;
 
   const price = nativeToken?.priceUsd || 0;
-  const totalAmountOriginal = convert.toOriginalAmount(total, pDecimals, false);
+  const totalAmountNumber = convert.toNumber(total, true);
+  const totalAmountOriginal = convert.toOriginalAmount(totalAmountNumber, pDecimals, false);
   let totalAmount = convert.toNumber(totalAmountOriginal, true) * price;
 
   if (isNaN(totalAmount)) {
