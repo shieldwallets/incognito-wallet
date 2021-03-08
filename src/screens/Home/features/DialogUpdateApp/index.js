@@ -12,7 +12,7 @@ const DialogUpdateApp = React.memo((props) => {
     ? textContent
     : 'We just released new version of the app!\nTo continue to use the app, simply update\nto new version on the store.';
   return (
-    <Dialog width={0.84} dialogStyle={{ height: 280 }} visible={visible}>
+    <Dialog width={0.88} dialogStyle={{ height: 280 }} visible={visible}>
       <DialogContent style={styled.dialog_content}>
         <View style={styled.wrapper}>
           <Text style={styled.title}>{title}</Text>
