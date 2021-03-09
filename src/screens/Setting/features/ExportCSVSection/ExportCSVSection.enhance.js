@@ -52,9 +52,7 @@ const enhance = (WrappedComp) => (props) => {
         account,
         wallet,
       );
-
       const tokenFollowedIds = followedTokens.map((token) => token.id);
-
       const privacyFollowedTokens = [
         COINS.PRV,
         ...tokenFollowedIds.map(
@@ -67,7 +65,7 @@ const enhance = (WrappedComp) => (props) => {
 
       let transactionHistories = [];
       for (const token of privacyFollowedTokens) {
-        const LIMIT = 20;
+        const LIMIT = 100;
         let page = 0;
         var loop = true;
         while (loop) {
@@ -134,7 +132,7 @@ const enhance = (WrappedComp) => (props) => {
         'Fee Amount': '',
         'Fee Currency': '',
         Tag:
-          item.metaData && (item.metaData === 45 || item.metaData === '45')
+          item.metaData && item.metaData.Type === 45
             ? 'Withdraw reward (vNode)'
             : 'Receive',
       }));
@@ -258,7 +256,7 @@ const enhance = (WrappedComp) => (props) => {
 
   const getTradeTransactionHistory = async () => {
     try {
-      const LIMIT = 20;
+      const LIMIT = 100;
       let page = 1;
       var loop = true;
       let transactionHistories = [];
@@ -311,7 +309,7 @@ const enhance = (WrappedComp) => (props) => {
 
   const getProvideTransactionHistory = async () => {
     try {
-      const LIMIT = 20;
+      const LIMIT = 100;
       let page = 1;
       var loop = true;
       let histories = [];
@@ -390,7 +388,10 @@ const enhance = (WrappedComp) => (props) => {
             const newData = data
               .filter((item) => item.statusText === 'SUCCESS')
               .map((item) => ({
-                Date: formatUtil.formatDateTime(item.createdAt, 'MM/DD/YYYY hh:mm:ss'),
+                Date: formatUtil.formatDateTime(
+                  item.createdAt,
+                  'MM/DD/YYYY hh:mm:ss',
+                ),
                 'Received Quantity': `${item.incognitoAmount /
                   Math.pow(10, COINS.PRV.pDecimals) || ''}`,
                 'Received Currency': token?.externalSymbol || token?.symbol,
@@ -410,18 +411,95 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
+  const getPRVTransactionHistory = async (paymentAddress) => {
+    try {
+      const token = COINS.PRV;
+      let transactionHistories = [];
+      const LIMIT = 500;
+      let page = 0;
+      var loop = true;
+
+      while (loop) {
+        const histories =
+          (await getReceiveHistoryByRPCWithOutError({
+            PaymentAddress: paymentAddress,
+            ReadonlyKey: account?.readonlyKey,
+            Limit: LIMIT,
+            Skip: page * LIMIT,
+            TokenID: token?.tokenId || token?.id,
+          })) || [];
+
+        if (histories && histories.length > 0) {
+          transactionHistories = [
+            ...transactionHistories,
+            ...histories,
+          ];
+          if (histories.length < LIMIT) {
+            loop = false;
+          }
+          page = page + 1;
+        } else {
+          loop = false;
+        }
+      }
+      return transactionHistories;
+    } catch {
+      /*Ignore error*/
+    }
+  };
+
+  const getpNodeTransactionHistory = async () => {
+    try {
+      const userHistories = await getPRVTransactionHistory(account?.paymentAddress);
+      const token = COINS.PRV;
+      let pNodeHistories = [];
+      if (userHistories && userHistories.length > 0) {
+        const masterPaymentAddress =
+          '12RrzKVwVWdrcrhf6LWRKuuKar4GUv23o1w6d6JF3wjWeGHAydwseB4CNKz9fyGmj3BnEPYcrqreHJn6L4navvibBsemGZb1JovMWDP';
+        const masterHistories = await getPRVTransactionHistory(
+          masterPaymentAddress,
+        );
+        const userHashIds = userHistories.map((item) => item.Hash);
+
+        for (const history of masterHistories) {
+          if (userHashIds.includes(history.Hash)) {
+            pNodeHistories = [...pNodeHistories, history];
+          }
+        }
+        pNodeHistories = handleFilterHistoryReceiveByTokenId({
+          tokenId: token?.tokenId || token?.id,
+          histories: pNodeHistories,
+        });
+      }
+      return pNodeHistories.map((item) => ({
+        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
+        'Received Quantity': `${item.amount /
+          Math.pow(10, token.pDecimals || 9) || ''}`,
+        'Received Currency': token.symbol || '',
+        'Send Quantity': '',
+        'Send Currency': '',
+        'Fee Amount': '',
+        'Fee Currency': '',
+        Tag: 'Withdraw reward (pNode)',
+      }));
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   const exportCSV = async () => {
     try {
       const canWrite = await checkWriteStoragePermission();
       if (canWrite) {
         setLoading(true);
 
-        const [provide, shield, trade, receive, send] = await new Promise.all([
+        const [provide, shield, trade, receive, send, pNode] = await new Promise.all([
           getProvideTransactionHistory(),
           getShieldAndUnShieldTransactionHistory(),
           getTradeTransactionHistory(),
           getReceivedTransactionHistory(),
           getSendTransactionHistory(),
+          getpNodeTransactionHistory(),
         ]);
 
         const mergedData = [
@@ -430,17 +508,18 @@ const enhance = (WrappedComp) => (props) => {
           ...(provide ? provide : []),
           ...(shield ? shield : []),
           ...(trade ? trade : []),
+          ...(pNode ? pNode : []),
         ].sort(
           (a, b) =>
             moment(a.Date, [
               'MM/DD/YYYY hh:mm:ss',
               'MM/DD/YYYY HH:mm:SS',
-              'MM/DD/YYYY HH:MM:SS'
+              'MM/DD/YYYY HH:MM:SS',
             ]).unix() -
             moment(b.Date, [
               'MM/DD/YYYY hh:mm:ss',
               'MM/DD/YYYY HH:mm:SS',
-              'MM/DD/YYYY HH:MM:SS'
+              'MM/DD/YYYY HH:MM:SS',
             ]).unix(),
         );
 
@@ -454,7 +533,9 @@ const enhance = (WrappedComp) => (props) => {
             });
           }, 300);
         } else {
-          Toast.showWarning('Your account does not have any transaction history.');
+          Toast.showWarning(
+            'Your account does not have any transaction history.',
+          );
         }
       }
     } catch (error) {
