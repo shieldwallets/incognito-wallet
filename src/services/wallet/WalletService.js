@@ -13,6 +13,11 @@ import { randomBytes } from 'react-native-randombytes';
 import { DEX } from '@utils/dex';
 import accountService from '@services/wallet/accountService';
 import { updateWalletAccounts } from '@services/api/masterKey';
+import {
+  getIsMirage,
+  handleCachedAccount
+} from '@services/wallet/accountService.helpers';
+import { loadAccountCached } from '@src/database/helper/accountCached.helpers';
 import { getPassphrase } from './passwordService';
 import Server from './Server';
 
@@ -70,11 +75,45 @@ export async function loadWallet(passphrase, name = 'Wallet') {
   const accounts = wallet.MasterAccount.child;
   for (const account of accounts) {
     try {
-      await account.loadAccountCached(storage, `${name}-${account.name}-cached`);
+      // await account.loadAccountCached(storage, `${name}-${account.name}-cached`);
+      const accountKey = `${name}-${account.name}-cached`;
+      const isMirage   = await getIsMirage(accountKey);
+
+      if (!isMirage) {
+        await account.loadAccountCached(storage, accountKey);
+      }
+
+      if (accountKey && isMirage) {
+        const {
+          derivatorToSerialNumberCache,
+          spentCoinCached
+        } = await loadAccountCached(accountKey);
+        account.derivatorToSerialNumberCache = derivatorToSerialNumberCache;
+        account.spentCoinCached = spentCoinCached;
+      }
+
     } catch (e) {
       console.debug('LOAD ACCOUNTS CACHE ERROR', e);
-      await account.clearCached(`${name}-${account.name}-cached`);
-      await account.saveAccountCached(storage, `${name}-${account.name}-cached`);
+      // await account.clearCached(`${name}-${account.name}-cached`);
+      // await account.saveAccountCached(storage, `${name}-${account.name}-cached`);
+      const accountKey = `${name}-${account.name}-cached`;
+
+      /*
+      * if did mirage data
+      * dont @account.saveAccountCached(storage, `${name}-${account.name}-cached`)
+      * */
+      const isMirage = await getIsMirage(accountKey);
+      if (!isMirage) {
+        await account.clearCached(accountKey);
+        await account.saveAccountCached(storage, accountKey);
+      }
+
+      /*
+      * store data by @watermelonDB
+      * */
+      if(accountKey) {
+        await handleCachedAccount(account, accountKey);
+      }
     }
   }
   return wallet?.Name ? wallet : false;

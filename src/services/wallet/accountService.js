@@ -16,7 +16,11 @@ import { chooseBestCoinToSpent } from 'incognito-chain-web-js/lib/tx/utils';
 import bn from 'bn.js';
 import Server from '@services/wallet/Server';
 import { PRV_ID } from '@screens/DexV2/constants';
-import { CustomError, ErrorCode } from '../exception';
+import {
+  getIsMirage,
+  handleCachedAccount
+} from '@services/wallet/accountService.helpers';
+import { CustomError, ErrorCode, ExHandler } from '../exception';
 import tokenService from './tokenService';
 import {
   loadListAccountWithBLSPubKey,
@@ -31,18 +35,42 @@ export const getBalanceNoCache = (
   wallet,
   tokenId,
 ) => async () => {
-  const account = wallet.MasterAccount.child[indexAccount];
-  account.isRevealViewKeyToGetCoins = true;
+  try {
+    const account = wallet.MasterAccount.child[indexAccount];
+    account.isRevealViewKeyToGetCoins = true;
 
-  const balance = await wallet.MasterAccount.child[indexAccount].getBalance(
-    tokenId,
-  );
+    const balance = await wallet.MasterAccount.child[indexAccount].getBalance(
+      tokenId,
+    );
+    const accountKey = `${wallet.Name}-${account.name}-cached`;
 
-  if (Object.keys(account.derivatorToSerialNumberCache).length < 10000) {
-    await account.saveAccountCached(wallet.storage, `${wallet.Name}-${account.name}-cached`);
+    // if (Object.keys(account.derivatorToSerialNumberCache).length < 10000) {
+    //   await account.saveAccountCached(wallet.storage, `${wallet.Name}-${account.name}-cached`);
+    // }
+    const isMirage = await getIsMirage(accountKey);
+
+    /*
+     * Check did mirage data dont save data to storage below
+     * @account.saveAccountCached(wallet.storage, `${wallet.Name}-${account.name}-cached`)
+     * */
+
+    if (
+      !isMirage &&
+      Object.keys(account.derivatorToSerialNumberCache).length < 10000
+    ) {
+      await account.saveAccountCached(wallet.storage, accountKey);
+    }
+
+    /*
+     * store data by @watermelonDB
+     * */
+    if (accountKey) {
+      await handleCachedAccount(account, accountKey);
+    }
+    return balance;
+  } catch (error) {
+    new ExHandler(error).showErrorToast();
   }
-
-  return balance;
 };
 
 const getPendingHistory = (histories, spendingCoins) => {
