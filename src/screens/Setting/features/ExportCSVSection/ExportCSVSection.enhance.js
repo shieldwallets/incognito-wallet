@@ -16,6 +16,7 @@ import {
   getHistories as getProvideHistories,
   getUserPoolData,
   getPoolConfig,
+  checkPNodeReward
 } from '@services/api/pool';
 import { getReceiveHistoryByRPCWithOutError } from '@src/services/wallet/RpcClientService';
 import { Toast } from '@src/components/core';
@@ -415,7 +416,7 @@ const enhance = (WrappedComp) => (props) => {
     try {
       const token = COINS.PRV;
       let transactionHistories = [];
-      const LIMIT = 500;
+      const LIMIT = 100;
       let page = 0;
       var loop = true;
 
@@ -451,21 +452,13 @@ const enhance = (WrappedComp) => (props) => {
   const getpNodeTransactionHistory = async () => {
     try {
       const userHistories = await getPRVTransactionHistory(account?.paymentAddress);
+      const userHashIds = userHistories.map((item) => item.Hash);
+      const data = await checkPNodeReward(userHashIds);
+
       const token = COINS.PRV;
       let pNodeHistories = [];
-      if (userHistories && userHistories.length > 0) {
-        const masterPaymentAddress =
-          '12RrzKVwVWdrcrhf6LWRKuuKar4GUv23o1w6d6JF3wjWeGHAydwseB4CNKz9fyGmj3BnEPYcrqreHJn6L4navvibBsemGZb1JovMWDP';
-        const masterHistories = await getPRVTransactionHistory(
-          masterPaymentAddress,
-        );
-        const userHashIds = userHistories.map((item) => item.Hash);
-
-        for (const history of masterHistories) {
-          if (userHashIds.includes(history.Hash)) {
-            pNodeHistories = [...pNodeHistories, history];
-          }
-        }
+      if (data && data.length > 0) {
+        pNodeHistories = userHistories.filter(history => data.includes(history.Hash));
         pNodeHistories = handleFilterHistoryReceiveByTokenId({
           tokenId: token?.tokenId || token?.id,
           histories: pNodeHistories,
@@ -483,7 +476,7 @@ const enhance = (WrappedComp) => (props) => {
         Tag: 'Withdraw reward (pNode)',
       }));
     } catch (error) {
-      console.log('error', error);
+      /*Ignore error*/
     }
   };
 
