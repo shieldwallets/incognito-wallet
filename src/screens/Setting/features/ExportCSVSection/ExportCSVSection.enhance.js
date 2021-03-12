@@ -34,6 +34,7 @@ import { ConfirmedTx } from '@src/services/wallet/WalletService';
 import { getpTokenHistory } from '@src/services/api/history';
 import { accountSeleclor } from '@src/redux/selectors';
 import _ from 'lodash';
+import convert from '@utils/convert';
 
 const enhance = (WrappedComp) => (props) => {
   const { accounts, wallet } = props;
@@ -292,14 +293,14 @@ const enhance = (WrappedComp) => (props) => {
         }
       }
       return transactionHistories.map((item) => ({
-        Date: moment(item.createdAt, 'DD MMM YYYY hh:mm A').format(
-          'MM/DD/YYYY HH:mm:SS',
+        Date: moment(item.createdAt, 'DD MMM YYYY hh:mm').format(
+          'MM/DD/YYYY HH:mm:ss',
         ),
-        'Received Quantity': item.amountReceive || '',
+        'Received Quantity': convert.toNumber(item.amountReceive, true) || '',
         'Received Currency': item.buyTokenSymbol || '',
-        'Send Quantity': item.sellAmount || '',
+        'Send Quantity': convert.toNumber(item.sellAmount) || '',
         'Send Currency': item.sellTokenSymbol || '',
-        'Fee Amount': item.networkFee || '',
+        'Fee Amount': convert.toNumber(item.networkFee) || '',
         'Fee Currency': item.networkFeeTokenSymbol || '',
         Tag: item.type,
       }));
