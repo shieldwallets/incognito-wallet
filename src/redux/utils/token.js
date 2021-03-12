@@ -4,7 +4,6 @@ import { getpTokenHistory } from '@src/services/api/history';
 import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
 import { loadHistoryByAccount } from '@src/services/wallet/WalletService';
 import { getFeeFromTxHistory } from '@src/screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.utils';
-import moment from 'moment';
 import { endsWith, isEmpty } from 'lodash';
 
 export const normalizeHistoriesFromApi = ({
@@ -100,7 +99,7 @@ const normalizedHistories = ({
         feePToken: Number(h?.feePToken),
         isIncognitoTx: true,
         metaDataType: h?.metaData?.Type,
-        memo: h?.info || h?.memo
+        memo: h?.info || h?.memo,
       };
       const { indexTx, historyFromApi } = normalizedHistory(
         _historiesFromApi,
@@ -234,11 +233,39 @@ export const loadTokenHistory = () => async (dispatch, getState) => {
   }
 };
 
+export const loadTokenHistoryWithToken = (token) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    const state = getState();
+    const wallet = state?.wallet;
+    const account = accountSeleclor.defaultAccount(state);
+
+    if (!wallet) {
+      throw new Error('Wallet is not exist to load history');
+    }
+    if (!account) {
+      throw new Error('Account is not exist to load history');
+    }
+    const histories = await tokenService.getTokenHistory({
+      wallet,
+      account,
+      token,
+    });
+    return histories;
+  } catch (e) {
+    return [];
+  }
+};
+
 export const getHistoryFromApi = () => async (dispatch, getState) => {
   try {
     const state = getState();
     const selectedPrivacy = selectedPrivacySeleclor.selectedPrivacy(state);
-    const signPublicKeyEncode = accountSeleclor.signPublicKeyEncodeSelector(state);
+    const signPublicKeyEncode = accountSeleclor.signPublicKeyEncodeSelector(
+      state,
+    );
     const { isDeposable, isWithdrawable, paymentAddress } = selectedPrivacy;
     if (!isWithdrawable || !isDeposable) {
       return;
