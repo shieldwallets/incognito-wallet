@@ -7,6 +7,7 @@ import { accountSeleclor } from '@src/redux/selectors';
 import { setWallet } from '@src/redux/actions/wallet';
 import { getPTokenList } from '@src/redux/actions/token';
 import accountService from '@src/services/wallet/accountService';
+import { logEvent, Events } from '@services/firebase';
 import { detectBEP2Token, addBEP2Token } from '@src/services/api/token';
 import LoadingContainer from '@src/components/LoadingContainer';
 import { ExHandler, CustomError, ErrorCode } from '@src/services/exception';
@@ -44,6 +45,9 @@ export class AddBep2TokenContainer extends Component {
         symbol,
         originalSymbol,
       };
+      
+      logEvent(Events.add_coin_manually, { ticker: originalSymbol, token_type: 'bep2' });
+
       newPToken = await addBEP2Token(data);
 
       await accountService.addFollowingTokens([newPToken.convertToToken()], account, wallet);

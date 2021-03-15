@@ -24,6 +24,7 @@ import { loadAllMasterKeyAccounts, loadAllMasterKeys } from '@src/redux/actions/
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
 import Welcome from '@screens/GetStarted/Welcome';
 import withPin from '@components/pin.enhance';
+import { logEvent, Events } from '@services/firebase';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -143,6 +144,7 @@ const enhance = (WrappedComp) => (props) => {
       }
       await checkWallet();
     } catch (e) {
+      logEvent(Events.view_error_screen, {'type_of_error': 'network'});
       errorMessage = new ExHandler(
         e,
         'Something\'s not quite right. Please make sure you\'re connected to the internet.\n' +

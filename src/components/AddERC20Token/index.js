@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { debounce } from 'lodash';
 import { Toast } from '@src/components/core';
 import { accountSeleclor } from '@src/redux/selectors';
+import { logEvent, Events } from '@services/firebase';
 import { setWallet } from '@src/redux/actions/wallet';
 import { getPTokenList } from '@src/redux/actions/token';
 import accountService from '@src/services/wallet/accountService';
@@ -45,6 +46,8 @@ export class AddERC20TokenContainer extends Component {
         contractId: address,
         decimals
       };
+
+      logEvent(Events.add_coin_manually, { ticker: symbol, token_type: 'erc20' });
 
       newPToken = await addERC20Token(data);
       // add this new token to user following list

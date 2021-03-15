@@ -6,6 +6,7 @@ import convertUtil from '@utils/convert';
 import { useSelector } from 'react-redux';
 import { tradingFeeSelector } from '@screens/DexV2/components/Trade/TradeV2/Trade.selector';
 import { COINS } from '@src/constants';
+import { logEvent, Events } from '@services/firebase';
 
 const withValidate = WrappedComp => (props) => {
   const [error, setError] = React.useState('');
@@ -52,6 +53,9 @@ const withValidate = WrappedComp => (props) => {
           ||
           tradingFee > prvBalance
         ) {
+          if (prvBalance && prvBalance !== 0) {
+            logEvent(Events.alert_topup_prv);
+          }
           setError(MESSAGES.NOT_ENOUGH_PRV_NETWORK_FEE);
         } else if (feeToken?.id !== COINS.PRV_ID && inputBalance < inputValue + fee) {
           MESSAGES.NOT_ENOUGH_BALANCE_TO_TRADE(inputToken.symbol);

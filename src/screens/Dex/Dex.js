@@ -150,6 +150,7 @@ class Dex extends React.Component {
       shares,
       isLoading,
       masterKeyAccounts,
+      onSelectPrivacyByTokenID
     } = this.props;
     const { addLiquidityParams, mode, removeLiquidityParams } = this.state;
 
@@ -168,6 +169,7 @@ class Dex extends React.Component {
           pairTokens={pairTokens}
           pairs={pairs}
           isLoading={isLoading}
+          onSelectPrivacyByTokenID={onSelectPrivacyByTokenID}
         />
       );
     }

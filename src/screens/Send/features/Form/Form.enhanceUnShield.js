@@ -27,6 +27,7 @@ import {
 } from '@screens/UnShield';
 import Utils from '@src/utils/Util';
 import { devSelector } from '@src/screens/Dev';
+import { logEvent, Events } from '@services/firebase';
 import { formName } from './Form.enhance';
 
 export const enhanceUnshield = (WrappedComp) => (props) => {
@@ -378,6 +379,12 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
           tokenSymbol: externalSymbol || res?.tokenSymbol,
           keySaveAddressBook: CONSTANT_KEYS.REDUX_STATE_RECEIVERS_OUT_NETWORK,
         };
+        /**
+         *  Log event when user send any transaction from wallet. 
+         */
+        logEvent(Events.withdraw, {
+          public_address: toAddress
+        });
         navigation.navigate(routeNames.Receipt, { params });
         await dispatch(reset(formName));
       }

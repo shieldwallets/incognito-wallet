@@ -3,6 +3,8 @@ import ErrorBoundary from '@src/components/ErrorBoundary';
 import { useSelector } from 'react-redux';
 import { tradeSelector } from '@screens/DexV2/components/Trade/TradeV2/Trade.selector';
 import { TRADE_LOADING_VALUE } from '@screens/DexV2/components/Trade/TradeV2/Trade.appConstant';
+import { PRV_ID } from '@src/screens/DexV2/constants';
+import { selectedPrivacySeleclor } from '@src/redux/selectors';
 
 const enhanceData = WrappedComp => props => {
 
@@ -29,6 +31,10 @@ const enhanceData = WrappedComp => props => {
     lastInputToken,
     lastAccount
   } = useSelector(tradeSelector);
+
+  const nativeToken = useSelector(
+    selectedPrivacySeleclor.getPrivacyDataByTokenID,
+  )(PRV_ID);
 
   const disableButton = useMemo(() => {
     return {
@@ -64,7 +70,8 @@ const enhanceData = WrappedComp => props => {
           inputBalanceText,
           prvBalance,
           lastInputToken,
-          lastAccount
+          lastAccount,
+          nativeToken
         }}
       />
     </ErrorBoundary>

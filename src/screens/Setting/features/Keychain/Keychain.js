@@ -13,6 +13,7 @@ import {
 } from '@src/redux/selectors/masterKey';
 import MainLayout from '@components/MainLayout';
 import { THEME } from '@src/styles';
+import { logEvent, Events } from '@services/firebase';
 import withKeychain from './Keychain.enhance';
 import RightBtn from './RightBtn';
 import BtnInfo from './BtnInfo';
@@ -50,7 +51,10 @@ const Keychain = () => {
     sectionItemFactories.push({
       title: 'Import a keychain',
       desc: 'Using a private key',
-      handlePress: () => navigation.navigate(routeNames.ImportAccount),
+      handlePress: () => {
+        logEvent(Events.restore_wallet, {'type_of_restore': 'private key'});
+        navigation.navigate(routeNames.ImportAccount);
+      },
     });
   } else {
     sectionItemFactories.push({
@@ -61,7 +65,10 @@ const Keychain = () => {
     sectionItemFactories.push({
       title: 'Import a keychain',
       desc: 'Using a private key',
-      handlePress: () => navigation.navigate(routeNames.ImportAccount),
+      handlePress: () => {
+        logEvent(Events.restore_wallet, {'type_of_restore': 'private key'});
+        navigation.navigate(routeNames.ImportAccount);
+      },
     });
   }
   sectionItemFactories.push({

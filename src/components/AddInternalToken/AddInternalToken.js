@@ -28,6 +28,7 @@ import { setWallet } from '@src/redux/actions/wallet';
 import { getInternalTokenList } from '@src/redux/actions/token';
 import { ExHandler } from '@src/services/exception';
 import ROUTES_NAME from '@routers/routeNames';
+import { logEvent, Events } from '@services/firebase';
 import styleSheet from './style';
 
 const formName = 'addInternalToken';
@@ -147,6 +148,9 @@ class AddInternalToken extends Component {
 
     try {
       this.setState({ isCreatingOrSending: true });
+
+      logEvent(Events.mint_coin, { ticker: symbol, name: name });
+
       const res = await Token.createSendPToken(
         tokenObject,
         TOKEN_FEE || 0,

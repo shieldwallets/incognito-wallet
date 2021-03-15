@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { Button, Image, Text, View, Toast } from '@src/components/core';
+import { Button, Image, Text, View } from '@src/components/core';
 import accountService from '@services/wallet/accountService';
 import convertUtil from '@utils/convert';
 import { Divider } from 'react-native-elements';
@@ -19,6 +19,7 @@ import AddSuccessDialog from '@screens/Dex/components/AddSuccessDialog';
 import CODE from '@src/services/exception/customError/code';
 import { CustomError, ExHandler } from '@services/exception';
 import { MAX_FEE_PER_TX } from '@components/EstimateFee/EstimateFee.utils';
+import { logEvent, Events } from '@services/firebase';
 import Input from '../Input';
 import Loading from '../Loading';
 import { MESSAGES, MIN_INPUT, PRV_ID, SECOND } from '../../constants';
@@ -343,7 +344,7 @@ class Pool extends React.Component {
   };
 
   add = async () => {
-    const { account, onAddHistory, onUpdateHistory, onUpdateParams } = this.props;
+    const { account, onAddHistory, onUpdateHistory, onUpdateParams, onSelectPrivacyByTokenID } = this.props;
     const { inputToken, inputValue, outputToken, outputValue, inputFee, outputFee, adding } = this.state;
     const pa = account.PaymentAddress;
     const timestamp = new Date().getTime().toString();
@@ -351,6 +352,17 @@ class Pool extends React.Component {
     let newHistory;
 
     console.debug('ADD LIQUIDITY', inputFee, outputFee, inputValue, outputValue, pairId);
+
+    /**
+    *  Log event when user add liquidity
+    */
+    const Token = onSelectPrivacyByTokenID(outputToken.id);
+    logEvent(Events.add_liquidity, {
+      name: outputToken.name || '',
+      ticker: outputToken.symbol || '',
+      amount: convertUtil.toNumber(outputValue, true) / Math.pow(10, outputToken.pDecimals || 9),
+      amountUsd: Token.priceUsd ? (convertUtil.toNumber(outputValue, true) / Math.pow(10, outputToken.pDecimals))*Token.priceUsd : null,
+    });
 
     if (adding) {
       return;
@@ -544,6 +556,7 @@ Pool.propTypes = {
   onUpdateParams: PropTypes.func.isRequired,
   onAddHistory: PropTypes.func.isRequired,
   onUpdateHistory: PropTypes.func.isRequired,
+  onSelectPrivacyByTokenID: PropTypes.func.isRequired,
   account: PropTypes.object.isRequired,
   pairs: PropTypes.array.isRequired,
   tokens: PropTypes.array.isRequired,

@@ -8,12 +8,18 @@ import {
   actionRemoveFollowToken,
 } from '@src/redux/actions/token';
 import { withTokenVerified } from '@src/components/Token';
+import { logEvent, Events } from '@services/firebase';
 
 const enhance = (WrappedComp) => (props) => {
   const dispatch = useDispatch();
   const handleToggleFollowToken = async (token) => {
     try {
       if (!token?.isFollowed) {
+        logEvent(Events.add_coin_list, {
+          name: token?.name || '',
+          ticker: token?.symbol || '',
+          status: token?.isVerified ? 'verified' : 'unverified',
+        });
         await dispatch(actionAddFollowToken(token?.tokenId));
       } else {
         await dispatch(actionRemoveFollowToken(token?.tokenId));

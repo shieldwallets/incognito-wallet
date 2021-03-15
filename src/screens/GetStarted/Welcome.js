@@ -13,6 +13,7 @@ import BackupKeys from '@screens/BackupKeys';
 import ConfirmBackUp from '@screens/GetStarted/ConfirmBackUpKeys';
 import { loadWallet as loadWallet } from '@src/services/wallet/WalletService';
 import { CONSTANT_CONFIGS } from '@src/constants';
+import { logEvent, Events } from '@services/firebase';
 
 const styles = StyleSheet.create({
   flex: {
@@ -55,10 +56,12 @@ const Welcome = () => {
   }, []);
 
   const handleImport = () => {
+    logEvent(Events.restore_wallet, {'type_of_restore': 'seed phrase'});
     navigation.navigate(routeNames.InitImportMasterKey, { init: true });
   };
 
   const handleCreate = () => {
+    logEvent(Events.create_new_wallet);
     navigation.navigate(routeNames.InitMasterKey , { init: true });
   };
 

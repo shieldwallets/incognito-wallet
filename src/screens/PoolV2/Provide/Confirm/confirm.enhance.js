@@ -4,6 +4,10 @@ import accountService from '@services/wallet/accountService';
 import { provide } from '@services/api/pool';
 import { getSignPublicKey } from '@services/gomobile';
 import LocalDatabase from '@utils/LocalDatabase';
+import { useSelector } from 'react-redux';
+import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { logEvent, Events } from '@services/firebase';
+import convert from '@utils/convert';
 
 const withConfirm = WrappedComp => (props) => {
   const [error, setError] = React.useState('');
@@ -19,6 +23,10 @@ const withConfirm = WrappedComp => (props) => {
     originProvide,
   } = props;
 
+  const Token = useSelector(
+    selectedPrivacySeleclor.getPrivacyDataByTokenID,
+  )(coin.id);
+
   const confirm = async () => {
     if (providing) {
       return;
@@ -30,6 +38,16 @@ const withConfirm = WrappedComp => (props) => {
     try {
       let provideValue = isPrv ? originProvide : value;
       let providerFee  = fee;
+
+      /**
+      *  Log event when user provide 
+      */
+      logEvent(Events.provide_coin, {
+        name: coin.name || '',
+        ticker: coin.symbol || '',
+        amount: convert.toNumber(provideValue, true) / Math.pow(10, coin.pDecimals || 9),
+        amountUsd: Token.priceUsd ? (convert.toNumber(provideValue, true) / Math.pow(10, coin.pDecimals || 9))*Token.priceUsd : null,
+      });
 
       const signPublicKeyEncode = await getSignPublicKey(account.PrivateKey);
       const txs = await LocalDatabase.getProvideTxs();

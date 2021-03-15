@@ -31,6 +31,7 @@ import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
+import { logEvent, Events } from '@services/firebase';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -182,6 +183,7 @@ const TxHistoryDetail = (props) => {
     historyId,
   } = props;
   const toggleHistoryDetail = dev[CONSTANT_KEYS.DEV_TEST_TOGGLE_HISTORY_DETAIL];
+  const selected = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const { typeText, statusColor, statusMessage, history } = data;
   const { fromApi } = history;
   const { fee, formatFee, feeUnit } = getFeeFromTxHistory(history);
@@ -301,6 +303,16 @@ const TxHistoryDetail = (props) => {
   React.useEffect(() => {
     if (fromApi && historyId && onPullRefresh && data?.history?.currencyType) {
       handleRefresh();
+    }
+    /**
+    *  Log event when user choose shield any coin and we create pending wallet for transaction
+    */
+    if (!!history?.depositAddress && statusMessage === 'Pending') {
+      logEvent(Events.initiate_shielding_transaction, {
+        ticker: history?.symbol || '',
+        name: selected?.name || '',
+        txId: history?.id
+      });
     }
   }, []);
 

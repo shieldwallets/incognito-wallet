@@ -34,6 +34,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import BtnRetryGrey from '@components/Button/BtnRetryGrey';
 import withParams from '@screens/DexV2/components/Trade/params.enhance';
 import withHistory from '@screens/DexV2/components/Trade/history.enhance';
+import convert from '@utils/convert';
+import { logEvent, Events } from '@services/firebase';
 import styles from './style';
 
 const Trade = (props) => {
@@ -71,10 +73,21 @@ const Trade = (props) => {
     onChangeSegment,
     onRetryTradeInfo,
     disableButton,
+    nativeToken
   } = props;
 
   const navigation = useNavigation();
   const navigateTradeConfirm = () => {
+    /**
+    *  Log event when uses view preview pDex screen after press button "preview my order"
+    */
+    logEvent(Events.pdex_view_preview_swap, {
+      ticker1: inputToken?.symbol || '',
+      ticker2: outputToken?.symbol || '',
+      amount1: inputValue/ Math.pow(10, inputToken?.pDecimals || 9),
+      amount2: minimumAmount/ Math.pow(10, outputToken?.pDecimals || 9),
+      amount_of_swap_usd: convert.toNumber(inputValue/ Math.pow(10, inputToken?.pDecimals || 9), true) * (nativeToken?.priceUsd || 0)
+    });
     navigation.navigate(ROUTE_NAMES.TradeConfirm, {
       inputToken,
       inputValue,
@@ -89,7 +102,8 @@ const Trade = (props) => {
       inputBalance,
       prvBalance,
       quote,
-
+      nativeToken,
+      
       // Reload new rate after trading successfully
       onTradeSuccess: onLoadPairs
     });
@@ -238,6 +252,7 @@ Trade.propTypes = {
   segmentIndex: PropTypes.number.isRequired,
   onChangeSegment: PropTypes.func.isRequired,
   onRetryTradeInfo: PropTypes.func.isRequired,
+  nativeToken: PropTypes.object.isRequired,
   disableButton: PropTypes.object,
 };
 

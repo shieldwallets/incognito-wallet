@@ -19,6 +19,7 @@ const withData = WrappedComp => (props) => {
   const feeToken = useNavigationParam('feeToken');
   const isErc20 = useNavigationParam('isErc20');
   const quote = useNavigationParam('quote');
+  const nativeToken = useNavigationParam('nativeToken');
 
   const { tradingFee } = useSelector(tradingFeeSelector)();
 
@@ -48,6 +49,7 @@ const withData = WrappedComp => (props) => {
         prvBalance,
         isErc20,
         quote,
+        nativeToken,
 
         tradingFee,
         priority,

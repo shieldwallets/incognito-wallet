@@ -108,6 +108,7 @@ export const MESSAGES = {
   NO_PAIR: 'You haven\'t added any pairs yet.',
   SLIPPAGE_WARNING: 'Your trade may fail at this range.',
   SLIPPAGE_ERROR: 'Enter a number from 0 to 99.99.',
+  API_POOL_ERROR: 'The network is a little busy. Please try again later.'
 };
 export const MILLISECOND = 1;
 export const SECOND = 1000 * MILLISECOND;

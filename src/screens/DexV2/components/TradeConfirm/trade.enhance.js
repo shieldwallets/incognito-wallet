@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { actionAddFollowToken } from '@src/redux/actions/token';
 import { actionLogEvent } from '@src/screens/Performance';
 import { getSlippagePercent } from '@screens/DexV2/components/Trade/TradeV2/Trade.utils';
+import { logEvent, Events } from '@services/firebase';
 import BigNumber from 'bignumber.js';
 
 const withTrade = (WrappedComp) => (props) => {
@@ -28,6 +29,7 @@ const withTrade = (WrappedComp) => (props) => {
     account,
     isErc20,
     quote,
+    nativeToken,
 
     tradingFee,
     slippage,
@@ -74,6 +76,19 @@ const withTrade = (WrappedComp) => (props) => {
     if (trading) {
       return;
     }
+    /**
+    *  Log event when user initiade trade
+    */
+    const start = new Date().getTime();
+    logEvent(Events.pdex_place_order, {
+      ticker1: inputToken?.symbol || '',
+      ticker2: outputToken?.symbol || '',
+      amount1: inputValue/ Math.pow(10, inputToken?.pDecimals || 9),
+      amount2: minimumAmount/ Math.pow(10, outputToken?.pDecimals || 9),
+      amount_of_swap_usd: convertUtil.toNumber(inputValue/ Math.pow(10, inputToken?.pDecimals || 9), true) * (nativeToken?.priceUsd || 0),
+      priority
+    });
+
     setTrading(true);
     setError('');
     try {
@@ -116,6 +131,7 @@ const withTrade = (WrappedComp) => (props) => {
       }
 
       if (spendingCoin || spendingPRV) {
+        logEvent(Events.alert_previous_tx);
         return setError(MESSAGES.PENDING_TRANSACTIONS);
       }
       dispatch(actionLogEvent({ desc: 'TRADE START DEPOSIT' }));
@@ -158,15 +174,46 @@ const withTrade = (WrappedComp) => (props) => {
       );
       dispatch(actionLogEvent({ desc: 'TRADE END SEND COIN TO WALLET' }));
       if (result && result.txId) {
+        /**
+         *  Log event when user successfully swap coins
+         */
+        const end = new Date().getTime();
+        logEvent(Events.pdex_made_swap, {
+          ticker1: inputToken.symbol || '',
+          ticker2: outputToken.symbol || '',
+          amount1: inputValue/ Math.pow(10, inputToken.pDecimals),
+          amount2: minimumAmount/ Math.pow(10, outputToken.pDecimals),
+          amount_of_swap_usd: convertUtil.toNumber(inputValue/ Math.pow(10, inputToken.pDecimals), true) * (nativeToken?.priceUsd || 0),
+          priority,
+          orderId: result.txId,
+          total_minutes: (end - start)/60000,
+        });
         onTradeSuccess(true);
       }
     } catch (error) {
       if (error) {
+        /**
+         *  Log event when user failed transaction
+         */
+        const end = new Date().getTime();
+        logEvent(Events.pdex_swap_failed, {
+          ticker1: inputToken?.symbol || '',
+          ticker2: outputToken?.symbol || '',
+          amount1: inputValue/ Math.pow(10, inputToken?.pDecimals || 9),
+          amount2: minimumAmount/ Math.pow(10, outputToken?.pDecimals || 9),
+          amount_of_swap_usd: convertUtil.toNumber(inputValue/ Math.pow(10, inputToken?.pDecimals || 9), true) * (nativeToken?.priceUsd || 0),
+          priority,
+          total_minutes: (end - start)/60000,
+        });
         dispatch(actionLogEvent({
           desc: `Trade has error: ${error?.message || error} with Code: ${error?.code}`
         }));
       }
-      setError(new ExHandler(error).getMessage(MESSAGES.TRADE_ERROR));
+      const errorMessage = new ExHandler(error).getMessage(MESSAGES.TRADE_ERROR);
+      if (errorMessage === MESSAGES.API_POOL_ERROR) {
+        logEvent(Events.alert_network_busy);
+      }
+      setError(errorMessage);
     } finally {
       setTrading(false);
       dispatch(actionAddFollowToken(inputToken?.id));

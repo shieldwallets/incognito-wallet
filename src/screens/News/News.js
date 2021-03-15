@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { camelCaseKeys } from '@src/utils';
 import { ScrollView } from '@src/components/core';
 import { useFocusEffect } from 'react-navigation-hooks';
+import { logEvent, Events } from '@services/firebase';
 import withNews from './News.enhance';
 import { newsSelector } from './News.selector';
 import { LAYOUT_TYPE } from './News.constant';
@@ -86,6 +87,7 @@ const News = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       handleFetchNews();
+      logEvent(Events.view_bulletin);
     }, []),
   );
   return (

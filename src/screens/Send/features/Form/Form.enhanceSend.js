@@ -18,6 +18,7 @@ import tokenService from '@services/wallet/tokenService';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { logEvent, Events } from '@services/firebase';
 import { formName } from './Form.enhance';
 
 export const enhanceSend = (WrappedComp) => (props) => {
@@ -46,6 +47,12 @@ export const enhanceSend = (WrappedComp) => (props) => {
         message,
       );
       if (res.txId) {
+        /**
+         *  Log event when user send any transaction from wallet. 
+         */
+        logEvent(Events.withdraw, {
+          incognito_address: toAddress
+        });
         return res;
       } else {
         throw new Error('Sent tx, but doesnt have txID, please check it');
@@ -95,6 +102,12 @@ export const enhanceSend = (WrappedComp) => (props) => {
         message,
       );
       if (res.txId) {
+        /**
+         *  Log event when user send any transaction from wallet. 
+         */
+        logEvent(Events.withdraw, {
+          public_address: toAddress
+        });
         return res;
       } else {
         throw new Error('Sent tx, but doesnt have txID, please check it');

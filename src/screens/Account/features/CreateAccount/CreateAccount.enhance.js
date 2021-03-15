@@ -1,6 +1,6 @@
 /* eslint-disable import/no-cycle */
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
 import { useNavigation } from 'react-navigation-hooks';
@@ -9,6 +9,8 @@ import { actionFetchCreateAccount } from '@src/redux/actions/account';
 import trim from 'lodash/trim';
 import { ExHandler, CustomError, ErrorCode } from '@src/services/exception';
 import { Keyboard } from 'react-native';
+import { logEvent, Events } from '@services/firebase';
+import { accountSeleclor } from '@src/redux/selectors';
 import { formCreateAccount } from './CreateAccount';
 
 const enhance = (WrappedComponent) => (props) => {
@@ -18,6 +20,7 @@ const enhance = (WrappedComponent) => (props) => {
     form: formCreateAccount,
   });
   const disabledForm = !isFormValid;
+  const listAccount = useSelector(accountSeleclor.listAccountSelector);
   const handleCreateAccount = async ({ accountName }) => {
     try {
       Keyboard.dismiss();
@@ -30,6 +33,12 @@ const enhance = (WrappedComponent) => (props) => {
       await dispatch(
         actionFetchCreateAccount({ accountName: trim(accountName) }),
       );
+      /**
+      *  Log event when user create new keychain
+      */
+      logEvent(Events.create_new_keychain, {
+        order_number_of_keychain: listAccount && listAccount.length ? listAccount.length + 1 : 1
+      });
       navigation.pop();
     } catch (e) {
       new ExHandler(
