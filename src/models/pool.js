@@ -81,9 +81,9 @@ export class PoolHistory {
     if (!data) {
       return null;
     }
-
     this.id = data.ID;
     this.time = moment(data.CreatedAt).format(LONG_DATE_TIME_FORMAT);
+    this.time1 = data.CreatedAt;
     this.amount = data.Amount;
     this.status = data.Status;
     this.coinId = data.TokenID;
