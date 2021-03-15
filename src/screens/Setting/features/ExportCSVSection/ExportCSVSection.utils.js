@@ -45,7 +45,7 @@ export const exportAndSaveCSVFile = (arr) => {
         rnfs
           .writeFile(path, csv, 'utf8')
           .then(() => {
-            resolve(path);
+            resolve(Platform.OS === 'android' ? `file://${path}` : path);
           })
           .catch((error) => reject(error));
       }

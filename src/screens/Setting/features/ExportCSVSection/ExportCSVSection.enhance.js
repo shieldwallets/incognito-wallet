@@ -21,7 +21,7 @@ import {
 import { getReceiveHistoryByRPCWithOutError } from '@src/services/wallet/RpcClientService';
 import { Toast } from '@src/components/core';
 import withDefaultAccount from '@components/Hoc/withDefaultAccount';
-import { Share } from 'react-native';
+import Share from 'react-native-share';
 import { compose } from 'recompose';
 import moment from 'moment';
 import formatUtil from '@src/utils/format';
@@ -520,10 +520,9 @@ const enhance = (WrappedComp) => (props) => {
         if (mergedData && mergedData.length > 0) {
           const path = await exportAndSaveCSVFile(mergedData);
           setTimeout(() => {
-            Share.share({
-              message: 'Export balance changes of the current keychain',
+            Share.open({
               url: path,
-              title: 'Report',
+              title: 'Export balance changes of the current keychain',
             });
           }, 300);
         } else {
