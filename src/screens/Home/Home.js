@@ -68,7 +68,7 @@ const Home = (props) => {
         />
       )} */}
       <DialogUpdateApp
-        visible={false}
+        visible={outdatedVersion}
         onPress={onUpdateApp}
       />
     </View>
