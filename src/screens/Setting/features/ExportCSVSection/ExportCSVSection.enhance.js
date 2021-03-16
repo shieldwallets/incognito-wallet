@@ -16,12 +16,12 @@ import {
   getHistories as getProvideHistories,
   getUserPoolData,
   getPoolConfig,
-  checkPNodeReward
+  checkPNodeReward,
 } from '@services/api/pool';
 import { getReceiveHistoryByRPCWithOutError } from '@src/services/wallet/RpcClientService';
 import { Toast } from '@src/components/core';
 import withDefaultAccount from '@components/Hoc/withDefaultAccount';
-import { Share } from 'react-native';
+import Share from 'react-native-share';
 import { compose } from 'recompose';
 import moment from 'moment';
 import formatUtil from '@src/utils/format';
@@ -35,6 +35,7 @@ import { getpTokenHistory } from '@src/services/api/history';
 import { accountSeleclor } from '@src/redux/selectors';
 import _ from 'lodash';
 import convert from '@utils/convert';
+import BigNumber from 'bignumber.js';
 
 const enhance = (WrappedComp) => (props) => {
   const { accounts, wallet } = props;
@@ -125,9 +126,10 @@ const enhance = (WrappedComp) => (props) => {
         }
       }
       return transactionHistories.map((item) => ({
-        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
-        'Received Quantity': `${item.amount /
-          Math.pow(10, item.pDecimals || 9) || ''}`,
+        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY HH:mm:ss'),
+        'Received Quantity': `${new BigNumber(item.amount || 0)
+          .dividedBy(Math.pow(10, item.pDecimals || 9))
+          .toFixed()}`,
         'Received Currency': item.symbol || '',
         'Send Quantity': '',
         'Send Currency': '',
@@ -152,14 +154,16 @@ const enhance = (WrappedComp) => (props) => {
       prvHistories =
         prvHistories && prvHistories.length > 0
           ? prvHistories.map((item) => ({
-            Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
+            Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY HH:mm:ss'),
             'Received Quantity': '',
             'Received Currency': '',
-            'Send Quantity': `${item.amountNativeToken /
-                Math.pow(10, COINS.PRV.pDecimals || 9) || ''}`,
+            'Send Quantity': `${new BigNumber(item.amountNativeToken || 0)
+              .dividedBy(Math.pow(10, COINS.PRV.pDecimals || 9))
+              .toFixed() || ''}`,
             'Send Currency': COINS.PRV.symbol || '',
-            'Fee Amount': `${item.feeNativeToken /
-                Math.pow(10, COINS.PRV.pDecimals || 9) || ''}`,
+            'Fee Amount': `${new BigNumber(item.feeNativeToken || 0)
+              .dividedBy(Math.pow(10, COINS.PRV.pDecimals || 9))
+              .toFixed() || ''}`,
             'Fee Currency': COINS.PRV.symbol || '',
             Tag: 'Send',
           }))
@@ -199,16 +203,20 @@ const enhance = (WrappedComp) => (props) => {
           histories.map((item) => {
             const sendQuantity =
               item.amountNativeToken && item.amountNativeToken !== '0'
-                ? `${item.amountNativeToken /
-                    Math.pow(10, COINS.PRV.pDecimals) || ''}`
-                : `${item.amountPToken / Math.pow(10, token?.pDecimals || 9) ||
-                    ''}`;
+                ? `${new BigNumber(item.amountNativeToken || 0)
+                  .dividedBy(Math.pow(10, COINS.PRV.pDecimals))
+                  .toFixed() || ''}`
+                : `${new BigNumber(item.amountPToken || 0)
+                  .dividedBy(Math.pow(10, token?.pDecimals || 9))
+                  .toFixed() || ''}`;
             const feeAmount =
               item.feeNativeToken && item.feeNativeToken !== '0'
-                ? `${item.feeNativeToken / Math.pow(10, COINS.PRV.pDecimals) ||
-                    ''}`
-                : `${item.feePToken / Math.pow(10, token?.pDecimals || 9) ||
-                    ''}`;
+                ? `${new BigNumber(item.feeNativeToken || 0)
+                  .dividedBy(Math.pow(10, COINS.PRV.pDecimals))
+                  .toFixed() || ''}`
+                : `${new BigNumber(item.feePToken || 0)
+                  .dividedBy(Math.pow(10, token?.pDecimals || 9))
+                  .toFixed() || ''}`;
 
             const sendCurrency =
               item.amountNativeToken && item.amountNativeToken !== '0'
@@ -219,7 +227,7 @@ const enhance = (WrappedComp) => (props) => {
                 ? COINS.PRV.symbol
                 : token?.symbol;
             return {
-              Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
+              Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY HH:mm:ss'),
               'Received Quantity': '',
               'Received Currency': '',
               'Send Quantity': sendQuantity,
@@ -292,18 +300,26 @@ const enhance = (WrappedComp) => (props) => {
           loop = false;
         }
       }
-      return transactionHistories.map((item) => ({
-        Date: moment(item.createdAt, 'DD MMM YYYY hh:mm').format(
-          'MM/DD/YYYY HH:mm:ss',
-        ),
-        'Received Quantity': convert.toNumber(item.amountReceive, true) || '',
-        'Received Currency': item.buyTokenSymbol || '',
-        'Send Quantity': convert.toNumber(item.sellAmount) || '',
-        'Send Currency': item.sellTokenSymbol || '',
-        'Fee Amount': convert.toNumber(item.networkFee) || '',
-        'Fee Currency': item.networkFeeTokenSymbol || '',
-        Tag: item.type,
-      }));
+      return transactionHistories.map((item) => {
+        const sendCurrency = new BigNumber(
+          convert.toNumber(item.sellAmount || 0, true),
+        ).toFixed();
+        return {
+          Date: moment(item.createdAt1).format('MM/DD/YYYY HH:mm:ss'),
+          'Received Quantity':
+            new BigNumber(
+              convert.toNumber(item.amountReceive || 0, true),
+            ).toFixed() || '',
+          'Received Currency': item.buyTokenSymbol || '',
+          'Send Quantity': isNaN(sendCurrency) ? '' : sendCurrency,
+          'Send Currency': item.sellTokenSymbol || '',
+          'Fee Amount':
+            new BigNumber(convert.toNumber(item.networkFee || 0, true)).toFixed() ||
+            '',
+          'Fee Currency': item.networkFeeTokenSymbol || '',
+          Tag: item.type,
+        };
+      });
     } catch (error) {
       /*Ignore error*/
     }
@@ -339,11 +355,10 @@ const enhance = (WrappedComp) => (props) => {
         }
       }
       return histories.map((item) => ({
-        Date: moment(item.time, 'DD MMM YYYY hh:mm A').format(
-          'MM/DD/YYYY HH:mm:ss',
-        ),
-        'Received Quantity': `${item.amount /
-          Math.pow(10, item.coin.pDecimals || 9) || ''}`,
+        Date: moment(item.time1).format('MM/DD/YYYY HH:mm:ss'),
+        'Received Quantity': `${new BigNumber(item.amount || 0)
+          .dividedBy(Math.pow(10, item.coin.pDecimals || 9))
+          .toFixed() || ''}`,
         'Received Currency': item.coin.symbol || '',
         'Send Quantity': '',
         'Send Currency': '',
@@ -392,10 +407,11 @@ const enhance = (WrappedComp) => (props) => {
               .map((item) => ({
                 Date: formatUtil.formatDateTime(
                   item.createdAt,
-                  'MM/DD/YYYY hh:mm:ss',
+                  'MM/DD/YYYY HH:mm:ss',
                 ),
-                'Received Quantity': `${item.incognitoAmount /
-                  Math.pow(10, COINS.PRV.pDecimals) || ''}`,
+                'Received Quantity': `${new BigNumber(item.incognitoAmount || 0)
+                  .dividedBy(Math.pow(10, COINS.PRV.pDecimals))
+                  .toFixed() || ''}`,
                 'Received Currency': token?.externalSymbol || token?.symbol,
                 'Send Quantity': '',
                 'Send Currency': '',
@@ -432,10 +448,7 @@ const enhance = (WrappedComp) => (props) => {
           })) || [];
 
         if (histories && histories.length > 0) {
-          transactionHistories = [
-            ...transactionHistories,
-            ...histories,
-          ];
+          transactionHistories = [...transactionHistories, ...histories];
           if (histories.length < LIMIT) {
             loop = false;
           }
@@ -452,23 +465,28 @@ const enhance = (WrappedComp) => (props) => {
 
   const getpNodeTransactionHistory = async () => {
     try {
-      const userHistories = await getPRVTransactionHistory(account?.paymentAddress);
+      const userHistories = await getPRVTransactionHistory(
+        account?.paymentAddress,
+      );
       const userHashIds = userHistories.map((item) => item.Hash);
       const data = await checkPNodeReward(userHashIds);
 
       const token = COINS.PRV;
       let pNodeHistories = [];
       if (data && data.length > 0) {
-        pNodeHistories = userHistories.filter(history => data.includes(history.Hash));
+        pNodeHistories = userHistories.filter((history) =>
+          data.includes(history.Hash),
+        );
         pNodeHistories = handleFilterHistoryReceiveByTokenId({
           tokenId: token?.tokenId || token?.id,
           histories: pNodeHistories,
         });
       }
       return pNodeHistories.map((item) => ({
-        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY hh:mm:ss'),
-        'Received Quantity': `${item.amount /
-          Math.pow(10, token.pDecimals || 9) || ''}`,
+        Date: formatUtil.formatDateTime(item.time, 'MM/DD/YYYY HH:mm:ss'),
+        'Received Quantity': `${new BigNumber(item.amount || 0)
+          .dividedBy(Math.pow(10, token.pDecimals || 9))
+          .toFixed() || ''}`,
         'Received Currency': token.symbol || '',
         'Send Quantity': '',
         'Send Currency': '',
@@ -487,12 +505,19 @@ const enhance = (WrappedComp) => (props) => {
       if (canWrite) {
         setLoading(true);
 
-        const [provide, shield, trade, receive, send, pNode] = await new Promise.all([
+        const [
+          provide,
+          shield,
+          trade,
+          receive,
+          send,
+          pNode,
+        ] = await new Promise.all([
           getProvideTransactionHistory(),
           getShieldAndUnShieldTransactionHistory(),
           getTradeTransactionHistory(),
           getReceivedTransactionHistory(),
-          getSendTransactionHistory(),
+          getSendTransactionHistory(), 
           getpNodeTransactionHistory(),
         ]);
 
@@ -520,10 +545,9 @@ const enhance = (WrappedComp) => (props) => {
         if (mergedData && mergedData.length > 0) {
           const path = await exportAndSaveCSVFile(mergedData);
           setTimeout(() => {
-            Share.share({
-              message: 'Export balance changes of the current keychain',
+            Share.open({
               url: path,
-              title: 'Report',
+              title: 'Export balance changes of the current keychain',
             });
           }, 300);
         } else {
