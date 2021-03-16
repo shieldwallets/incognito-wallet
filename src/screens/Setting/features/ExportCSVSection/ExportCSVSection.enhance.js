@@ -278,7 +278,7 @@ const enhance = (WrappedComp) => (props) => {
       const tokens = tokenService.mergeTokens(chainTokens, pTokens);
 
       while (loop) {
-        const newData = await getHistories(accounts, tokens, page, LIMIT);
+        const newData = await getHistories([account], tokens, page, LIMIT);
         if (newData) {
           const newIds = newData.map((item) => item.id);
           const newTransactionHistories = _(
