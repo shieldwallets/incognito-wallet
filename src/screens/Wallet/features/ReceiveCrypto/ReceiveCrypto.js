@@ -11,6 +11,7 @@ import { TouchableOpacity } from '@src/components/core';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
+import { BtnShare } from '@src/components/Button';
 import withReceiveCrypto from './ReceiveCrypto.enhance';
 
 export const homeStyle = StyleSheet.create({
@@ -39,7 +40,10 @@ const ReceiveCrypto = () => {
   if (!selectedPrivacy) return <LoadingContainer />;
   return (
     <View style={homeStyle.container}>
-      <Header title="Receive" />
+      <Header
+        title="Receive"
+        rightHeader={<BtnShare value={address} />}
+      />
       <ScrollView>
         <QrCodeGenerate
           value={address}
