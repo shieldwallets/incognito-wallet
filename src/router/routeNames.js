@@ -130,4 +130,6 @@ export default {
   RestoreAllData: 'RestoreAllData',
   
   UpdateNodeFirmware: 'UpdateNodeFirmware',
+
+  ExportCSV: 'ExportCSV',
 };

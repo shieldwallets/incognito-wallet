@@ -4,11 +4,9 @@ import AppUpdater from '@components/AppUpdater/index';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import CurrencySection from '@screens/Setting/features/CurrencySection/CurrencySection';
 import MainLayout from '@components/MainLayout/index';
 import RemoveStorage from '@screens/Setting/features/RemoveStorage/RemoveStorage';
-import Loading from '@screens/DexV2/components/Loading';
 import PINSection from './features/PINSection';
 import SeparatorSection from './features/SeparatorSection';
 import DevSection from './features/DevSection';
@@ -22,9 +20,8 @@ import withSetting from './Setting.enhance';
 import DecimalDigitsSection from './features/DecimalDigitsSection';
 import ExportCSVSection from './features/ExportCSVSection';
 
-const Setting = (props) => {
+const Setting = () => {
   const navigation = useNavigation();
-  const { loadingExportCSV, exportCSV } = props;
   const { server } = useSelector(settingSelector);
   const sectionItemFactories = [
     {
@@ -39,7 +36,7 @@ const Setting = (props) => {
   ];
 
   const handlePressExportCSV = () => {
-    exportCSV();
+    navigation?.navigate(routeNames.ExportCSV);
   };
 
   return (
@@ -61,19 +58,8 @@ const Setting = (props) => {
       <Text style={settingStyle.textVersion}>
         {`v${AppUpdater.appVersion}`}
       </Text>
-      <Loading open={loadingExportCSV} />
     </MainLayout>
   );
-};
-
-Setting.propTypes = {
-  loadingExportCSV: PropTypes.bool,
-  exportCSV: PropTypes.func,
-};
-
-Setting.defaultProps = {
-  loadingExportCSV: false,
-  exportCSV: null,
 };
 
 export default withSetting(Setting);
