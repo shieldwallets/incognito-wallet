@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { THEME } from '@src/styles';
-import {useDispatch} from 'react-redux';
-import {getSettings} from '@src/redux/actions/settings';
+import { useDispatch } from 'react-redux';
+import { getSettings } from '@src/redux/actions/settings';
+import withConnect from '@screens/Wallet/features/BridgeConnect/BridgeConnect.enhanceConnect';
 
 const styles = StyleSheet.create({
   container: {
@@ -35,4 +36,4 @@ AppScreen.propTypes = {
   children: PropTypes.any.isRequired
 };
 
-export default AppScreen;
+export default withConnect(AppScreen);

@@ -18,7 +18,8 @@ const commonPlugins = [
         '@assets':'./src/assets',
         '@components': './src/components',
         '@screens': './src/screens',
-        '@routers':'./src/router'
+        '@routers':'./src/router',
+        'crypto': 'react-native-crypto'
       }
     }
   ],

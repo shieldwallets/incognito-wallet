@@ -17,6 +17,7 @@ import streamline from '@screens/Streamline/Streamline.reducer';
 import txHistoryDetail from '@screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.reducer';
 import node from '@src/screens/Node/Node.reducer';
 import trade from '@screens/DexV2/components/Trade/TradeV2/Trade.reducer';
+import bridgeConnect from '@screens/Wallet/features/BridgeConnect/BridgeConnect.reducer';
 import wallet from './wallet';
 import account from './account';
 import server from './server';
@@ -60,6 +61,7 @@ const rootReducer = reduceReducers(
     node,
     masterKey,
     trade,
+    bridgeConnect,
   }),
   globalReducer,
 );
