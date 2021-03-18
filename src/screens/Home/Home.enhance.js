@@ -5,8 +5,8 @@ import { withNavigation } from 'react-navigation';
 import Modal, { actionToggleModal } from '@src/components/Modal';
 import withFCM from '@src/screens/Notification/Notification.withFCM';
 import withWallet from '@screens/Wallet/features/Home/Wallet.enhance';
-import { useSelector, useDispatch, connect } from 'react-redux';
-import { useFocusEffect } from 'react-navigation-hooks';
+import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect, useNavigation } from 'react-navigation-hooks';
 import APIService from '@src/services/api/miner/APIService';
 import { accountSeleclor } from '@src/redux/selectors';
 import { ExHandler } from '@src/services/exception';
@@ -29,6 +29,8 @@ import { loadAllMasterKeyAccounts } from '@src/redux/actions/masterKey';
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
 import { configRPC } from '@services/wallet/WalletService';
 import withPin from '@components/pin.enhance';
+import { addBalanceListener } from '@services/wallet/accountService';
+import routeNames from '@routers/routeNames';
 import { homeSelector } from './Home.selector';
 import { actionFetch as actionFetchHomeConfigs } from './Home.actions';
 import Airdrop from './features/Airdrop';
@@ -49,6 +51,7 @@ const enhance = (WrappedComp) => (props) => {
   );
   const masterKeys = useSelector(masterKeysSelector);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const getHomeConfiguration = async () => {
     try {
@@ -98,6 +101,22 @@ const enhance = (WrappedComp) => (props) => {
   React.useEffect(() => {
     getFollowingToken(false);
   }, []);
+
+  React.useEffect(() => {
+    if (defaultAccount) {
+      addBalanceListener((account) => {
+        if (defaultAccount.PrivateKey === account.PrivateKey) {
+          if (account.isHavingVersion1UnspentCoin()) {
+            navigation.navigate(routeNames.UpgradeV1Coins);
+          }
+        }
+      });
+    }
+
+    return () => {
+      addBalanceListener(null);
+    };
+  }, [defaultAccount]);
 
   React.useEffect(() => {
     fetchData();

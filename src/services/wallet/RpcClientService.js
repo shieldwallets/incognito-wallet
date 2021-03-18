@@ -1,8 +1,4 @@
-import Axios from 'axios';
 import {
-  getEstimateFee,
-  getEstimateFeeForPToken as getEstimateFeeForPTokenService,
-  getMaxWithdrawAmount,
   RpcClient,
   Wallet,
 } from 'incognito-chain-web-js/build/wallet';
@@ -41,103 +37,6 @@ export function setRpcClient(server, username, password) {
   Wallet.RpcClient = new RpcClient(server, username, password);
 }
 
-export function listCustomTokens() {
-  return getRpcClient().listCustomTokens();
-}
-
-export function listPrivacyTokens() {
-  return getRpcClient().listPrivacyCustomTokens();
-}
-
-/**
- *
- * @param {string} from Incognito Address
- * @param {string} to Incognito Address
- * @param {number} amount nano unit
- * @param {object} accountWallet get from WalletService.getAccountByName(accountName);
- *
- * Estimate fee for sending native token (PRV), fee is returned in PRV nano unit
- */
-export async function getEstimateFeeForNativeToken(
-  from,
-  to,
-  amount,
-  accountWallet,
-) {
-  console.log('Estimating fee ...');
-  let fee;
-  const isPrivacyForNativeToken = true;
-  const isPrivacyForPrivateToken = false;
-  try {
-    fee = await getEstimateFee(
-      from,
-      to,
-      amount,
-      accountWallet,
-      isPrivacyForNativeToken,
-      isPrivacyForPrivateToken,
-      getRpcClient(),
-    );
-  } catch (e) {
-    throw e;
-  }
-  return fee;
-}
-
-/**
- *
- * @param {string} from
- * @param {string} to
- * @param {number} amount in nano
- * @param {object} tokenObject
- * @param {object} account get from WalletService.getAccountByName(accountName);
- * @param {number} feeToken  in nano
- * @param {bool} isGetTokenFee default `false`
- *
- * Estimate fee for sending PRIVATE_TOKEN (pETH, pBTC, Incognito Custom Tokens,...) in
- * - nano PRV if `isGetTokenFee` is `false` (default)
- * - nano PRIVATE_TOKEN if `isGetTokenFee` is `true`
- *
- * tokenObject format
- * @param {bool} Privacy
- * @param {string} TokenID
- * @param {string} TokenName
- * @param {string} TokenSymbol
- * @param {string} TokenTxType see here CONSTANT_COMMONS.TOKEN_TX_TYPE
- * @param {string} TokenAmount in nano
- * @param {string} TokenReceivers  { PaymentAddress: string, Amount: number in nano }
- */
-export async function getEstimateFeeForPToken(
-  from,
-  to,
-  amount,
-  tokenObject,
-  account,
-  isGetTokenFee = false,
-) {
-  let fee;
-  const isPrivacyForNativeToken = false;
-  const isPrivacyForPrivateToken = true;
-  const feeToken = 0;
-  try {
-    fee = await getEstimateFeeForPTokenService(
-      from,
-      to,
-      amount,
-      tokenObject,
-      account,
-      getRpcClient(),
-      isPrivacyForNativeToken,
-      isPrivacyForPrivateToken,
-      feeToken,
-      isGetTokenFee,
-    );
-  } catch (e) {
-    throw e;
-  }
-  return fee;
-}
-
 export async function getStakingAmount(type) {
   let resp;
   try {
@@ -146,85 +45,6 @@ export async function getStakingAmount(type) {
     throw e;
   }
   return resp.res;
-}
-
-export async function getActiveShard() {
-  let resp;
-  try {
-    resp = await getRpcClient().getActiveShard();
-  } catch (e) {
-    throw e;
-  }
-
-  return resp.shardNumber;
-}
-
-export async function getMaxShardNumber() {
-  let resp;
-  try {
-    resp = await getRpcClient().getMaxShardNumber();
-  } catch (e) {
-    throw e;
-  }
-
-  return resp.shardNumber;
-}
-
-export async function hashToIdenticon(hashStrs) {
-  let resp;
-  try {
-    resp = await getRpcClient().hashToIdenticon(hashStrs);
-  } catch (e) {
-    throw e;
-  }
-
-  return resp.images;
-}
-
-/**
- *
- * @param {string} from
- * @param {string} to
- * @param {object} tokenObject
- * @param {object} account get from wallet.getAccountByName(account?.name)
- * @param {bool} isPrivacyForPrivateToken for centralized = true, decentralized = false
- *
- * tokenObject = {
-      Privacy: bool,
-      TokenID: string,
-      TokenName: string,
-      TokenSymbol: string,
-      TokenTxType: from CONSTANT_COMMONS.TOKEN_TX_TYPE,
-      TokenAmount: amount in nano,
-      TokenReceivers: {
-        PaymentAddress: string,
-        Amount: amount in nano
-      }
-    }
- */
-export async function getMaxWithdrawAmountService(
-  from,
-  to,
-  tokenObject,
-  account,
-  isPrivacyForPrivateToken,
-) {
-  let response;
-  const isPrivacyForNativeToken = false;
-  try {
-    response = await getMaxWithdrawAmount(
-      from,
-      to,
-      tokenObject,
-      account,
-      getRpcClient(),
-      isPrivacyForNativeToken,
-      isPrivacyForPrivateToken,
-    );
-  } catch (e) {
-    throw e;
-  }
-  return response;
 }
 
 export function isExchangeRatePToken(tokenID) {
@@ -336,7 +156,17 @@ export const getReceiveHistoryByRPC = async ({
   } else if (response.data.Error) {
     throw response.data.Error;
   }
-  return response.data.Result?.ReceivedTransactions;
+  const txs = response.data.Result?.ReceivedTransactions;
+  const simpleTxs = txs.map(item => ({
+    InputSerialNumbers: item.InputSerialNumbers,
+    Hash: item.TxDetail.Hash,
+    LockTime: item.TxDetail.LockTime,
+    ReceivedAmounts: item.ReceivedAmounts,
+    Metadata: item.TxDetail.Metadata,
+
+  }));
+
+  return simpleTxs;
 };
 
 export const getTxTransactionByHash = async (txId) => {

@@ -1,8 +1,8 @@
-const { AccountWallet, KeyWallet } = require('incognito-chain-web-js/build/wallet');
+const { AccountWallet, base58CheckDeserialize } = require('incognito-chain-web-js/build/wallet');
 
 function isPaymentAddress(paymentAddrStr) {
   try {
-    const key = KeyWallet.base58CheckDeserialize(paymentAddrStr);
+    const key = base58CheckDeserialize(paymentAddrStr);
     const paymentAddressObj = key.KeySet.PaymentAddress || {};
     if (paymentAddressObj.Pk.length === 32 && paymentAddressObj.Tk.length === 32) {
       return true;
@@ -25,7 +25,7 @@ class Validator {
   }
 
   _throwError(message) {
-    throw new Error(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);  
+    throw new Error(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);
   }
 
   _isDefined() {
@@ -56,15 +56,15 @@ class Validator {
   boolean(message = 'Must be boolean') {
     return this._onCondition(() => typeof this.value === 'boolean', message);
   }
-  
+
   number(message = 'Must be number') {
     return this._onCondition(() => Number.isFinite(this.value) && this.value > 0, message);
   }
-  
+
   intergerNumber(message = 'Must be an interger number') {
     return this._onCondition(() => Number.isInteger(this.value) && this.value > 0, message);
   }
-  
+
   paymentAddress(message = 'Invalid payment address') {
     return this._onCondition(() => isPaymentAddress(this.value), message);
   }
@@ -74,15 +74,15 @@ class Validator {
   }
 
   /**
-   * 
+   *
    * Check "PrivateKey" is existed is enough for now
    */
   accountWallet(message = 'Invalid account wallet') {
     return this._onCondition(() => this.value instanceof AccountWallet, message);
   }
-  
+
   /**
-   * 
+   *
    * @param {number} value amount in nano (must be an integer number)
    * @param {string} message error message
    */

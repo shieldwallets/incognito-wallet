@@ -128,6 +128,8 @@ export default {
   ManageStorage: 'ManageStorage',
   BackUpAllData: 'BackUpAllData',
   RestoreAllData: 'RestoreAllData',
-  
+
   UpdateNodeFirmware: 'UpdateNodeFirmware',
+
+  UpgradeV1Coins: 'UpgradeV1Coins',
 };

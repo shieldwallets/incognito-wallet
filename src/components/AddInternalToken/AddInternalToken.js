@@ -18,7 +18,6 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withNavigation } from 'react-navigation';
 import { CONSTANT_COMMONS } from '@src/constants';
-import { getEstimateFeeForPToken } from '@src/services/wallet/RpcClientService';
 import { addTokenInfo } from '@src/services/api/token';
 import Token from '@src/services/wallet/tokenService';
 import formatUtil from '@src/utils/format';
@@ -75,42 +74,6 @@ class AddInternalToken extends Component {
         e,
         'Your coin logo has been not saved yet, but you can update it again in Coin Detail screen.',
       ).showWarningToast();
-    }
-  };
-
-  // estimate fee when user update isPrivacy or amount, and toAddress is not null
-  handleEstimateFee = async (values) => {
-    const { account, wallet } = this.props;
-
-    const { fromAddress, toAddress, name, symbol, amount } = values;
-
-    const tokenObject = {
-      Privacy: true,
-      TokenID: '',
-      TokenName: name,
-      TokenSymbol: symbol,
-      TokenTxType: CONSTANT_COMMONS.TOKEN_TX_TYPE.INIT,
-      TokenAmount: Number(amount),
-      TokenReceivers: {
-        PaymentAddress: toAddress,
-        Amount: Number(amount),
-      },
-    };
-
-    const accountWallet = wallet.getAccountByName(account.name);
-    try {
-      const fee = await getEstimateFeeForPToken(
-        fromAddress,
-        toAddress,
-        Number(amount),
-        tokenObject,
-        accountWallet,
-      );
-
-      // update fee
-      this.setState({ fee: Number(fee * 2) || 50 });
-    } catch (e) {
-      new ExHandler(e).showErrorToast(true);
     }
   };
 
@@ -190,38 +153,6 @@ class AddInternalToken extends Component {
     } finally {
       this.setState({ isCreatingOrSending: false });
     }
-  };
-
-  handleShouldGetFee = async () => {
-    const { account, isFormValid, name, symbol, amount } = this.props;
-    const { PaymentAddress: paymentAddress } = account;
-
-    if (!isFormValid || !paymentAddress) {
-      return;
-    }
-
-    if (amount && paymentAddress && name && symbol) {
-      this.handleEstimateFee({
-        name,
-        symbol,
-        amount,
-        toAddress: paymentAddress,
-        fromAddress: paymentAddress,
-      });
-    }
-  };
-
-  renderBalance = () => {
-    const { account } = this.props;
-
-    return (
-      <Text style={styleSheet.balance}>
-        {` Balance: ${formatUtil.amount(
-          account.value,
-          CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY,
-        )} ${CONSTANT_COMMONS.CRYPTO_SYMBOL.PRV}`}
-      </Text>
-    );
   };
 
   render() {
@@ -385,23 +316,12 @@ class AddInternalToken extends Component {
   }
 }
 
-AddInternalToken.defaultProps = {
-  isFormValid: false,
-  name: null,
-  symbol: null,
-  amount: null,
-};
-
 AddInternalToken.propTypes = {
   navigation: PropTypes.object.isRequired,
   wallet: PropTypes.object.isRequired,
   account: PropTypes.object.isRequired,
   rfChange: PropTypes.func.isRequired,
   setWallet: PropTypes.func.isRequired,
-  isFormValid: PropTypes.bool,
-  name: PropTypes.string,
-  symbol: PropTypes.string,
-  amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   getInternalTokenList: PropTypes.func.isRequired,
 };
 

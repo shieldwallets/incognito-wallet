@@ -53,8 +53,7 @@ class AddStakeContainer extends BaseScreen {
   }
 
   async getStakeAmount() {
-    const amount = await getStakingAmount(stakeType);
-    this.setState({ amount });
+    this.setState({ amount: 1750e9 });
   }
 
   async getBalance() {

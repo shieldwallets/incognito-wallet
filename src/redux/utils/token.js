@@ -4,7 +4,6 @@ import { getpTokenHistory } from '@src/services/api/history';
 import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
 import { loadHistoryByAccount } from '@src/services/wallet/WalletService';
 import { getFeeFromTxHistory } from '@src/screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.utils';
-import moment from 'moment';
 import { endsWith, isEmpty } from 'lodash';
 
 export const normalizeHistoriesFromApi = ({
@@ -300,8 +299,7 @@ export const handleFilterHistoryReceiveByTokenId = ({ tokenId, histories }) => {
     result = result
       .filter((history) => {
         const receivedAmounts = history?.ReceivedAmounts;
-        const isTokenExisted = Object.keys(receivedAmounts)?.includes(tokenId);
-        return isTokenExisted;
+        return Object.keys(receivedAmounts)?.includes(tokenId);
       })
       .map((history) => {
         const receivedAmounts = history?.ReceivedAmounts;
@@ -334,7 +332,6 @@ export const handleFilterHistoryReceiveByTokenId = ({ tokenId, histories }) => {
           tokenId,
           serialNumbers,
           metaData,
-          privacyCustomTokenProofDetail: history?.PrivacyCustomTokenProofDetail,
           isMintedToken: !hasInputs && !!hasOutputs,
         };
       });

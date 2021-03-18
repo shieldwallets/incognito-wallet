@@ -244,7 +244,7 @@ const syncUnlinkWithNewMasterKey = (newMasterKey) => async (dispatch, getState) 
   const wallet = newMasterKey.wallet;
 
   for (const account of accounts) {
-    const findItemWithKey = (item) => item.getPrivateKey() === account.PrivateKey;
+    const findItemWithKey = (item) => item.PrivateKey === account.PrivateKey;
 
     const isCreated = await wallet.hasCreatedAccount(account.PrivateKey);
     if (isCreated) {

@@ -28,7 +28,6 @@ export default class Token {
     account,
     wallet,
     paymentInfo,
-    feePToken = 0,
     info = '',
     actionLogEvent = null,
     txHandler,
@@ -84,8 +83,7 @@ export default class Token {
         ? actionLogEvent({
           desc: `create send 
             \n_submitParam: ${JSON.stringify(_submitParam)},
-            \nfeeNativeToken: ${feeNativeToken},
-            \nfeePToken: ${feePToken},
+            \nfeeNativeToken: ${feeNativeToken},           
             \npaymentInfos: ${JSON.stringify(paymentInfos)},
             \ninfo: ${info}
             \nhasPrivacyForNativeToken: ${hasPrivacyForNativeToken},
@@ -100,12 +98,7 @@ export default class Token {
         paymentInfos,
         _submitParam,
         feeNativeToken,
-        feePToken,
-        hasPrivacyForNativeToken,
-        hasPrivacyForPToken,
         strInfo,
-        false,
-        false,
         txHandler,
       );
 
@@ -136,21 +129,19 @@ export default class Token {
     let indexAccount = wallet.getAccountIndexByName(
       account.name || account.AccountName,
     );
-    // prepare param for create and send privacy custom token
-    // payment info
-    // @@ Note: it is use for receivers constant
-    // let paymentInfos = [];
-    //   paymentInfos[0] = {
-    //     paymentAddressStr: submitParam.TokenReceivers.PaymentAddress,
-    //     amount: 100
-    //   };
+
+    const newPaymentInfos = [...paymentInfos].map(item => ({
+      PaymentAddress: item.paymentAddressStr,
+      Amount: item.amount,
+      Message: item.message || '',
+    }));
 
     let response;
     try {
       response = await wallet.MasterAccount.child[
         indexAccount
       ].createAndSendBurningRequestTx(
-        paymentInfos,
+        newPaymentInfos,
         submitParam,
         feeNativeToken,
         feePToken,
@@ -243,9 +234,7 @@ export default class Token {
       if (!token?.id) {
         throw new Error('Token is required');
       }
-      await updateStatusHistory(wallet).catch(() =>
-        console.warn('History statuses were not updated'),
-      );
+      await updateStatusHistory(wallet);
       const accountWallet = wallet.getAccountByName(account.name);
       let histories = [];
       histories = await accountWallet.getPrivacyTokenTxHistoryByTokenID(

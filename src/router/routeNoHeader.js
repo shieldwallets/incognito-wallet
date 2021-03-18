@@ -79,6 +79,7 @@ import ManageStorage from '@screens/ManageStorage';
 import BackUpAllData from '@screens/BackUpAllData';
 import RestoreAll from '@screens/RestoreAllData';
 import UpdateFirmware from '@screens/Node/UpdateFirmware';
+import UpgradeCoins from '@screens/UpgradeCoins/UpgradeCoins';
 
 const masterKeyRoutes = [
   {
@@ -409,6 +410,10 @@ const routes = [
     screen: UpdateFirmware,
     name: routeNames.UpdateNodeFirmware,
   },
+  {
+    screen: UpgradeCoins,
+    name: routeNames.UpgradeV1Coins,
+  }
 ];
 
 export const getRoutesNoHeader = () =>

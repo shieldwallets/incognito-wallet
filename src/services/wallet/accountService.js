@@ -5,9 +5,9 @@ import tokenModel from '@src/models/token';
 import storage from '@src/services/storage';
 import {
   AccountWallet,
-  KeyWallet,
   Wallet,
   constants,
+  base58CheckDeserialize,
 } from 'incognito-chain-web-js/build/wallet';
 import _ from 'lodash';
 import { STACK_TRACE } from '@services/exception/customError/code/webjsCode';
@@ -26,6 +26,10 @@ import {
 
 const TAG = 'Account';
 
+let balanceListener;
+
+const pendingBalanceGetters = {};
+
 export const getBalanceNoCache = (
   indexAccount,
   wallet,
@@ -40,6 +44,13 @@ export const getBalanceNoCache = (
 
   if (Object.keys(account.derivatorToSerialNumberCache).length < 10000) {
     await account.saveAccountCached(wallet.storage, `${wallet.Name}-${account.name}-cached`);
+  }
+
+  if (balanceListener) {
+    // Only trigger balance listener when other balance getters is completed
+    if (Object.keys(pendingBalanceGetters).length === 1) {
+      await balanceListener(account);
+    }
   }
 
   return balance;
@@ -74,6 +85,10 @@ const hasSpendingCoins = async (indexAccount, wallet, amount, tokenId) => {
     .resultInputCoins;
 
   return getPendingHistory(histories, spendingCoins);
+};
+
+export const addBalanceListener = (listener) => {
+  balanceListener = listener;
 };
 
 export default class Account {
@@ -130,10 +145,6 @@ export default class Account {
     info = '',
     txHandler,
   ) {
-    console.log('Wallet.ProgressTx: ', Wallet.ProgressTx);
-    // paymentInfos: payment address string, amount in Number (miliconstant)
-    // await Wallet.resetProgressTx();
-    // console.log('Wallet.ProgressTx: ', Wallet.ProgressTx);
     const indexAccount = wallet.getAccountIndexByName(
       account.name || account.AccountName,
     );
@@ -142,13 +153,20 @@ export default class Account {
 
     const infoStr = typeof info !== 'string' ? JSON.stringify(info) : info;
 
+    const newPaymentInfos = [...paymentInfos].map(item => ({
+      PaymentAddress: item.paymentAddressStr,
+      Amount: item.amount,
+      Message: item.message || '',
+    }));
+
     result = await wallet.MasterAccount.child[
       indexAccount
-    ].createAndSendNativeToken(paymentInfos, fee, isPrivacy, infoStr, false, txHandler);
-
-    console.log(
-      'Spendingcoin after sendConstant: ',
-      wallet.MasterAccount.child[indexAccount].spendingCoins,
+    ].createAndSendNativeToken(
+      newPaymentInfos,
+      fee,
+      infoStr,
+      null,
+      txHandler,
     );
 
     // save wallet
@@ -213,12 +231,18 @@ export default class Account {
       TokenReceivers: receivers,
     };
 
+    const newPaymentInfos = [...paymentInfos].map(item => ({
+      PaymentAddress: item.paymentAddressStr,
+      Amount: item.amount,
+      Message: item.message || '',
+    }));
+
     return tokenService.createSendPToken(
       tokenObject,
       nativeFee,
       account,
       wallet,
-      paymentInfos,
+      newPaymentInfos,
       tokenFee,
       memo,
       null,
@@ -359,7 +383,7 @@ export default class Account {
 
   static checkPaymentAddress(paymentAddrStr) {
     try {
-      const key = KeyWallet.base58CheckDeserialize(paymentAddrStr);
+      const key = base58CheckDeserialize(paymentAddrStr);
       const paymentAddressObj = key?.KeySet?.PaymentAddress || {};
       if (
         paymentAddressObj.Pk?.length === 32 &&
@@ -376,7 +400,7 @@ export default class Account {
 
   static validatePrivateKey(privateKey) {
     try {
-      const keyWallet = KeyWallet.base58CheckDeserialize(privateKey);
+      const keyWallet = base58CheckDeserialize(privateKey);
       return !!keyWallet;
     } catch (e) {
       return false;
@@ -398,10 +422,16 @@ export default class Account {
       this.getAccountName(account),
     );
 
-    return await cachePromise(
+    pendingBalanceGetters[key] = true;
+
+    const balance = await cachePromise(
       key,
       getBalanceNoCache(indexAccount, wallet, tokenId),
     );
+
+    delete pendingBalanceGetters[key];
+
+    return balance;
   }
 
   static parseShard(account) {

@@ -105,12 +105,15 @@ export function deleteWallet(wallet) {
 
 export async function loadHistoryByAccount(wallet, accountName) {
   wallet.Storage = storage;
-  await updateStatusHistory(wallet).catch(() => console.warn('History statuses were not updated'));
+  await updateStatusHistory(wallet);
   return (await wallet.getHistoryByAccount(accountName)) || [];
 }
 
 export async function updateStatusHistory(wallet) {
-  await wallet.updateStatusHistory();
+  await wallet.updateStatusHistory()
+    .catch((e) =>
+      console.warn('History statuses were not updated', e),
+    );
   await saveWallet(wallet);
   // wallet.save(await getPassphrase());
 }
