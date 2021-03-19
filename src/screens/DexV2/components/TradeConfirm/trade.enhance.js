@@ -4,9 +4,6 @@ import { PRV } from '@services/wallet/tokenService';
 import { COINS, CONSTANT_COMMONS } from '@src/constants';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
-import { deposit as depositAPI, trade as tradeAPI, tradePKyber as TradeKyberAPI } from '@services/api/pdefi';
-import { MAX_PDEX_TRADE_STEPS } from '@screens/DexV2/constants';
-import convertUtil from '@utils/convert';
 import { DEFI_TRADING_FEE, MAX_FEE_PER_TX } from '@components/EstimateFee/EstimateFee.utils';
 import { TradeHistory } from '@models/dexHistory';
 import { useDispatch } from 'react-redux';
@@ -34,26 +31,11 @@ const withTrade = WrappedComp => (props) => {
     onTradeSuccess,
     wallet,
     account,
-    isErc20,
-    quote,
   } = props;
-
-
-  const deposit = () => {
-    return depositAPI({
-      tokenId: inputToken.id,
-      amount: inputValue,
-      networkFee: fee / MAX_PDEX_TRADE_STEPS * (MAX_PDEX_TRADE_STEPS - 1) + (isErc20 ? DEFI_TRADING_FEE : 0),
-      networkFeeTokenId: feeToken.id,
-      receiverAddress: account.PaymentAddress,
-    });
-  };
 
   const trade = async () => {
     let prvFee = 0;
     let tokenFee = 0;
-    let spendingPRV = false;
-    let spendingCoin = false;
     if (trading) {
       return;
     }
@@ -74,7 +56,9 @@ const withTrade = WrappedComp => (props) => {
         return setError(MESSAGES.NOT_ENOUGH_BALANCE_TO_TRADE(inputToken.symbol));
       }
 
-      if (prvBalance < prvFee + (isErc20 ? DEFI_TRADING_FEE : 0)) {
+      console.debug('PRV BALANCE', prvBalance, prvFee);
+
+      if (prvBalance < prvFee) {
         return setError(MESSAGES.NOT_ENOUGH_PRV_NETWORK_FEE);
       }
 
@@ -92,7 +76,7 @@ const withTrade = WrappedComp => (props) => {
         if (result && result.txId) {
           onTradeSuccess(true);
 
-          onAddHistory(new TradeHistory(result, inputToken, outputToken, inputValue, outputValue, MAX_FEE_PER_TX, 'PRV', 0));
+          onAddHistory(new TradeHistory(result, inputToken, outputToken, inputValue, outputValue, MAX_FEE_PER_TX, 'PRV', minimumAmount));
         }
       } else {
         const tokenObject = {
@@ -117,8 +101,9 @@ const withTrade = WrappedComp => (props) => {
 
         if (result && result.txId) {
           onTradeSuccess(true);
-
-          onAddHistory(new TradeHistory(result, inputToken, outputToken, inputValue, outputValue, MAX_FEE_PER_TX, outputToken.symbol, 0));
+          const newHistory = new TradeHistory(result, inputToken, outputToken, inputValue, minimumAmount, MAX_FEE_PER_TX, outputToken.symbol, 0);
+          console.debug('NEW HISTORY');
+          onAddHistory(newHistory);
         }
       }
     } catch (error) {
@@ -126,19 +111,6 @@ const withTrade = WrappedComp => (props) => {
     } finally {
       setTrading(false);
     }
-  };
-
-  const tradeKyber = async (depositId) => {
-    const originalValue = convertUtil.toDecimals(inputValue, inputToken);
-    const data = {
-      sellTokenAddress: inputToken.address,
-      sellAmount: originalValue,
-      buyTokenAddress: outputToken.address,
-      expectAmount: quote.expectedRate?.toFixed(0),
-      depositId: depositId,
-    };
-
-    await TradeKyberAPI(data);
   };
 
   return (

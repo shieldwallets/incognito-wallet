@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { Image, TouchableOpacity, View, RoundCornerButton, Text, RefreshControl, ScrollView } from '@components/core';
 import withFilter from '@screens/DexV2/components/Trade/filter.enhance';
+import {Divider} from 'react-native-elements';
 import downArrow from '@assets/images/icons/circle_arrow_down.png';
 import withSwap from '@screens/DexV2/components/Trade/swap.enhance';
 import Balance from '@screens/DexV2/components/Balance';
@@ -14,13 +15,13 @@ import withChangeInputToken from '@screens/DexV2/components/Trade/inputToken.enh
 import { useNavigation } from 'react-navigation-hooks';
 import ROUTE_NAMES from '@routers/routeNames';
 import withWarning from '@screens/DexV2/components/Trade/warning.enhance';
-import withParams from '@screens/DexV2/components/Trade/params.enhance';
+import withHistories from '@screens/DexV2/components/histories.enhance';
 import withAccount from '@screens/DexV2/components/account.enhance';
 import withERC20 from '@screens/DexV2/components/Trade/with.erc20';
 import PoolSize from '@screens/DexV2/components/PoolSize';
-import Powered from '@screens/DexV2/components/Powered';
 import { ArrowRightGreyIcon } from '@components/Icons';
-import withOldHistories from '@screens/DexV2/components/oldHistories.enhance';
+import Input from '@screens/DexV2/components/NewInput/Input';
+import withMin from '@screens/DexV2/components/Trade/min.enhance';
 import NewInput from '../NewInput';
 import withPair from './pair.enhance';
 import withChangeInput  from './input.enhance';
@@ -52,7 +53,7 @@ const Trade = ({
   feeToken,
   pair,
 
-  oldHistories,
+  histories,
 
   error,
   warning,
@@ -63,9 +64,14 @@ const Trade = ({
 
   isLoading,
   onLoadPairs,
+  inputBalanceText,
+  extra,
+  min,
+  onChangeMin,
 }) => {
   const navigation = useNavigation();
   const navigateTradeConfirm = () => {
+    console.debug('PRV', prvBalance);
     navigation.navigate(ROUTE_NAMES.TradeConfirm, {
       inputToken,
       inputValue,
@@ -111,12 +117,15 @@ const Trade = ({
             disabled={inputBalance === null}
             loading={inputBalance === null}
             placeholder="0"
+            maxValue={inputBalanceText}
           />
           <Text style={styles.error}>{error}</Text>
           <View style={styles.arrowWrapper}>
+            <Divider style={styles.divider} />
             <TouchableOpacity onPress={onSwapTokens}>
               <Image source={downArrow} style={styles.arrow} />
             </TouchableOpacity>
+            <Divider style={styles.divider} />
           </View>
           <NewInput
             tokens={outputList}
@@ -125,6 +134,17 @@ const Trade = ({
             value={outputText}
             disabled={inputBalance === null}
             loading={gettingQuote}
+          />
+          <ExtraInfo
+            left={(
+              <View style={{ width: 300 }}>
+                <Input
+                  onChange={onChangeMin}
+                  value={min}
+                />
+              </View>
+            )}
+            right="%"
           />
           <RoundCornerButton
             style={styles.button}
@@ -152,15 +172,20 @@ const Trade = ({
                 outputToken={outputToken}
                 quote={quote}
               />
+              <ExtraInfo left="500 USDT TO USDC" right={extra.usdtToUsdc} />
+              <ExtraInfo left="500 USDC TO USDT" right={extra.usdcToUsdt} />
+              <ExtraInfo left="500 USDT TO DAI" right={extra.usdtToDai} />
+              <ExtraInfo left="500 USDC to DAI" right={extra.usdcToDai} />
+              <ExtraInfo left="1 PRV TO USDC" right={extra.prvToUsdc} />
+              <ExtraInfo left="1 PRV TO USDT" right={extra.prvToUsdt} />
               {!!(!isErc20 && pair) && <PoolSize outputToken={outputToken} inputToken={inputToken} pair={pair} />}
-              <Powered network={isErc20 ? 'Kyber' : 'Incognito'} />
               <ExtraInfo left={warning} right="" style={styles.warning} />
             </View>
           )}
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        {!!oldHistories.length && (
+        {!!histories.length && (
           <TouchableOpacity onPress={navigateHistory} style={styles.bottomFloatBtn}>
             <Text style={styles.bottomText}>Order history</Text>
             <ArrowRightGreyIcon style={{ marginLeft: 10 }} />
@@ -193,7 +218,10 @@ Trade.propTypes = {
 
   fee: PropTypes.number.isRequired,
   feeToken: PropTypes.object.isRequired,
-  pair: PropTypes.object,
+  pair: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.array,
+  ]),
 
   histories: PropTypes.array,
 
@@ -203,11 +231,13 @@ Trade.propTypes = {
   gettingQuote: PropTypes.bool,
   quote: PropTypes.object,
   isErc20: PropTypes.bool,
+  inputBalanceText: PropTypes.string,
 };
 
 export default compose(
+  withMin,
   withAccount,
-  withOldHistories,
+  withHistories,
   withChangeInputToken,
   withFilter,
   withERC20,
@@ -219,7 +249,6 @@ export default compose(
   withCalculateOutput,
   withValidate,
   withWarning,
-  withParams,
 )(Trade);
 
 Trade.defaultProps = {
@@ -240,4 +269,5 @@ Trade.defaultProps = {
   gettingQuote: false,
   quote: null,
   isErc20: false,
+  inputBalanceText: '',
 };

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, Modal, Toast } from '@src/components/core';
-import QRCodeScanner from 'react-native-qrcode-scanner';
 import styles from './style';
 
 let Com;
@@ -60,19 +59,6 @@ class QrScanner extends Component {
       >
         <View style={styles.container}>
           <View>
-            {
-              open && (
-                <QRCodeScanner
-                  showMarker
-                  onRead={this.handleSuccess}
-                  notAuthorizedView={NotAuthorizedView}
-                  cameraStyle={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-              )
-            }
           </View>
         </View>
       </Modal>

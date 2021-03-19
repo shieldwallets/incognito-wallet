@@ -18,6 +18,7 @@ class Dex extends React.Component {
       pairs,
       loading,
       onLoadPairs,
+      extra,
     } = this.props;
 
     return (
@@ -27,6 +28,7 @@ class Dex extends React.Component {
         pairTokens={pairTokens}
         isLoading={loading}
         onLoadPairs={onLoadPairs}
+        extra={extra}
       />
     );
   }

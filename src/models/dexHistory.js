@@ -9,7 +9,7 @@ function parseHistory(history, historyObject) {
 }
 
 export class TradeHistory {
-  constructor(res, inputToken, outputToken, inputValue, outputValue, networkFee, networkFeeUnit, tradingFee, stopPrice) {
+  constructor(res, inputToken, outputToken, inputValue, outputValue, networkFee, networkFeeUnit, stopPrice) {
     if (!res) {
       return;
     }
@@ -25,9 +25,7 @@ export class TradeHistory {
     this.type = MESSAGES.TRADE;
     this.networkFee = formatUtil.amountFull(networkFee, networkFeeUnit === inputToken.symbol ? inputToken.pDecimals : PRV.pDecimals);
     this.networkFeeUnit = networkFeeUnit;
-    this.tradingFee = formatUtil.amountFull(tradingFee, inputToken.pDecimals);
-    this.stopPrice = formatUtil.amountFull(stopPrice, outputToken.pDecimals);
-    this.updatedAt = Math.floor(new Date().getTime() / 1000);
+    this.minimumAmount = formatUtil.amountFull(stopPrice, outputToken.pDecimals);
   }
 
   static load(historyObject) {

@@ -27,8 +27,8 @@
 		20B559AF22C393B10079FC06 /* Gomobile.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B559AE22C393B10079FC06 /* Gomobile.m */; };
 		3B50FECFE455494A8373E5A6 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ECBE1563D1B5449E86A7658F /* libRNVectorIcons.a */; };
 		712C447B244313E700A3CBA6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 712C447A244313E700A3CBA6 /* GoogleService-Info.plist */; };
-		7144D81C24373E68005224F2 /* Gomobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7144D81B24373E68005224F2 /* Gomobile.framework */; };
 		71ACEF372477D8CE003AE3E3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 71ACEF362477D8CE003AE3E3 /* Images.xcassets */; };
+		71F360FC2580813F00F86420 /* Gomobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71F360FB2580813F00F86420 /* Gomobile.framework */; };
 		82E467C899D04A02A0589EB9 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB08C251E22B438096EA6169 /* libRNGestureHandler.a */; };
 		A23A5B4BF797429292519AC6 /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D828B2179CD4981AB6E75EE /* libRNCAsyncStorage.a */; };
 		C944FB71546FC63E3C584A22 /* libPods-Incognito.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E3C9B022E86A08BD344C7392 /* libPods-Incognito.a */; };
@@ -115,8 +115,8 @@
 		6AEC11E5EF9842079A2776CF /* SF-Pro-Display-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-MediumItalic.otf"; path = "../src/assets/fonts/SF-Pro-Display-MediumItalic.otf"; sourceTree = "<group>"; };
 		712C447A244313E700A3CBA6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7139BB1E57B94AE2A6C8F4AF /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		7144D81B24373E68005224F2 /* Gomobile.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gomobile.framework; sourceTree = "<group>"; };
 		71ACEF362477D8CE003AE3E3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		71F360FB2580813F00F86420 /* Gomobile.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Gomobile.framework; sourceTree = "<group>"; };
 		728920B4B46C4A338855AD52 /* SF-Pro-Display-Ultralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Display-Ultralight.otf"; path = "../src/assets/fonts/SF-Pro-Display-Ultralight.otf"; sourceTree = "<group>"; };
 		7314E748FE8E4E34B81A890F /* HelveticaNeueHv.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = HelveticaNeueHv.ttf; path = ../src/assets/fonts/HelveticaNeueHv.ttf; sourceTree = "<group>"; };
 		7375685BE9DC4CE6B1D711DB /* HelveticaNeueIt.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = HelveticaNeueIt.ttf; path = ../src/assets/fonts/HelveticaNeueIt.ttf; sourceTree = "<group>"; };
@@ -181,6 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEEBD6E32355CBB3006EFECD /* libreact-native-camera.a in Frameworks */,
+				71F360FC2580813F00F86420 /* Gomobile.framework in Frameworks */,
 				FEEBD6DB2355CA94006EFECD /* libRNPermissions.a in Frameworks */,
 				FEEBD6D72355CA35006EFECD /* libreact-native-randombytes.a in Frameworks */,
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
@@ -188,7 +189,6 @@
 				82E467C899D04A02A0589EB9 /* libRNGestureHandler.a in Frameworks */,
 				3B50FECFE455494A8373E5A6 /* libRNVectorIcons.a in Frameworks */,
 				A23A5B4BF797429292519AC6 /* libRNCAsyncStorage.a in Frameworks */,
-				7144D81C24373E68005224F2 /* Gomobile.framework in Frameworks */,
 				D7BDB11DB76A47B9A686E426 /* libTcpSockets.a in Frameworks */,
 				C944FB71546FC63E3C584A22 /* libPods-Incognito.a in Frameworks */,
 			);
@@ -297,9 +297,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				71F360FB2580813F00F86420 /* Gomobile.framework */,
 				1F29808A246D5526000EE1C6 /* fonts */,
 				FD6F21E024750AA0000CC07D /* BridgeLottie.swift */,
-				7144D81B24373E68005224F2 /* Gomobile.framework */,
 				FE52DCEE22DC685E003203EF /* AutonomousZMQ.framework */,
 				FE6F885F22DC3B0E0009C5AA /* ZMQ */,
 				13B07FAE1A68108700A75B9A /* Incognito */,
@@ -660,7 +660,7 @@
 				APP_DISPLAY_NAME = "My Wallet";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODEPUSH_KEY = "dlPpkGqme-9iS8DF0sZ9f0r1IgAyxealppUt2";
+				CODEPUSH_KEY = "";
 				CODE_SIGN_ENTITLEMENTS = Incognito/Incognito.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;

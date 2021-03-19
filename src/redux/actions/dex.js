@@ -209,7 +209,7 @@ const getStatusByType = {
 };
 
 async function getStatus(history) {
-  return getStatusByType[history.type](history);
+  return getStatusByType[history.type.toLowerCase()](history);
 }
 
 export const getHistoriesSuccess = (histories) => ({
@@ -219,22 +219,25 @@ export const getHistoriesSuccess = (histories) => ({
 
 export const getTradeHistories = () => async (dispatch) => {
   const histories = await LocalDatabase.getDexHistory();
-  const formattedHistories = histories.map(item => {
-    const history = HISTORY_TYPES[item.type].load(item);
 
-    if (RETRY_STATUS.includes(history.status) && history.errorTried < MAX_ERROR_TRIED) {
-      history.status = undefined;
-    } else {
-      history.status = NOT_CHANGE_STATUS.includes(item.status) ? item.status : undefined;
+  const formattedHistories = histories.map(item => {
+    const loader = HISTORY_TYPES[item.type.toLowerCase()];
+    if (loader) {
+      const history = loader.load(item);
+      if (RETRY_STATUS.includes(history.status) && history.errorTried < MAX_ERROR_TRIED) {
+        history.status = undefined;
+      } else {
+        history.status = NOT_CHANGE_STATUS.includes(item.status) ? item.status : undefined;
+      }
+
+      history.errorTried = history.errorTried || 0;
+      return history;
     }
 
-    history.errorTried = history.errorTried || 0;
-
-
-    console.debug(history.type);
-
-    return history;
-  }).filter(item => item.type === MESSAGES.TRADE);
+    return null;
+  })
+    .filter(item => item)
+    .filter(item => item.type.toLowerCase() === MESSAGES.TRADE);
 
   dispatch(getHistoriesSuccess(formattedHistories));
 
@@ -269,7 +272,6 @@ export const getHistoryStatusSuccess = (history) => ({
 
 export const getHistoryStatus = (history) => async (dispatch) => {
   const res = await getStatus(history);
-
   if (typeof res === 'string') {
     const status = res;
     if (status === TRANSFER_STATUS.UNSUCCESSFUL) {

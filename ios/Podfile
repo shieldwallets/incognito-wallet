@@ -48,7 +48,6 @@ target 'Incognito' do
 
   pod 'TcpSockets', :path => '../node_modules/react-native-tcp'
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-  pod 'RCTRestart', :path => '../node_modules/react-native-restart/ios'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   pod 'react-native-keep-awake', :path => '../node_modules/react-native-keep-awake'
 

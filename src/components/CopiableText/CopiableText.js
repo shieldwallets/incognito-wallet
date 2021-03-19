@@ -33,10 +33,10 @@ const CopiableText = ({
   >
     {children || (
       <Text
-        style={styleSheet.text}
-        {...(oneLine ? { numberOfLines: 1, ellipsizeMode: 'middle' } : {})}
+        style={{ width: 200 }}
+        numberOfLines={1}
+        ellipsizeMode="middle"
         {...textProps}
-        {...generateTestId(COPYABLE_ADDRESS.ADDRESS)}
       >
         {text}
       </Text>

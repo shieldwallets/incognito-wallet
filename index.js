@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler';
+import 'react-native-get-random-values';
 import '@src/services/polyfill';
 import _ from 'lodash';
 // import AppTemp from '@src/Temp';

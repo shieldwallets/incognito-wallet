@@ -494,7 +494,7 @@ export default class Account {
     let indexAccount = wallet.getAccountIndexByName(account.name || account.AccountName);
     let result;
     try {
-      console.debug('CREATE AND SEND NATIVE TOKEN TRADE', fee, tokenIDToBuyStr, sellAmount, minimumAcceptableAmount, tradingFee, info);
+      console.debug('CREATE AND SEND NATIVE TOKEN TRADE', fee, tokenIDToBuyStr, sellAmount, minimumAcceptableAmount, tradingFee, info, indexAccount);
       result = await wallet.MasterAccount.child[
         indexAccount
       ].createAndSendNativeTokenTradeRequestTx(fee, tokenIDToBuyStr, sellAmount, minimumAcceptableAmount, tradingFee, info);

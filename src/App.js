@@ -6,7 +6,6 @@ import AppContainer from '@src/router';
 import React from 'react';
 import 'react-native-console-time-polyfill';
 import { Provider } from 'react-redux';
-import AppUpdater from '@components/AppUpdater/index';
 import { PersistGate } from 'redux-persist/integration/react';
 import Toast from '@components/core/Toast/Toast';
 
@@ -19,7 +18,6 @@ const App = () => {
       <PersistGate loading={null} persistor={persistor}>
         <AppScreen>
           <AppContainer />
-          <AppUpdater />
           <Toast />
           <QrScanner />
         </AppScreen>

@@ -1,11 +1,11 @@
 PODS:
   - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
-  - CodePush (6.0.0):
+  - CodePush (6.3.0):
     - Base64 (~> 1.1)
-    - JWT (~> 3.0.0-beta.7)
+    - JWT (~> 3.0.0-beta.12)
     - React
-    - SSZipArchive (~> 2.1)
+    - SSZipArchive (~> 2.2.2)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.61.2)
   - FBReactNativeSpec (0.61.2):
@@ -32,8 +32,6 @@ PODS:
   - Permission-FaceID (2.1.4):
     - RNPermissions
   - RCTRequired (0.61.2)
-  - RCTRestart (0.0.13):
-    - React
   - RCTTypeSafety (0.61.2):
     - FBLazyVector (= 0.61.2)
     - Folly (= 2018.10.22.00)
@@ -268,7 +266,6 @@ DEPENDENCIES:
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
-  - RCTRestart (from `../node_modules/react-native-restart/ios`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
   - React-Core (from `../node_modules/react-native/`)
@@ -327,8 +324,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions/ios/FaceID.podspec"
   RCTRequired:
     :path: "../node_modules/react-native/Libraries/RCTRequired"
-  RCTRestart:
-    :path: "../node_modules/react-native-restart/ios"
   RCTTypeSafety:
     :path: "../node_modules/react-native/Libraries/TypeSafety"
   React:
@@ -389,7 +384,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  CodePush: 58d8b6595f46057ca1f49c55fb6860ad7fd38ce3
+  CodePush: 69186fd1143f7e5e5c6f65383cf14f4927e28213
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 68b6a76960fbd8ecd9fb7ce0aadd3329c3340a99
   FBReactNativeSpec: 5a764c60abdc3336a213e5310c40b74741f32839
@@ -399,7 +394,6 @@ SPEC CHECKSUMS:
   Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85
   Permission-FaceID: 08f06f502c95dbd7d35033e65c7ebe23d4189f67
   RCTRequired: c639d59ed389cfb1f1203f65c2ea946d8ec586e2
-  RCTRestart: dd19aab87fc1118e05b6b5b91b959105647f56b4
   RCTTypeSafety: dc23fb655d6c77667c78e327bf661bc11e3b8aec
   React: 7e586e5d7bec12b91c1a096826b0fc9ab1da7865
   React-Core: 8ddb9770b4a30a6ab4a754e6ed5ec76454e3d699
@@ -430,6 +424,6 @@ SPEC CHECKSUMS:
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: fb5ac7957dee1fa0f39cfab92a4f4e8d9d743555
+PODFILE CHECKSUM: 1dc25533915d549aa8fc91925341cd9bb7718494
 
 COCOAPODS: 1.8.4
