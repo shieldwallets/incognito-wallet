@@ -51,7 +51,8 @@ export const Hook = (props) => {
     handleRetryHistoryStatus,
     fetchingHistory,
     handleOpenLink = null,
-    moreLines = false
+    moreLines = false,
+    flexExtra = 5,
   } = props;
   const shouldShowMsg = !!message;
   const [state, setState] = React.useState({
@@ -83,7 +84,7 @@ export const Hook = (props) => {
         >
           {`${label}:`}
         </Text>
-        <View style={styled.extra}>
+        <View style={[styled.extra, { flex: flexExtra }]}>
           <Text
             style={[
               styled.valueText,
@@ -197,6 +198,7 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
+  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
   const historyFactories = [
     {
       label: 'ID',
@@ -226,7 +228,7 @@ const TxHistoryDetail = (props) => {
       valueText: statusMessage,
       valueTextStyle: { color: statusColor },
       disabled: !toggleHistoryDetail && !statusMessage,
-      canRetryExpiredDeposit: history?.canRetryExpiredDeposit,
+      canRetryExpiredDeposit: history?.canRetryExpiredDeposit || isBTCInvalidAmount,
       handleRetryExpiredDeposit: onRetryExpiredDeposit,
       message: history?.statusDetail,
       handleRetryHistoryStatus: onRetryHistoryStatus,
@@ -325,7 +327,7 @@ const TxHistoryDetail = (props) => {
       }
     >
       {historyFactories.map((hook, index) => (
-        <Hook key={index} {...hook} />
+        <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5}/>
       ))}
       {!!history?.depositAddress && (history.statusText === 'PENDING') && (
         <QrCodeAddressDefault
