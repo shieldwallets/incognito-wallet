@@ -7,8 +7,8 @@ const ExportCSVSection = (props) => {
   return (
     <Section
       data={{
-        title: 'Report',
-        desc: 'Export balance changes of the current keychain',
+        title: 'Reporting',
+        desc: 'Export transaction history of the current keychain',
         handlePress: handlePress,
       }}
     />

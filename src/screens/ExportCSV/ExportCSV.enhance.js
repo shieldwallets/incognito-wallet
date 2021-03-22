@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  checkWriteStoragePermission,
-  exportAndSaveCSVFile,
-} from '@src/screens/Setting/features/ExportCSVSection/ExportCSVSection.utils';
-import {
   loadAccountHistory,
   handleFilterHistoryReceiveByTokenId,
   loadTokenHistoryWithToken,
@@ -36,10 +32,15 @@ import { accountSeleclor } from '@src/redux/selectors';
 import _ from 'lodash';
 import convert from '@utils/convert';
 import BigNumber from 'bignumber.js';
+import {
+  checkWriteStoragePermission,
+  exportAndSaveCSVFile,
+} from './ExportCSV.utils';
 
 const enhance = (WrappedComp) => (props) => {
-  const { accounts, wallet } = props;
+  const { wallet } = props;
   const account = useSelector(accountSeleclor.defaultAccountSelector);
+  const [dataFile, setDataFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -50,6 +51,7 @@ const enhance = (WrappedComp) => (props) => {
   );
 
   const getReceivedTransactionHistory = async () => {
+    console.time('getReceivedTransactionHistory');
     try {
       const followedTokens = await accountService.getFollowingTokens(
         account,
@@ -68,9 +70,9 @@ const enhance = (WrappedComp) => (props) => {
 
       let transactionHistories = [];
       for (const token of privacyFollowedTokens) {
-        const LIMIT = 100;
+        const LIMIT = 1000;
         let page = 0;
-        var loop = true;
+        let loop = true;
         while (loop) {
           const histories =
             (await getReceiveHistoryByRPCWithOutError({
@@ -136,16 +138,20 @@ const enhance = (WrappedComp) => (props) => {
         'Fee Amount': '',
         'Fee Currency': '',
         Tag:
-          item.metaData && item.metaData.Type === 45
-            ? 'Withdraw reward (vNode)'
+          item.metaData && item.metaData.Type && CONSTANT_COMMONS.HISTORY.TYPE_HISTORY_RECEIVE[item.metaData.Type]
+            ? CONSTANT_COMMONS.HISTORY.TYPE_HISTORY_RECEIVE[item.metaData.Type]
             : 'Receive',
+        tx: item,
       }));
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getReceivedTransactionHistory');
     }
   };
 
   const getSendPRVTransactionHistory = async () => {
+    console.time('getSendPRVTransactionHistory');
     try {
       let [prvHistories] = await new Promise.all([
         dispatch(loadAccountHistory()),
@@ -171,10 +177,13 @@ const enhance = (WrappedComp) => (props) => {
       return prvHistories || [];
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getSendPRVTransactionHistory');
     }
   };
 
   const getSendAnotherCoinTransactionHistory = async () => {
+    console.time('getSendAnotherCoinTransactionHistory');
     try {
       const followedTokens = await accountService.getFollowingTokens(
         account,
@@ -246,10 +255,13 @@ const enhance = (WrappedComp) => (props) => {
       return anotherHistories;
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getSendAnotherCoinTransactionHistory');
     }
   };
 
   const getSendTransactionHistory = async () => {
+    console.time('getSendTransactionHistory');
     try {
       const [prvHistories, anotherHistories] = await new Promise.all([
         getSendPRVTransactionHistory(),
@@ -261,14 +273,17 @@ const enhance = (WrappedComp) => (props) => {
       ];
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getSendTransactionHistory');
     }
   };
 
   const getTradeTransactionHistory = async () => {
+    console.time('getTradeTransactionHistory');
     try {
-      const LIMIT = 100;
+      const LIMIT = 1000;
       let page = 1;
-      var loop = true;
+      let loop = true;
       let transactionHistories = [];
 
       const [pTokens, chainTokens] = await Promise.all([
@@ -317,19 +332,22 @@ const enhance = (WrappedComp) => (props) => {
             new BigNumber(convert.toNumber(item.networkFee || 0, true)).toFixed() ||
             '',
           'Fee Currency': item.networkFeeTokenSymbol || '',
-          Tag: item.type,
+          Tag: 'Trade V2',
         };
       });
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getTradeTransactionHistory');
     }
   };
 
   const getProvideTransactionHistory = async () => {
+    console.time('getProvideTransactionHistory');
     try {
-      const LIMIT = 100;
+      const LIMIT = 1000;
       let page = 1;
-      var loop = true;
+      let loop = true;
       let histories = [];
 
       const config = await getPoolConfig();
@@ -354,27 +372,44 @@ const enhance = (WrappedComp) => (props) => {
           loop = false;
         }
       }
-      return histories.map((item) => ({
-        Date: moment(item.time1).format('MM/DD/YYYY HH:mm:ss'),
-        'Received Quantity': `${new BigNumber(item.amount || 0)
-          .dividedBy(Math.pow(10, item.coin.pDecimals || 9))
-          .toFixed() || ''}`,
-        'Received Currency': item.coin.symbol || '',
-        'Send Quantity': '',
-        'Send Currency': '',
-        'Fee Amount': '',
-        'Fee Currency': '',
-        Tag:
-          item.type === 'Withdraw reward'
-            ? 'Withdraw reward (Provide)'
-            : item.type,
-      }));
+      return histories.map((item) => {
+        const formatted = {
+          Date: moment(item.time1).format('MM/DD/YYYY HH:mm:ss'),
+          'Received Quantity': `${new BigNumber(item.amount || 0)
+            .dividedBy(Math.pow(10, item.coin.pDecimals || 9))
+            .toFixed() || ''}`,
+          'Received Currency': item.coin.symbol || '',
+          'Send Quantity': '',
+          'Send Currency': '',
+          'Fee Amount': '',
+          'Fee Currency': '',
+          Tag:
+            item.type === 'Withdraw reward'
+              ? 'Withdraw reward (Provide)'
+              : item.type,
+        };
+
+        if (item.type === 'Provide') {
+          formatted['Send Quantity'] = formatted['Received Quantity'];
+          formatted['Send Currency'] = formatted['Received Currency'];
+          formatted['Fee Amount'] = formatUtil.amountFull(100, COINS.PRV.pDecimals);
+          formatted['Fee Currency'] = 'PRV';
+
+          formatted['Received Currency'] = '';
+          formatted['Received Quantity'] = '';
+        }
+
+        return formatted;
+      });
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getProvideTransactionHistory');
     }
   };
 
   const getShieldAndUnShieldTransactionHistory = async () => {
+    console.time('getShieldAndUnShieldTransactionHistory');
     try {
       const { paymentAddress } = account;
 
@@ -426,49 +461,15 @@ const enhance = (WrappedComp) => (props) => {
       }
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getShieldAndUnShieldTransactionHistory');
     }
   };
 
-  const getPRVTransactionHistory = async (paymentAddress) => {
+  const getpNodeTransactionHistory = async (userHistories) => {
+    console.time('getpNodeTransactionHistory');
     try {
-      const token = COINS.PRV;
-      let transactionHistories = [];
-      const LIMIT = 100;
-      let page = 0;
-      var loop = true;
-
-      while (loop) {
-        const histories =
-          (await getReceiveHistoryByRPCWithOutError({
-            PaymentAddress: paymentAddress,
-            ReadonlyKey: account?.readonlyKey,
-            Limit: LIMIT,
-            Skip: page * LIMIT,
-            TokenID: token?.tokenId || token?.id,
-          })) || [];
-
-        if (histories && histories.length > 0) {
-          transactionHistories = [...transactionHistories, ...histories];
-          if (histories.length < LIMIT) {
-            loop = false;
-          }
-          page = page + 1;
-        } else {
-          loop = false;
-        }
-      }
-      return transactionHistories;
-    } catch {
-      /*Ignore error*/
-    }
-  };
-
-  const getpNodeTransactionHistory = async () => {
-    try {
-      const userHistories = await getPRVTransactionHistory(
-        account?.paymentAddress,
-      );
-      const userHashIds = userHistories.map((item) => item.Hash);
+      const userHashIds = userHistories.map((item) => item.txID);
       const data = await checkPNodeReward(userHashIds);
 
       const token = COINS.PRV;
@@ -496,29 +497,51 @@ const enhance = (WrappedComp) => (props) => {
       }));
     } catch (error) {
       /*Ignore error*/
+    } finally {
+      console.timeEnd('getpNodeTransactionHistory');
     }
   };
 
+  const shareFile = (path) => {
+    setTimeout(() => {
+      Share.open({
+        url: path,
+        title: 'Export balance changes of the current keychain',
+      });
+    }, 300);
+  };
+
   const exportCSV = async () => {
+    console.time('exportCSV');
+    if (dataFile) {
+      return shareFile(dataFile);
+    }
+
     try {
       const canWrite = await checkWriteStoragePermission();
       if (canWrite) {
         setLoading(true);
 
         const [
+          [receive, pNode],
           provide,
           shield,
           trade,
-          receive,
           send,
-          pNode,
         ] = await new Promise.all([
+          getReceivedTransactionHistory().then(histories => {
+            const prvTxs = histories.filter(history => history.tx.tokenId === COINS.PRV_ID)
+              .map(item => item.tx);
+
+            return Promise.all([
+              getpNodeTransactionHistory(prvTxs),
+              Promise.resolve(histories)
+            ]);
+          }),
           getProvideTransactionHistory(),
           getShieldAndUnShieldTransactionHistory(),
           getTradeTransactionHistory(),
-          getReceivedTransactionHistory(),
-          getSendTransactionHistory(), 
-          getpNodeTransactionHistory(),
+          getSendTransactionHistory(),
         ]);
 
         const mergedData = [
@@ -540,16 +563,23 @@ const enhance = (WrappedComp) => (props) => {
               'MM/DD/YYYY HH:mm:SS',
               'MM/DD/YYYY HH:MM:SS',
             ]).unix(),
-        );
+        ).map(item => ({
+          Date: item.Date,
+          'Received Quantity': item['Received Quantity'],
+          'Received Currency': item['Received Currency'],
+          'Send Quantity': item['Send Quantity'],
+          'Send Currency': item['Send Currency'],
+          'Fee Amount': item['Fee Amount'],
+          'Fee Currency': item['Fee Currency'],
+          Tag: item.Tag,
+        }));
 
         if (mergedData && mergedData.length > 0) {
+          console.time('exportAndSaveCSVFile');
           const path = await exportAndSaveCSVFile(mergedData);
-          setTimeout(() => {
-            Share.open({
-              url: path,
-              title: 'Export balance changes of the current keychain',
-            });
-          }, 300);
+          console.timeEnd('exportAndSaveCSVFile');
+          setDataFile(path);
+          shareFile(path);
         } else {
           Toast.showWarning(
             'Your account does not have any transaction history.',
@@ -560,6 +590,7 @@ const enhance = (WrappedComp) => (props) => {
       console.log('error', error);
     } finally {
       setLoading(false);
+      console.timeEnd('exportCSV');
     }
   };
 
@@ -570,6 +601,7 @@ const enhance = (WrappedComp) => (props) => {
           ...props,
           loadingExportCSV: loading,
           exportCSV,
+          dataFile,
         }}
       />
     </ErrorBoundary>
