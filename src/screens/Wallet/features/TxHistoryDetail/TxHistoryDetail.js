@@ -31,6 +31,8 @@ import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
+import { COLORS } from '@src/styles';
+import { FontStyle } from '@src/styles/TextStyle';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -180,6 +182,7 @@ const TxHistoryDetail = (props) => {
     onPullRefresh,
     isRefresh,
     historyId,
+    minShield
   } = props;
   const toggleHistoryDetail = dev[CONSTANT_KEYS.DEV_TEST_TOGGLE_HISTORY_DETAIL];
   const { typeText, statusColor, statusMessage, history } = data;
@@ -286,6 +289,12 @@ const TxHistoryDetail = (props) => {
       copyable: true,
       disabled: !history?.erc20TokenAddress,
     },
+    {
+      label: 'Shield Address',
+      valueText: history.depositAddress,
+      copyable: false,
+      disabled: history.statusText !== 'EXPIRED',
+    },
   ];
   const onCopyData = () => {
     Clipboard.setString(JSON.stringify(data));
@@ -318,10 +327,14 @@ const TxHistoryDetail = (props) => {
       {historyFactories.map((hook, index) => (
         <Hook key={index} {...hook} />
       ))}
-      {!!history?.depositAddress && (
+      {!!history?.depositAddress && (history.statusText !== 'SUCCESS' && history.statusText !== 'EXPIRED' && history.statusMessage !== 'Processing [1]' 
+      && history.statusMessage !== 'Processing [2]' && history.statusMessage !== 'Processing [3]') && (
         <QrCodeAddressDefault
           label="Shielding address"
           address={history?.depositAddress}
+          isPending={history.statusText === 'PENDING'}
+          symbol={history.symbol}
+          min={minShield}
         />
       )}
       {toggleTxHistoryDetail && (
@@ -354,6 +367,7 @@ TxHistoryDetail.propTypes = {
   /* Handle pull refresh */
   isRefresh: PropTypes.bool.isRequired,
   onPullRefresh: PropTypes.func.isRequired,
+  minShield: PropTypes.number.isRequired,
 };
 
 export default React.memo(TxHistoryDetail);

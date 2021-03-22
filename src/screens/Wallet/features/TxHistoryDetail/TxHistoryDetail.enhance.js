@@ -27,6 +27,7 @@ import {
 } from '@screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.actions';
 import Header from '@components/Header';
 import routeNames from '@routers/routeNames';
+import { actionGetMinMaxShield } from '@src/screens/Shield/Shield.actions';
 
 const enhance = (WrappedComp) => (props) => {
   const data            = useNavigationParam('data');
@@ -95,6 +96,19 @@ const enhance = (WrappedComp) => (props) => {
     };
   }, []);
 
+  /*
+  * Handle get min shield case PENDING
+  * */
+  const [minShield, setMinShield] = React.useState(undefined);
+  useEffect( async () => {
+    if (data && data.history && data.history.statusText === 'PENDING') {
+      if (token && token.id) {
+        const [ min ] = await actionGetMinMaxShield({ tokenId: token.id });
+        setMinShield(min);
+      }
+    }
+  }, [data]);
+
   return (
     <ErrorBoundary>
       <Header title="Transaction details" onGoBack={onGoBack} />
@@ -111,6 +125,7 @@ const enhance = (WrappedComp) => (props) => {
               fetchingHistory: isFetching,
               historyId,
               signPublicKeyEncode,
+              minShield
             }}
             />
           )
