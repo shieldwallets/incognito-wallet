@@ -327,8 +327,7 @@ const TxHistoryDetail = (props) => {
       {historyFactories.map((hook, index) => (
         <Hook key={index} {...hook} />
       ))}
-      {!!history?.depositAddress && (history.statusText !== 'SUCCESS' && history.statusText !== 'EXPIRED' && history.statusMessage !== 'Processing [1]' 
-      && history.statusMessage !== 'Processing [2]' && history.statusMessage !== 'Processing [3]') && (
+      {!!history?.depositAddress && (history.statusText === 'PENDING') && (
         <QrCodeAddressDefault
           label="Shielding address"
           address={history?.depositAddress}
