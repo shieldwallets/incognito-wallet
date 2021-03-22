@@ -3,9 +3,9 @@ import MainLayout from '@components/MainLayout';
 import { RoundCornerButton, Text } from '@components/core';
 import { StyleSheet } from 'react-native';
 import { THEME } from '@src/styles';
-import enhanceExportCSV from '@src/screens/Setting/features/ExportCSVSection/ExportCSVSection.enhance';
 import Loading from '@screens/DexV2/components/Loading';
 import PropTypes from 'prop-types';
+import enhanceExportCSV from './ExportCSV.enhance';
 
 const styles = StyleSheet.create({
   text: {
@@ -26,7 +26,7 @@ const ExportCSV = (props) => {
   return (
     <MainLayout header="Reporting" scrollable>
       <Text style={styles.text}>
-        {'We need file and folder permission so we can export csv and stored it in your device. Please grant us the permission. \n\n We will export transaction data of trade, provide and withdraw node rewards.'}
+        {'We need file and folder permission to export csv and stored it in your device. Please grant us the permission. \n\n We will export transaction data of trade, provide and withdraw node rewards.'}
       </Text>
       <RoundCornerButton
         style={styles.button}
