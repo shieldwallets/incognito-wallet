@@ -34,7 +34,7 @@ const Form = createForm(formName, {
   enableReinitialize: true,
 });
 
-const RightLabel = React.memo(() => {
+export const RightLabel = React.memo(() => {
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const amount = format.amount(
     selectedPrivacy?.amount,

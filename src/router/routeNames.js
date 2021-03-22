@@ -130,4 +130,5 @@ export default {
   RestoreAllData: 'RestoreAllData',
   
   UpdateNodeFirmware: 'UpdateNodeFirmware',
+  BridgeShield: 'BridgeShield',
 };

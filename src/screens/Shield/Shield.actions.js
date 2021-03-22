@@ -86,7 +86,6 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
 
 export const actionFetch = ({ tokenId }) => async (dispatch, getState) => {
   try {
-    await dispatch(setSelectedPrivacy(tokenId));
     const state = getState();
     const account = defaultAccountSelector(state);
     const { isFetching } = shieldSelector(state);

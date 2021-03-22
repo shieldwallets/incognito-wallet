@@ -24,6 +24,7 @@ import { loadAllMasterKeyAccounts, loadAllMasterKeys } from '@src/redux/actions/
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
 import Welcome from '@screens/GetStarted/Welcome';
 import withPin from '@components/pin.enhance';
+import { setSelectedPrivacy } from '@src/redux/actions/selectedPrivacy';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -188,7 +189,10 @@ const enhance = (WrappedComp) => (props) => {
         isFetched && //finish splash screen
         !errorMsg //no error
       ) {
-        navigation.navigate(routeNames.Home);
+        // navigation.navigate(routeNames.Home);
+        // Todo: set default data for test
+        dispatch(setSelectedPrivacy('4946b16a08a9d4afbdf416edf52ef15073db0fc4a63e78eb9de80f94f6c0852a'));
+        navigation.navigate(routeNames.BridgeShield);
       }
     }, [masterKeys, isInitialing, isCreating, isMigrated, isFetched, errorMsg]),
   );

@@ -9,6 +9,8 @@ import routeNames from '@src/router/routeNames';
 import PropTypes from 'prop-types';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { withTokenVerified } from '@src/components/Token';
+import { CONSTANT_COMMONS } from '@src/constants';
+import { setSelectedPrivacy } from '@src/redux/actions/selectedPrivacy';
 import { actionFetch as fetchDataShield } from './Shield.actions';
 
 const enhance = (WrappedComp) => (props) => {
@@ -24,11 +26,18 @@ const enhance = (WrappedComp) => (props) => {
   const handleWhyShield = () => navigation.navigate(routeNames.WhyShield);
   const handleShield = async (tokenId) => {
     try {
-      if (!isTokenSelectable(tokenId)) {
-        return;
+      if (!isTokenSelectable(tokenId)) return;
+      const tokenSelected = availableTokens.find(token => token.tokenId === tokenId);
+
+      const isEthNetwork = tokenSelected.rootNetworkName === CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM;
+      const routeName = isEthNetwork
+        ? routeNames.BridgeShield
+        : routeNames.ShieldGenQRCode;
+      navigation.navigate(routeName);
+      await dispatch(setSelectedPrivacy(tokenId));
+      if (!isEthNetwork) {
+        await dispatch(fetchDataShield({ tokenId }));
       }
-      navigation.navigate(routeNames.ShieldGenQRCode);
-      await dispatch(fetchDataShield({ tokenId }));
     } catch (error) {
       console.debug('SHIELD ERROR', error);
     }

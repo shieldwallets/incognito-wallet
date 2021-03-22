@@ -7,7 +7,7 @@ import FullScreenLoading from '@components/FullScreenLoading/index';
 import HeaderBar from '@components/HeaderBar/HeaderBar';
 import {COLORS} from '@src/styles';
 import {MAX_WAITING_TIME, MESSAGES, MIN_CANCEL_VALUE, SHORT_WAIT_TIME} from '@screens/Dex/constants';
-import {CONSTANT_COMMONS} from '@src/constants';
+import { CONSTANT_COMMONS } from '@src/constants';
 import tokenService, {PRV} from '@services/wallet/tokenService';
 import accountService from '@services/wallet/accountService';
 import Toast from '@components/core/Toast/Toast';

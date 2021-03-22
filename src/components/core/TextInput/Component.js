@@ -27,6 +27,7 @@ const TextInput = ({
   oldVersion = false,
   canEditable,
   rightLabel,
+  numberOfLines,
   ...props
 }) => {
   const [focus, setFocus] = useState(false);
@@ -61,6 +62,7 @@ const TextInput = ({
     }
   }
 
+  console.log('SANG TEST: ', canEditable, numberOfLines === 0);
   return (
     <View style={[styleSheet.container, style]}>
       {label && (
@@ -84,6 +86,7 @@ const TextInput = ({
           oldVersion && styleSheet.rowOld,
           containerStyle,
           focus && oldVersion && styleSheet.focus,
+          !canEditable && numberOfLines === 0 && styleSheet.autoRow,
         ]}
       >
         {appendView}
@@ -113,7 +116,7 @@ const TextInput = ({
         ) : (
           <Text
             style={styleSheet.input}
-            numberOfLines={1}
+            numberOfLines={numberOfLines}
             ellipsizeMode="middle"
           >
             {props?.defaultValue || ''}
@@ -153,6 +156,7 @@ TextInput.defaultProps = {
   onRef: null,
   canEditable: true,
   rightLabel: null,
+  numberOfLines: 1,
 };
 
 TextInput.propTypes = {
@@ -172,6 +176,7 @@ TextInput.propTypes = {
   onRef: PropTypes.func,
   canEditable: PropTypes.bool,
   rightLabel: PropTypes.element,
+  numberOfLines: PropTypes.number,
 };
 
 export default TextInput;

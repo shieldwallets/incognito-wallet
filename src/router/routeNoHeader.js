@@ -79,6 +79,7 @@ import ManageStorage from '@screens/ManageStorage';
 import BackUpAllData from '@screens/BackUpAllData';
 import RestoreAll from '@screens/RestoreAllData';
 import UpdateFirmware from '@screens/Node/UpdateFirmware';
+import BridgeShield from '@screens/Shield/features/BridgeShield';
 
 const masterKeyRoutes = [
   {
@@ -408,6 +409,10 @@ const routes = [
   {
     screen: UpdateFirmware,
     name: routeNames.UpdateNodeFirmware,
+  },
+  {
+    screen: BridgeShield,
+    name: routeNames.BridgeShield,
   },
 ];
 

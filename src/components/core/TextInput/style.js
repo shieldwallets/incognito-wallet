@@ -51,6 +51,9 @@ const style = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  autoRow: {
+    height: null
+  }
 });
 
 export default style;
