@@ -9,7 +9,7 @@ const enhance = (WrappedComponent) => (props) => {
   const account = useNavigationParam('account');
   const title = account?.name ? `${account?.name}'s keys` : 'Your keys';
   const [state, setState] = React.useState({
-    token: null,
+    token: null
   });
   const { token } = state;
   const loadDeviceToken = async () => {
@@ -19,6 +19,7 @@ const enhance = (WrappedComponent) => (props) => {
   React.useEffect(() => {
     loadDeviceToken();
   }, []);
+
   if (!account) {
     return <LoadingContainer />;
   }

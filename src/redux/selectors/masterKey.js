@@ -10,6 +10,13 @@ export const masterlessKeyChainSelector = createSelector(
   ),
 );
 
+export const masterlessWalletSelector = createSelector(
+  masterlessKeyChainSelector,
+  (masterless) => {
+    return masterless?.wallet;
+  },
+);
+
 export const noMasterLessSelector = createSelector(
   masterKeyReducerSelector,
   (masterKey) => masterKey.list.filter(item => item.name.toLowerCase() !== 'masterless'),

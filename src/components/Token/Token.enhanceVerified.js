@@ -20,11 +20,13 @@ const enhance = (WrappedComp) => (props) => {
   const [toggleUnVerified, onToggleUnVerifiedTokens] = useTokenList();
   const [_verifiedTokens, keySearch, handleFilterData] = useSearchBox({
     data: verifiedTokens,
+    shouldCleanSearch: false,
     handleFilter: () =>
       handleFilterTokenByKeySearch({ tokens: verifiedTokens, keySearch }),
   });
   const [_unVerifiedTokens, _keySearch, _handleFilterData] = useSearchBox({
     data: unVerifiedTokens,
+    shouldCleanSearch: false,
     handleFilter: () =>
       handleFilterTokenByKeySearch({
         tokens: unVerifiedTokens,

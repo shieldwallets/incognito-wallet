@@ -40,6 +40,21 @@ export const styled = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
+  contentShieldBlance: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  btnHideBlance: {
+    position: 'absolute',
+    right: -15,
+    top: -15,
+    width: 50,
+    height: 50,
+  },
+  iconHide:{
+    marginLeft: 5,
+  }
 });
 
 export const styledHook = StyleSheet.create({
@@ -82,7 +97,6 @@ export const styledBalance = StyleSheet.create({
     fontFamily: FONT.NAME.medium,
     fontSize: FONT.SIZE.medium,
     color: COLORS.colorGreyBold,
-    marginTop: 10,
   },
   balance: {
     fontFamily: FONT.NAME.bold,

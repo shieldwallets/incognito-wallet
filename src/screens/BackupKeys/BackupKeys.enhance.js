@@ -1,18 +1,19 @@
 import { Platform, Share } from 'react-native';
 import clipboard from '@src/services/clipboard';
-import { accountSeleclor } from '@src/redux/selectors';
 import { ExHandler } from '@src/services/exception';
 import storageService from '@src/services/storage';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { debounce } from 'lodash';
+import { debounce , isEmpty } from 'lodash';
 import rnfs from 'react-native-fs';
 import SimpleInfo from '@src/components/SimpleInfo';
-import LoadingContainer from '@src/components/LoadingContainer';
 import { CONSTANT_KEYS } from '@src/constants';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
+import { masterlessWalletSelector, noMasterLessSelector} from '@src/redux/selectors/masterKey';
+import { loadListAccount } from '@services/wallet/WalletService';
+
 
 const getNameKey = (obj) => {
   const name = Object.keys(obj)[0];
@@ -21,29 +22,51 @@ const getNameKey = (obj) => {
   return [name, key];
 };
 
-const convertToString = (backupData) => {
-  return (
-    backupData
+const convertToString = (masterless, noMasterless) => {
+  let backupString = '';
+  if (noMasterless?.length > 0) {
+    backupString += '------MASTER KEYS------\n\n';
+    backupString += noMasterless
       ?.map((pair) => {
         const [name, key] = getNameKey(pair);
-        return `AccountName: ${name}\nPrivateKey:${key}`;
+        return `AccountName: ${name}\nPhrase: ${key}`;
       })
-      ?.join('\n\n') || ''
-  );
+      ?.join('\n\n') || '';
+  }
+  if (masterless?.length > 0) {
+    backupString += '\n\n------MASTERLESS------\n\n';
+    backupString += masterless
+      ?.map((pair) => {
+        const [name, key] = getNameKey(pair);
+        return `AccountName: ${name}\nPrivateKey: ${key}`;
+      })
+      ?.join('\n\n') || '';
+  }
+  return backupString;
 };
 
-const getBackupData = (accounts) => {
+const getBackupData = (accounts, masterKeys) => {
   try {
-    const info = [];
+    const masterless = [];
+    const noMasterless = [];
     if (accounts instanceof Array) {
       for (let account of accounts) {
-        info.push({ [account?.name || account?.AccountName]: account?.PrivateKey });
+        masterless.push({ [account?.name || account?.AccountName]: account?.PrivateKey });
       }
     }
 
-    if (info.length) {
-      return { backupData: info, backupDataStr: convertToString(info) };
+    if (masterKeys instanceof Array) {
+      for (let masterKey of masterKeys) {
+        if (masterKey.name) {
+          noMasterless.push({ [masterKey.name]: masterKey?.mnemonic });
+        }
+      }
     }
+    return {
+      masterless,
+      noMasterless,
+      backupDataStr: convertToString(masterless, noMasterless)
+    };
   } catch (e) {
     new ExHandler(e, 'Please try again').showErrorToast();
   }
@@ -51,19 +74,28 @@ const getBackupData = (accounts) => {
 
 const enhance = (WrappedComponent) => (props) => {
   const { listAccount } = props;
-  let accounts = useSelector(accountSeleclor.listAccountSelector);
+  const masterKeys = useSelector(noMasterLessSelector);
+  const masterlessWallet = useSelector(masterlessWalletSelector);
   const [state, setState] = React.useState({
-    backupData: [],
+    masterless: [],
+    noMasterless: [],
     backupDataStr: '',
   });
 
-  accounts = listAccount || accounts;
+  let masterlessAccounts = listAccount;
 
-  const { backupData, backupDataStr } = state;
+  const { masterless, noMasterless, backupDataStr } = state;
+
+  const loadMasterlessAccounts = async () => {
+    if (isEmpty(masterlessAccounts) && masterlessWallet) {
+      masterlessAccounts = await loadListAccount(masterlessWallet) || [];
+    }
+    setState({ ...state, ...getBackupData(masterlessAccounts, masterKeys) });
+  };
 
   React.useEffect(() => {
-    setState({ ...state, ...getBackupData(accounts) });
-  }, [accounts]);
+    loadMasterlessAccounts().then();
+  }, [masterlessWallet]);
 
   const markBackedUp = () => {
     storageService.setItem(
@@ -102,26 +134,27 @@ const enhance = (WrappedComponent) => (props) => {
     markBackedUp();
   };
 
-  if (backupData?.length === 0) {
+  if (noMasterless?.length === 0 && masterless?.length === 0) {
     return (
       <SimpleInfo
-        text="No account to backkup"
+        text="No account to backup"
         subtext="Your wallet have no account to backup"
       />
     );
-  } else if (backupData?.length > 0) {
+  } else {
     return (
       <WrappedComponent
         {...props}
         onSaveAs={debounce(handleSaveFile, 300)}
         onCopyAll={debounce(handleCopyAll, 300)}
-        backupData={backupData}
+        noMasterless={noMasterless}
+        masterless={masterless}
         getNameKey={getNameKey}
+        backupDataStr={backupDataStr}
       />
     );
   }
 
-  return <LoadingContainer />;
 };
 
 export default compose(

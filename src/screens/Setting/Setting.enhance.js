@@ -2,7 +2,6 @@ import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { useDispatch, useSelector } from 'react-redux';
 import { compose } from 'recompose';
-import { withLayout_2 } from '@src/components/Layout';
 import { actionFetchServers } from './Setting.actions';
 import { settingSelector } from './Setting.selector';
 

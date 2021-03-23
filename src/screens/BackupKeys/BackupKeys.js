@@ -6,13 +6,27 @@ import CopiableText from '@src/components/CopiableText';
 import { View, Text } from 'react-native';
 import Header from '@src/components/Header';
 import IconCopy from '@src/components/Icons/icon.copy';
-import { ButtonBasic } from '@src/components/Button';
+import { ButtonBasic, BtnQRCode } from '@src/components/Button';
+import srcQrCodeLight from '@src/assets/images/icons/qr_code_light.png';
+import srcQrCode from '@src/assets/images/icons/qr_code.png';
 import { ArrowRightGreyIcon } from '@src/components/Icons';
+import { useNavigation } from 'react-navigation-hooks';
+import routeNames from '@src/router/routeNames';
 import style from './BackupKeys.styled';
 import withBackupKeys from './BackupKeys.enhance';
 
 const BackupKeys = (props) => {
-  const { onSaveAs, onCopyAll, backupData, getNameKey, onNext, onBack } = props;
+  const { onSaveAs, onCopyAll, noMasterless, masterless, getNameKey, onNext, onBack, backupDataStr} = props;
+  const navigation = useNavigation();
+  
+  const onNavigateToQrPage = (label, value) => {
+    navigation.navigate(routeNames.ExportAccountModal, {
+      params: {
+        value,
+        label,
+      },
+    });
+  };
 
   const renderAccountItem = (name, key) => {
     return (
@@ -24,9 +38,14 @@ const BackupKeys = (props) => {
       >
         <View style={style.accountItemHeader}>
           <Text style={style.title}>{name}</Text>
+          <BtnQRCode
+            style={style.qrCode}
+            onPress={()=> onNavigateToQrPage(name, key)}
+            source={srcQrCodeLight}
+          />
           <IconCopy />
         </View>
-        <Text numberOfLines={1} ellipsizeMode="middle" style={style.desc}>
+        <Text style={style.desc}>
           {key}
         </Text>
       </CopiableText>
@@ -46,13 +65,21 @@ const BackupKeys = (props) => {
       <Header title="Back up private keys" onGoBack={onBack} />
       <View style={style.wrapper}>
         <ScrollView>
+          <View>
+            <Text style={style.titleGroup}>Master keys</Text>
+            {noMasterless.length > 0 && (noMasterless?.map((pair) => {
+              const [name, key] = getNameKey(pair);
+              return renderAccountItem(name, key);
+            }))}
+          </View>
           <View style={style.topGroup}>
-            {backupData?.map((pair) => {
+            <Text style={style.titleGroup}>Masterless</Text>
+            {masterless?.map((pair) => {
               const [name, key] = getNameKey(pair);
               return renderAccountItem(name, key);
             })}
           </View>
-          <View style={style.bottomGroup}>
+          <View>
             <Text style={style.title}>Back up all keys</Text>
             <TouchableOpacity onPress={onSaveAs}>
               <View style={style.saveAsBtn}>
@@ -60,11 +87,18 @@ const BackupKeys = (props) => {
                 <ArrowRightGreyIcon />
               </View>
             </TouchableOpacity>
-            <ButtonBasic
-              btnStyle={[style.copyAllButton, onNext && style.copyNext]}
-              title={onNext ? 'Copy all keys and\n\ncontinue to new update' : 'Copy all keys'}
-              onPress={handleCopy}
-            />
+            <View style={style.bottomGroup}>
+              <BtnQRCode
+                style={style.btnQRCode}
+                onPress={()=> onNavigateToQrPage('Back up private keys', backupDataStr)}
+                source={srcQrCode}
+              />
+              <ButtonBasic
+                btnStyle={[style.copyAllButton, onNext && style.copyNext]}
+                title={onNext ? 'Copy all keys and\n\ncontinue to new update' : 'Copy all keys'}
+                onPress={handleCopy}
+              />
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -73,13 +107,17 @@ const BackupKeys = (props) => {
 };
 
 BackupKeys.defaultProps = {
-  backupData: [],
+  backupDataStr: '',
+  noMasterless: [],
+  masterless: [],
   onNext: undefined,
   onBack: undefined,
 };
 
 BackupKeys.propTypes = {
-  backupData: PropTypes.arrayOf(PropTypes.object),
+  backupDataStr: PropTypes.string,
+  masterless: PropTypes.arrayOf(PropTypes.object),
+  noMasterless: PropTypes.arrayOf(PropTypes.object),
   onSaveAs: PropTypes.func.isRequired,
   onCopyAll: PropTypes.func.isRequired,
   getNameKey: PropTypes.func.isRequired,

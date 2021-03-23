@@ -11,7 +11,7 @@ export default StyleSheet.create({
   },
   accountItemContainer: {
     marginBottom: 30,
-    width: '100%',
+    marginHorizontal: 10
   },
   accountItemHeader: {
     width: '100%',
@@ -25,12 +25,23 @@ export default StyleSheet.create({
     fontSize: FONT.SIZE.superMedium,
     lineHeight: FONT.SIZE.superMedium + 4,
     color: COLORS.black,
+    flex: 1
   },
   desc: {
     fontFamily: FONT.NAME.medium,
     fontSize: FONT.SIZE.medium,
     lineHeight: FONT.SIZE.medium + 4,
     color: COLORS.colorGreyBold,
+    alignSelf: 'flex-start'
+  },
+  titleGroup: {
+    fontFamily: FONT.NAME.bold,
+    fontSize: FONT.SIZE.large,
+    lineHeight: FONT.SIZE.large + 4,
+    color: COLORS.black,
+    flex: 1,
+    marginTop: 5,
+    marginBottom: 25,
   },
   topGroup: {
     flex: 1,
@@ -42,11 +53,28 @@ export default StyleSheet.create({
     marginTop: 10,
   },
   copyAllButton: {
-    marginVertical: 50,
+    borderRadius: 15,
+    flex: 1
   },
   copyNext: {
     paddingVertical: 15,
     height: 90,
-    borderRadius: 11,
+    borderRadius: 10,
   },
+  qrCode: {
+    marginRight: 15,
+  },
+  bottomGroup: {
+    marginVertical: 50,
+    flexDirection: 'row'
+  },
+  btnQRCode: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    width: 50,
+    backgroundColor: '#ECECEC',
+    marginRight: 5,
+    borderRadius: 12,
+  }
 });

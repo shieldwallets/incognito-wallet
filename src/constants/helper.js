@@ -20,13 +20,11 @@ const HELPER_CONSTANT = {
     }]
   },
   PRICE_IMPACT: {
-    title: 'Price difference',
+    title: 'Size impact',
     contents: [{
-      content: 'This is the percentage difference between external market prices and your pDEX trade price. You may experience either positive or negative price impacts.\n\n' +
-        '+1% max price impact means you’ll gain at least 1%\n\n' +
-        '-1% max price impact means you’ll lose at most 1%\n\n' +
-        'The percentage shown for price impact takes into account 1% slippage tolerance by default, and may change in your favor after the trade has been executed.\n\n' +
-        'Price impact is affected by the size of your trade in relation to the balance of liquidity available. Bigger trades have larger price impacts.',
+      content: 'This is the difference between the current price and your estimated trade price, based on current and subsequent pool ratios.' +
+        '\n\n' +
+        'Size impact is determined by the size of your trade in relation to the balance of liquidity available. Bigger trades have larger size impacts.',
     }]
   },
   WARNING: {

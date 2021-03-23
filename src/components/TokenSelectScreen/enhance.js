@@ -13,7 +13,9 @@ const enhance = WrappedComp => (props) => {
       const validTokens = _.uniqBy(tokens, 'id').filter(
         item =>
           _.toLower(item.name).includes(searchText) ||
-          _.toLower(item.symbol).includes(searchText),
+          _.toLower(item.symbol).includes(searchText) ||
+          _.toLower(item?.tokenID).includes(searchText) ||
+          _.toLower(item?.contractId).includes(searchText),
       );
 
       setDisplayTokens(validTokens);

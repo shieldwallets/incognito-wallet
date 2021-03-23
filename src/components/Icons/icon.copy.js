@@ -4,8 +4,8 @@ import srcCopy from '@src/assets/images/icons/copy.png';
 
 const styled = StyleSheet.create({
   container: {
-    width: 19,
-    height: 18,
+    width: 20,
+    height: 20,
   },
 });
 

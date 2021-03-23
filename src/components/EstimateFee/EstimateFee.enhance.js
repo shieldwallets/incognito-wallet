@@ -47,7 +47,7 @@ const enhance = (WrappedComp) => (props) => {
       new ExHandler(error).showErrorToast();
     }
   };
-  const _handleChangeForm = React.useRef(debounce(handleChangeForm, 1000));
+  const _handleChangeForm = React.useRef(debounce(handleChangeForm, 1500));
   React.useEffect(() => {
     _handleChangeForm.current(
       address,
@@ -58,8 +58,8 @@ const enhance = (WrappedComp) => (props) => {
     );
   }, [address, amount, memo, isExternalAddress, isIncognitoAddress]);
   React.useEffect(() => {
-    if (!isKeyboardVisible) {
-      handleChangeForm(
+    if (!isKeyboardVisible && _handleChangeForm && _handleChangeForm.current) {
+      _handleChangeForm.current(
         address,
         amount,
         memo,

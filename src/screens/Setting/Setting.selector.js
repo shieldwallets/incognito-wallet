@@ -14,3 +14,8 @@ export const currencySelector = createSelector(
   settingSelector,
   (setting) => setting?.isToggleUSD,
 );
+
+export const showWalletBlanceSelector = createSelector(
+  settingSelector,
+  (setting) => setting?.showWalletBlance,
+);

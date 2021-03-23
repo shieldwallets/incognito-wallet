@@ -98,6 +98,8 @@ target 'Incognito' do
   pod 'RNCPushNotificationIOS', :path => '../node_modules/@react-native-community/push-notification-ios'
   pod 'react-native-get-random-values', :path => '../node_modules/react-native-get-random-values/react-native-get-random-values.podspec'
 
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
   pre_install do |installer|
     puts("Image fix for ios14: remove this when upgradeing to >= 0.63.3")
     find = "_currentFrame.CGImage;"

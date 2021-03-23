@@ -6,6 +6,7 @@ import {
   ACTION_FETCHED_SERVER,
   ACTION_TOGGLE_CURRENCY,
   ACTION_TOGGLE_DECIMAL_DIGITS,
+  ACTION_UPDATE_SHOW_WALLET_BALANCE
 } from './Setting.constant';
 
 const actionFetchedDevices = (payload) => ({
@@ -22,7 +23,7 @@ export const actionToggleDecimalDigits = () => ({
   type: ACTION_TOGGLE_DECIMAL_DIGITS,
 });
 
-export const actionFetchDevices = () => async (dispatch, getState) => {
+export const actionFetchDevices = () => async (dispatch) => {
   let devices = [];
   try {
     devices = (await LocalDatabase.getListDevices()).map((device) =>
@@ -35,7 +36,7 @@ export const actionFetchDevices = () => async (dispatch, getState) => {
   }
 };
 
-export const actionFetchServers = () => async (dispatch, getState) => {
+export const actionFetchServers = () => async (dispatch) => {
   let server = null;
   try {
     server = await serverService.getDefault();
@@ -48,4 +49,8 @@ export const actionFetchServers = () => async (dispatch, getState) => {
 
 export const actionToggleCurrency = () => ({
   type: ACTION_TOGGLE_CURRENCY,
+});
+
+export const actionUpdateShowWalletBlance = () => ({
+  type: ACTION_UPDATE_SHOW_WALLET_BALANCE,
 });

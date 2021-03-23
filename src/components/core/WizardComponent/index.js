@@ -10,6 +10,7 @@ const WizardAnim = ({ onAnimationFinish }) => {
       <LottieView
         autoPlay
         loop={false}
+        style={styles.lottie}
         resizeMode="cover"
         onAnimationFinish={onAnimationFinish}
         source={require('../../../assets/lottie/intro.json')}
@@ -33,5 +34,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'center',
+  },
+  lottie: {
+    width: '100%',
   },
 });

@@ -569,11 +569,12 @@ export const actionFetchUserFees = (payload) => async (dispatch, getState) => {
     throw error;
   } finally {
     if (_error && _error?.code === 'API_ERROR(-1027)') {
-      return await dispatch(actionFetchFailUserFees(true));
+      await dispatch(actionFetchFailUserFees(true));
+      return;
     }
-    if (!userFeesData.FeeAddress) {
+    if (!userFeesData.FeeAddress || _error) {
       await dispatch(actionFetchFailUserFees());
-      throw new Error('Can\'t not get master address!');
+      throw new Error('Enter a smaller amount to generate a more accurate fee estimation');
     }
     await dispatch(actionFetchedUserFees(userFeesData));
   }

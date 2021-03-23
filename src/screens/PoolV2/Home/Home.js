@@ -25,18 +25,18 @@ const Home = ({
   loading,
   account,
   isLoadingHistories,
+  nativeToken
 }) => {
   const renderContent = () => {
     if (!config || !userData) {
-      return (
-        <LoadingContainer />
-      );
+      return <LoadingContainer />;
     }
 
     return (
       <View style={styles.wrapper}>
         <TotalReward
           total={displayClipTotalRewards}
+          nativeToken={nativeToken}
         />
         <Actions
           buy={!withdrawable}
@@ -78,7 +78,8 @@ Home.propTypes = {
   onLoad: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   account: PropTypes.object.isRequired,
-  isLoadingHistories: PropTypes.bool.isRequired
+  isLoadingHistories: PropTypes.bool.isRequired,
+  nativeToken: PropTypes.object.isRequired,
 };
 
 Home.defaultProps = {

@@ -6,6 +6,7 @@ import {
   ACTION_FETCHED_DEVICES,
   ACTION_TOGGLE_DECIMAL_DIGITS,
   ACTION_TOGGLE_CURRENCY,
+  ACTION_UPDATE_SHOW_WALLET_BALANCE
 } from './Setting.constant';
 
 const initialState = {
@@ -13,7 +14,8 @@ const initialState = {
   devices: [],
   server: null,
   decimalDigits: true,
-  isToggleUSD: true
+  isToggleUSD: true,
+  showWalletBlance: false,
 };
 
 const settingReducer = (state = initialState, action) => {
@@ -40,6 +42,12 @@ const settingReducer = (state = initialState, action) => {
     return {
       ...state,
       isToggleUSD: !state?.isToggleUSD,
+    };
+  }
+  case ACTION_UPDATE_SHOW_WALLET_BALANCE: {
+    return {
+      ...state,
+      showWalletBlance: !state?.showWalletBlance,
     };
   }
   default:

@@ -9,7 +9,7 @@ import { trim } from 'lodash';
 import { useFocusEffect } from 'react-navigation-hooks';
 
 export const useSearchBox = (props) => {
-  const { data, handleFilter } = props;
+  const { data, handleFilter, shouldCleanSearch = true } = props;
   const initialState = {
     result: [],
   };
@@ -34,8 +34,10 @@ export const useSearchBox = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      setState({ ...state, result: [] });
-      dispatch(reset(searchBoxConfig.form));
+      if(shouldCleanSearch){
+        setState({ ...state, result: [] });
+        dispatch(reset(searchBoxConfig.form));
+      }
     }, []),
   );
 

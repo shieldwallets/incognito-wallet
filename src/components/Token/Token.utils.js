@@ -10,7 +10,9 @@ export const handleFilterTokenByKeySearch = ({ tokens, keySearch }) =>
       includes(toLower(token?.name), keySearch) ||
       includes(toLower(token?.symbol), keySearch) ||
       includes(toLower(token?.pSymbol), keySearch) ||
-      includes(toLower(token?.networkName), keySearch),
+      includes(toLower(token?.networkName), keySearch) ||
+      includes(toLower(token?.contractId), keySearch) ||
+      includes(toLower(token?.tokenId), keySearch),
   );
 
 

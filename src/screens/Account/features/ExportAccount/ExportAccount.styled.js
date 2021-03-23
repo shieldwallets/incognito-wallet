@@ -38,6 +38,14 @@ const style = StyleSheet.create({
     lineHeight: FONT.SIZE.medium + 3,
     color: COLORS.colorGreyBold,
     fontFamily: FONT.NAME.medium,
+    paddingBottom: 5
+  },
+  itemDataShowFull: {
+    fontSize: FONT.SIZE.medium,
+    lineHeight: FONT.SIZE.medium + 3,
+    color: COLORS.colorGreyBold,
+    fontFamily: FONT.NAME.medium,
+    marginBottom: 5
   },
   qrCode: {
     marginHorizontal: 20,

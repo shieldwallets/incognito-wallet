@@ -26,6 +26,11 @@ export default StyleSheet.create({
     lineHeight: lineHeight,
     color: COLORS.dark1,
   },
+  symbolUSD: {
+    fontSize: 18,
+    fontFamily: FONT.NAME.medium,
+    color: COLORS.newGrey,
+  },
   center: {
     textAlign: 'center',
   },

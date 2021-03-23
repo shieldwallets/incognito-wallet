@@ -52,25 +52,23 @@ const Keychain = () => {
       desc: 'Using a private key',
       handlePress: () => navigation.navigate(routeNames.ImportAccount),
     });
-
-    sectionItemFactories.push({
-      title: 'Back up',
-      desc: 'Back up all masterless private keys',
-      handlePress: () => navigation.navigate(routeNames.BackupKeys),
-    });
   } else {
     sectionItemFactories.push({
       title: `Reveal ${masterKey.name} recovery phrase`,
       desc: 'Back up this phrase so that even if you lose your device, you will always have access to your funds',
       handlePress: () => navigation.navigate(routeNames.MasterKeyPhrase, { data: { ...masterKey, isBackUp: true } }),
     });
-
     sectionItemFactories.push({
       title: 'Import a keychain',
       desc: 'Using a private key',
       handlePress: () => navigation.navigate(routeNames.ImportAccount),
     });
   }
+  sectionItemFactories.push({
+    title: 'Back up',
+    desc: 'Back up all master keys and masterless private keys',
+    handlePress: () => navigation.navigate(routeNames.BackupKeys),
+  });
 
   return (
     <MainLayout

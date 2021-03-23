@@ -101,6 +101,7 @@ const SendForm = (props) => {
               componentProps={{
                 editable: editableInput,
               }}
+              autoFocus
             />
             <Text style={styled.warningText}>
               For withdrawals to wallets on exchanges (e.g. Binance, etc.),

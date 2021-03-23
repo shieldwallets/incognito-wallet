@@ -46,6 +46,7 @@ export class PDexTradeHistoryModel {
       (item) => item.PaymentAddress === json.ReceiverAddress,
     )?.accountName;
     this.createdAt = moment(json.CreatedAt).format(LONG_DATE_TIME_FORMAT);
+    this.createdAt1 = json.CreatedAt;
     this.type = 'Trade';
     this.status = [HISTORY_STATUS.PENDING, HISTORY_STATUS.UNSUCCESSFUL, HISTORY_STATUS.SUCCESSFUL][json.Status];
     this.exchange = TYPES[json.Type] || 'Incognito';

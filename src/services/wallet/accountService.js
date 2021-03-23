@@ -15,6 +15,7 @@ import { cachePromise } from '@services/cache';
 import { chooseBestCoinToSpent } from 'incognito-chain-web-js/lib/tx/utils';
 import bn from 'bn.js';
 import Server from '@services/wallet/Server';
+import { PRV_ID } from '@screens/DexV2/constants';
 import { CustomError, ErrorCode } from '../exception';
 import tokenService from './tokenService';
 import {
@@ -412,9 +413,17 @@ export default class Account {
 
   static getFollowingTokens(account, wallet) {
     const indexAccount = wallet.getAccountIndexByName(this.getAccountName(account));
-    return wallet.MasterAccount.child[indexAccount]
+    const followedTokens = wallet.MasterAccount.child[indexAccount]
       .listFollowingTokens()
       ?.map(tokenModel.fromJson);
+
+    if (followedTokens && followedTokens.find(item => item?.id === PRV_ID)) {
+      this.removeFollowingToken(PRV_ID, account, wallet);
+
+      return followedTokens.filter(item => item?.id !== PRV_ID);
+    }
+
+    return followedTokens;
   }
 
   static async addFollowingTokens(tokens, account, wallet) {

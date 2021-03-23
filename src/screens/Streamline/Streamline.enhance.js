@@ -39,7 +39,7 @@ const enhance = (WrappedComp) => (props) => {
       await setState({
         ...state,
         refresh: true,
-        loading: typeof loading === 'undefined' ? true : false,
+        loading: typeof loading === 'undefined',
       });
       const accountHistory = await dispatch(loadAccountHistory());
       const historiesMainCrypto = normalizeData(
@@ -51,9 +51,12 @@ const enhance = (WrappedComp) => (props) => {
         ?.filter((history) =>
           utxos.find((txId) => txId === history?.incognitoTxID),
         )
-        .map((history) => ({ ...history, ...getStatusData(history) }));
+        .map((history) => ({ ...history, ...getStatusData(history) }))
+        .filter(history => history);
       _isPending = histories.some(
-        (history) => history?.statusMessage === 'Pending',
+        (history) =>
+          history.statusMessage === 'Pending' &&
+          history.time - new Date().getTime() < 5 * 60 * 1000 // Tx should complete in 5 minutes
       );
       if (!_isPending && utxos.length > 0) {
         const payload = { address: account?.paymentAddress };

@@ -15,13 +15,15 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const PRVSymbol = ({ style }) => (
-  <Text style={[styles.symbol, style, styles.font]}>{CONSTANT_COMMONS.PRV_SPECIAL_SYMBOL}</Text>
+const PRVSymbol = ({ style, symbol }) => (
+  <Text style={[styles.symbol, style, styles.font]}>
+    {symbol ? symbol : CONSTANT_COMMONS.PRV_SPECIAL_SYMBOL}
+  </Text>
 );
 
 PRVSymbol.propTypes = {
   style: PropTypes.object,
+  symbol: PropTypes.string,
 };
 
 PRVSymbol.defaultProps = {
