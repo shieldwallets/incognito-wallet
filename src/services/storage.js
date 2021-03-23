@@ -6,48 +6,40 @@ const SIZE = 2e6;
 const Storage = {
 
   async handleSaveLargeData(key, value) {
-    // eslint-disable-next-line no-empty
     try {
-      // // Remove old data
-      // const rs = await AsyncStorage.getItem(key);
-      // const parseData = JSON.parse(rs);
-      // if (parseData && parseData.type === LARGE_KEY ) {
-      //   for (const keyItem of Object.values(parseData)) {
-      //     if (keyItem !== 'LARGEDATA') {
-      //       await AsyncStorage.removeItem(keyItem);
-      //     }
-      //   }
-      // }
-
       // Save new data
       const parts = value.match(/.{1,2000000}/g);
       const objectKey = { type: LARGE_KEY, noOfParts: parts.length };
-      const savedData = [];
       for (let i = 0; i < parts.length; i++){
         const dataItem = parts[i];
         const keyItem = `${key}-part${i}`;
-        savedData.push([keyItem, dataItem]);
+        await AsyncStorage.setItem(keyItem, dataItem);
       }
 
       const data = JSON.stringify(objectKey);
-      savedData.push([key, data]);
+      await AsyncStorage.setItem(key, data);
 
-      await AsyncStorage.multiSet(savedData);
+      // Multiset cause crash when saving large data (40MB) on Android
+      // await AsyncStorage.multiSet(savedData);
     } catch (error) {
       console.log('error', error);
+      throw error;
     }
   },
 
   async handleLoadLargeData(key, objectKey) {
-    // eslint-disable-next-line no-empty
     try {
-      const keyItems = [];
+      let data = '';
       for (let i = 0; i < objectKey.noOfParts; i++){
         const keyItem = `${key}-part${i}`;
-        keyItems.push(keyItem);
+        const dataItem = await AsyncStorage.getItem(keyItem);
+        data = `${data}${dataItem}`;
       }
-      const dataArray = await AsyncStorage.multiGet(keyItems);
-      return dataArray.map(items => items[1]).join('');
+
+      // Multiget cause crash when loading large data (40MB) on Android
+      // const dataArray = await AsyncStorage.multiGet(keyItems);
+      // return dataArray.map(items => items[1]).join('');
+      return data;
     } catch (error) {
       // throw error;
       console.debug('LOAD LARGE DATA ERROR', error);

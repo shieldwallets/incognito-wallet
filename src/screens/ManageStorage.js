@@ -9,6 +9,7 @@ import Row from '@components/Row';
 import clipboard from '@services/clipboard';
 import Storage from '@services/storage';
 import Input from '@components/Input/input.text';
+import { ExHandler } from '@services/exception';
 
 const styles = StyleSheet.create({
   item: {
@@ -52,19 +53,23 @@ const ManageStorage = () => {
   }, []);
 
   const handleSpamData = async () => {
-    const randomKey = 'SPAM';
-    const randomData = new Array(parseInt(size)).fill('1').join('');
+    try {
+      const randomKey = 'SPAM';
+      const randomData = new Array(parseInt(size)).fill('1').join('');
 
-    let spamData = await Storage.getItem(randomKey);
+      let spamData = await Storage.getItem(randomKey);
 
-    if (!spamData) {
-      spamData = '';
+      if (!spamData) {
+        spamData = '';
+      }
+
+      spamData += randomData;
+
+      await Storage.setItem(randomKey, spamData);
+      await loadItems();
+    } catch (e) {
+      new ExHandler(e).showErrorToast();
     }
-
-    spamData += randomData;
-
-    await Storage.setItem(randomKey, spamData);
-    await loadItems();
   };
 
   const onChangeSize = (text) => {
