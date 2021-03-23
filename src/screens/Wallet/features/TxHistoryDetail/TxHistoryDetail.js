@@ -198,7 +198,8 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
-  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
+  const isInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 ;
+  const isBTCInvalidAmount = isInvalidAmount && history.symbol === 'BTC';
   const historyFactories = [
     {
       label: 'ID',
@@ -329,7 +330,7 @@ const TxHistoryDetail = (props) => {
       {historyFactories.map((hook, index) => (
         <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5}/>
       ))}
-      {!!history?.depositAddress && (history.statusCode === 0) && (
+      {!!history?.depositAddress && (history.statusCode === 0 || isInvalidAmount) && (
         <QrCodeAddressDefault
           label="Shielding address"
           address={history?.depositAddress}
