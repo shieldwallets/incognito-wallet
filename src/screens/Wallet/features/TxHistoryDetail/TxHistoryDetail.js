@@ -295,7 +295,7 @@ const TxHistoryDetail = (props) => {
       label: 'Shield Address',
       valueText: history.depositAddress,
       copyable: false,
-      disabled: history.statusText !== 'EXPIRED',
+      disabled: !history.depositAddress || history.statusText !== 'EXPIRED' || history.isShieldTx === false,
     },
   ];
   const onCopyData = () => {
