@@ -198,8 +198,8 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
-  const isInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 ;
-  const isBTCInvalidAmount = isInvalidAmount && history.symbol === 'BTC';
+  const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
+  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
   const historyFactories = [
     {
       label: 'ID',
