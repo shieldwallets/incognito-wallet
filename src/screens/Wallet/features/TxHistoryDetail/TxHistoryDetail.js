@@ -295,7 +295,7 @@ const TxHistoryDetail = (props) => {
       label: 'Shield Address',
       valueText: history.depositAddress,
       copyable: false,
-      disabled: history.statusText !== 'EXPIRED',
+      disabled: !history.depositAddress || history.statusText !== 'EXPIRED' || history.isShieldTx === false,
     },
   ];
   const onCopyData = () => {
@@ -329,11 +329,11 @@ const TxHistoryDetail = (props) => {
       {historyFactories.map((hook, index) => (
         <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5}/>
       ))}
-      {!!history?.depositAddress && (history.statusText === 'PENDING') && (
+      {!!history?.depositAddress && (history.statusCode === 0) && (
         <QrCodeAddressDefault
           label="Shielding address"
           address={history?.depositAddress}
-          isPending={history.statusText === 'PENDING'}
+          isPending={history.statusCode === 0}
           symbol={history.symbol}
           min={minShield}
         />
