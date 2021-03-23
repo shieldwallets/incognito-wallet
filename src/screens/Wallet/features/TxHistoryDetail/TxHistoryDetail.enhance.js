@@ -101,7 +101,7 @@ const enhance = (WrappedComp) => (props) => {
   * */
   const [minShield, setMinShield] = React.useState(undefined);
   useEffect( async () => {
-    if (data && data.history && data.history.statusText === 'PENDING') {
+    if (data && data.history && data.history.statusCode === 0) {
       if (token && token.id) {
         const [ min ] = await actionGetMinMaxShield({ tokenId: token.id });
         setMinShield(min);
