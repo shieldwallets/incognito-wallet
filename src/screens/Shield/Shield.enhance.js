@@ -22,13 +22,17 @@ const enhance = (WrappedComp) => (props) => {
     .map((token) => getPrivacyDataByTokenID(token?.tokenId))
     .filter((token) => token?.isDeposable);
   const handleWhyShield = () => navigation.navigate(routeNames.WhyShield);
-  const handleShield = async (tokenId) => {
+  const handleShield = async (item) => {
     try {
-      if (!isTokenSelectable(tokenId)) {
+      if (!isTokenSelectable(item?.tokenId)) {
         return;
       }
-      navigation.navigate(routeNames.ShieldGenQRCode);
-      await dispatch(fetchDataShield({ tokenId }));
+      if (item?.currencyType === 1 || item?.currencyType === 3) {
+        navigation.navigate(routeNames.TermOfUseShield, { tokenId: item?.tokenId });
+      } else {
+        navigation.navigate(routeNames.ShieldGenQRCode);
+        await dispatch(fetchDataShield({ tokenId: item?.tokenId }));
+      }
     } catch (error) {
       console.debug('SHIELD ERROR', error);
     }

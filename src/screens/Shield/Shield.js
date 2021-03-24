@@ -21,7 +21,7 @@ const Shield = (props) => {
         renderItem={({ item }) => (
           <Token
             externalSymbol
-            onPress={() => handleShield(item?.tokenId)}
+            onPress={() => handleShield(item)}
             tokenId={item?.tokenId}
             symbol="externalSymbol"
             styledSymbol={styled.styledSymbol}

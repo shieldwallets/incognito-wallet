@@ -53,6 +53,7 @@ export const Hook = (props) => {
     handleOpenLink = null,
     moreLines = false,
     flexExtra = 5,
+    notShowRetry
   } = props;
   const shouldShowMsg = !!message;
   const [state, setState] = React.useState({
@@ -107,6 +108,7 @@ export const Hook = (props) => {
           )}
           {showReload &&
             !canRetryExpiredDeposit &&
+            notShowRetry &&
             (fetchingHistory ? (
               <View style={{ marginLeft: 10 }}>
                 <ActivityIndicator size="small" />
@@ -235,6 +237,7 @@ const TxHistoryDetail = (props) => {
       handleRetryHistoryStatus: onRetryHistoryStatus,
       showReload,
       fetchingHistory,
+      notShowRetry: !(!history.isShieldTx && (history.decentralized && history.statusCode === 15 || history.statusCode === 16) || (!history.decentralized && history.statusCode === 15)),
     },
     {
       label: 'Time',
