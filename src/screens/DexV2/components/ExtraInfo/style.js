@@ -19,5 +19,14 @@ export default StyleSheet.create({
   textRight: {
     textAlign: 'right',
     maxWidth: deviceWidth - 155,
-  }
+  },
+  btnChevron: {
+    justifyContent: 'center',
+  },
+  message: {
+    ...FONT.STYLE.medium,
+    fontSize: 14, 
+    color: COLORS.colorGreyBold,
+    marginVertical: 10,
+  },
 });

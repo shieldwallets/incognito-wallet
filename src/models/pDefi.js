@@ -48,7 +48,7 @@ export class PDexTradeHistoryModel {
     this.createdAt = moment(json.CreatedAt).format(LONG_DATE_TIME_FORMAT);
     this.createdAt1 = json.CreatedAt;
     this.type = 'Trade';
-    this.status = [HISTORY_STATUS.PENDING, HISTORY_STATUS.UNSUCCESSFUL, HISTORY_STATUS.SUCCESSFUL][json.Status];
+    this.status = [HISTORY_STATUS.PENDING, HISTORY_STATUS.UNSUCCESSFUL, HISTORY_STATUS.SUCCESSFUL, HISTORY_STATUS.DEPOSIT_FAILD][json.Status];
     this.exchange = TYPES[json.Type] || 'Incognito';
     let buyToken = allTokens.find(
       (token) =>

@@ -13,7 +13,8 @@ const ERC20_NETWORK = {
 export const HISTORY_STATUS = {
   PENDING:      'Pending',
   UNSUCCESSFUL: 'Unsuccessful',
-  SUCCESSFUL:   'Successful'
+  SUCCESSFUL:   'Successful',
+  DEPOSIT_FAILD: 'Deposit Faild'
 };
 
 let kyberTradeAddress = '';

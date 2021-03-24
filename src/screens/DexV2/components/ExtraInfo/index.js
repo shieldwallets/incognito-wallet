@@ -1,25 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Text } from '@src/components/core';
+import { BtnChevron } from '@src/components/Button';
 import stylesheet from './style';
 
-
 const ExtraInfo = (props) => {
-  const { left, right, style, rightStyle, wrapperStyle } = props;
+  const { left, right, style, rightStyle, wrapperStyle, message } = props;
 
   const LeftWrapper = typeof left === 'object' ? View : Text;
   const RightWrapper = typeof right === 'object' ? View : Text;
 
+  const shouldShowMsg = !!message;
+  
+  const [state, setState] = React.useState({
+    toggleMessage: false,
+  });
+  const { toggleMessage } = state;
+
+  const handleToggleMsg = () => {
+    setState({ ...state, toggleMessage: !toggleMessage });
+  };
+
   return (
-    <View style={[stylesheet.wrapper, wrapperStyle]}>
-      <LeftWrapper style={[stylesheet.text, stylesheet.textLeft, style]}>{left}</LeftWrapper>
-      <RightWrapper
-        numberOfLines={1}
-        ellipsizeMode='tail'
-        style={[stylesheet.text, stylesheet.textRight, style, rightStyle, { flex: 1 }]}
-      >
-        {right}
-      </RightWrapper>
+    <View>
+      <View style={[stylesheet.wrapper, wrapperStyle]}>
+        <LeftWrapper style={[stylesheet.text, stylesheet.textLeft, style]}>{left}</LeftWrapper>
+        <RightWrapper
+          numberOfLines={1}
+          ellipsizeMode='tail'
+          style={[stylesheet.text, stylesheet.textRight, style, rightStyle, { flex: 1 }]}
+        >
+          {right}
+        </RightWrapper>
+        {shouldShowMsg && (
+          <BtnChevron
+            style={stylesheet.btnChevron}
+            size={18}
+            toggle={toggleMessage}
+            onPress={handleToggleMsg}
+          />
+        )}
+      </View>
+      {toggleMessage && <Text style={[stylesheet.message]}>{message}</Text>}
     </View>
   );
 };
@@ -37,12 +59,14 @@ ExtraInfo.propTypes = {
   style: PropTypes.object,
   wrapperStyle: PropTypes.object,
   rightStyle: PropTypes.object,
+  message: PropTypes.string,
 };
 
 ExtraInfo.defaultProps = {
   style: null,
   rightStyle: null,
   wrapperStyle: null,
+  message: null
 };
 
 export default ExtraInfo;

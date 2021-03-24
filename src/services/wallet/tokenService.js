@@ -32,6 +32,8 @@ export default class Token {
     info = '',
     actionLogEvent = null,
     txHandler,
+    depositId,
+    tradeHandler = null,
   ) {
     await Wallet.resetProgressTx();
     const { TokenSymbol, TokenName, TokenAmount } = submitParam;
@@ -107,6 +109,8 @@ export default class Token {
         false,
         false,
         txHandler,
+        depositId,
+        tradeHandler
       );
 
       await saveWallet(wallet);

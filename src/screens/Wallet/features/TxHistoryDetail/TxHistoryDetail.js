@@ -237,7 +237,7 @@ const TxHistoryDetail = (props) => {
       handleRetryHistoryStatus: onRetryHistoryStatus,
       showReload,
       fetchingHistory,
-      notShowRetry: !(!history.isShieldTx && (history.decentralized && history.statusCode === 15 || history.statusCode === 16) || (!history.decentralized && history.statusCode === 15)),
+      notShowRetry: !(!history.isShieldTx && (history.decentralized && history.statusCode === 15 || history.statusCode === 16 || history.statusCode === 9 || history.statusCode === 10) || (!history.decentralized && history.statusCode === 15)),
     },
     {
       label: 'Time',

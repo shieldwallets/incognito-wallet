@@ -87,3 +87,13 @@ export const submitChargeFeeTx = ({
     ChargeFeesTx: feeTxId,
   });
 };
+
+/**
+*
+* @param {number} DepositID
+* @param {string} TxID
+* @param {string} RawData
+*/
+export const submitRawDataPdexHandler = (params) => {
+  return http.post('pdefi/submit-raw-data-pdex-trade', params);
+};

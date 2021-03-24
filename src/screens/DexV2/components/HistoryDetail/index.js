@@ -26,7 +26,7 @@ const HistoryDetail = ({ history }) => {
     history?.sellAmount,
     buyAmount,
   );
-
+  
   let factories = [
     {
       left: 'ID',
@@ -51,6 +51,7 @@ const HistoryDetail = ({ history }) => {
     {
       left: 'Status',
       right: history?.status,
+      message: history?.status === HISTORY_STATUS.DEPOSIT_FAILD ? 'There was an issue completing this transaction. Your funds have been returned. Please try again' : null,
     },
     {
       left: 'Account',

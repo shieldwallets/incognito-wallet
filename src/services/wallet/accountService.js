@@ -129,6 +129,8 @@ export default class Account {
     wallet,
     info = '',
     txHandler,
+    depositId,
+    tradeHandler = null,
   ) {
     console.log('Wallet.ProgressTx: ', Wallet.ProgressTx);
     // paymentInfos: payment address string, amount in Number (miliconstant)
@@ -144,7 +146,7 @@ export default class Account {
 
     result = await wallet.MasterAccount.child[
       indexAccount
-    ].createAndSendNativeToken(paymentInfos, fee, isPrivacy, infoStr, false, txHandler);
+    ].createAndSendNativeToken(paymentInfos, fee, isPrivacy, infoStr, false, txHandler, depositId, tradeHandler);
 
     console.log(
       'Spendingcoin after sendConstant: ',
@@ -168,6 +170,8 @@ export default class Account {
     prvAmount,
     memo = '',
     txHandler,
+    depositId,
+    tradeHandler = null,
   ) {
     if (tokenId === COINS.PRV_ID) {
       const paymentInfos = [
@@ -185,6 +189,8 @@ export default class Account {
         wallet,
         memo,
         txHandler,
+        depositId,
+        tradeHandler,
       );
     }
 
@@ -223,6 +229,8 @@ export default class Account {
       memo,
       null,
       txHandler,
+      depositId,
+      tradeHandler,
     );
   }
 
