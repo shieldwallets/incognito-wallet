@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { RoundCornerButton } from '@components/core';
 import routeNames from '@src/router/routeNames';
 import { useDispatch } from 'react-redux';
+import { MESSAGES } from '@src/constants';
 import ic_radio from '@src/assets/images/icons/ic_radio.png';
 import ic_radio_check from '@src/assets/images/icons/ic_radio_check.png';
 import { actionFetch as fetchDataShield } from '../../Shield.actions';
@@ -20,9 +21,13 @@ const TermOfUseShield = (props) => {
     'I will send tokens from a smart contract', 'I will send tokens from my own wallet'];
   const [choose, setChoose] = React.useState(undefined);
 
-  const handlePress = async () => {
+  const handlePressNext = async () => {
     navigation.navigate(routeNames.ShieldGenQRCode);
     await dispatch(fetchDataShield({ tokenId }));
+  };
+
+  const handlePress = (index) => {
+    setChoose(index);
   };
 
   return (
@@ -37,7 +42,7 @@ const TermOfUseShield = (props) => {
             <TouchableOpacity 
               style={index === choose ? styled.selectedButton : styled.unSelectedButon} 
               key={`key-${index}`}
-              onPress={() => setChoose(index)}
+              onPress={() => handlePress(index)}
             >
               <View style={styled.contentView}>
                 <Image style={styled.icon} source={index === choose ? ic_radio_check : ic_radio} />
@@ -49,9 +54,10 @@ const TermOfUseShield = (props) => {
         <RoundCornerButton
           style={styled.button}
           title="Next"
-          disabled={(choose !== 0 && choose !== 1)}
-          onPress={handlePress}
+          disabled={(choose !== 1 && choose !== terms.length - 1)}
+          onPress={handlePressNext}
         />
+        {choose === 0 && <Text style={styled.errorText}>{MESSAGES.WARNING_TERMSOFUSE}</Text>}
       </ScrollView>
     </View>
   );
@@ -100,5 +106,13 @@ const styled = StyleSheet.create({
   button: {
     marginTop: 30,
     backgroundColor: COLORS.black,
-  }
+  },
+  errorText: {
+    ...FONT.STYLE.regular,
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: FONT.SIZE.regular,
+    lineHeight: FONT.SIZE.medium + 4,
+    color: COLORS.orange,
+  },
 });

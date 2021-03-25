@@ -14,7 +14,7 @@ export const HISTORY_STATUS = {
   PENDING:      'Pending',
   UNSUCCESSFUL: 'Unsuccessful',
   SUCCESSFUL:   'Successful',
-  DEPOSIT_FAILD: 'Deposit Faild'
+  DEPOSIT_FAILD: 'Deposit failed'
 };
 
 let kyberTradeAddress = '';

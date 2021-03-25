@@ -5,7 +5,7 @@ import { View, Text, ScrollView, FlexView } from '@components/core';
 import { withLayout_2 } from '@components/Layout';
 import Header from '@components/Header/index';
 import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
-import { CONSTANT_COMMONS } from '@src/constants';
+import { CONSTANT_COMMONS, MESSAGES } from '@src/constants';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
 import { HISTORY_STATUS } from '@src/constants/trading';
 import { useSelector } from 'react-redux';
@@ -51,7 +51,7 @@ const HistoryDetail = ({ history }) => {
     {
       left: 'Status',
       right: history?.status,
-      message: history?.status === HISTORY_STATUS.DEPOSIT_FAILD ? 'There was an issue completing this transaction. Your funds have been returned. Please try again' : null,
+      message: history?.status === HISTORY_STATUS.DEPOSIT_FAILD ? MESSAGES.DEPOSIT_FAILED : null,
     },
     {
       left: 'Account',

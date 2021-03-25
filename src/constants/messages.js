@@ -5,6 +5,9 @@ export default {
   PNODE_UNSTAKE_LABEL: 'Unstake',
   PNODE_UNSTAKE_DESC: 'Stop funded staking',
 
+  DEPOSIT_FAILED: 'There was an issue completing this transaction. Your funds have been returned. Please try again.',
+  WARNING_TERMSOFUSE: 'If sending from an exchange, please take\nwithdrawal times into account. \n\nIt may be more reliable to use a normal\nwallet as an intermediary.',
+
   // error
   CAN_NOT_GET_PDEX_TRADE_HISTORIES: 'Please refresh this screen to reload your pDEX history.',
   CAN_NOT_GET_PDEX_DATA: 'Please refresh this screen to reload pDEX.',
