@@ -15,7 +15,8 @@ export const deposit = ({
   networkFeeTokenId,
   receiverAddress,
   type,
-  priority
+  priority,
+  RawData = false
 }) => {
   return http.post('pdefi/request-deposit', {
     'TokenID': tokenId,
@@ -24,7 +25,8 @@ export const deposit = ({
     'NetworkFeeTokenID': networkFeeTokenId,
     'ReceiverAddress': receiverAddress,
     'Type': type,
-    'FeeLevel': priority.toLowerCase()
+    'FeeLevel': priority.toLowerCase(),
+    'RawData': RawData,
   }).then(data => new DepositResponse(data));
 };
 

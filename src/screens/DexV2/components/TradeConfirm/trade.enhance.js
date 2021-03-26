@@ -63,6 +63,7 @@ const withTrade = (WrappedComp) => (props) => {
       receiverAddress: account.PaymentAddress,
       type,
       priority,
+      RawData: true,
     });
   };
 
