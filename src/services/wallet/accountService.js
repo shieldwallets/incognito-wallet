@@ -146,7 +146,16 @@ export default class Account {
 
     result = await wallet.MasterAccount.child[
       indexAccount
-    ].createAndSendNativeToken(paymentInfos, fee, isPrivacy, infoStr, false, txHandler, depositId, tradeHandler);
+    ].createAndSendNativeToken(
+      paymentInfos,
+      fee,
+      isPrivacy,
+      infoStr,
+      false,
+      txHandler,
+      depositId,
+      tradeHandler,
+    );
 
     console.log(
       'Spendingcoin after sendConstant: ',
