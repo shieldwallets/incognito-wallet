@@ -295,7 +295,7 @@ export const actionFetchHistoryToken = (refreshing = false) => async (
         dispatch(actionFetchReceiveHistory(refreshing)),
       ];
       if (token) {
-        task = [...task, dispatch(getBalance(token))];
+        dispatch(getBalance(token));
       }
       const [
         historiesToken,
