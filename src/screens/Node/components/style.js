@@ -134,6 +134,12 @@ const style = StyleSheet.create({
   bigText: {
     fontSize: 18,
   },
+  rightHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 60,
+    justifyContent: 'space-between',
+  }
 });
 
 export const rewardStyle = StyleSheet.create({

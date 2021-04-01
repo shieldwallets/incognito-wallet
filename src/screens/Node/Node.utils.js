@@ -13,6 +13,9 @@ import DeviceInfo from 'react-native-device-info';
 import Util from '@utils/Util';
 import { CONSTANT_CONFIGS } from '@src/constants';
 import storage from '@services/storage';
+import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
+import { getPNodeBackLog } from '@services/api/device';
+import VirtualNodeService from '@services/VirtualNodeService';
 
 export const checkIfVerifyCodeIsExisting = async () => {
   return new Promise(async (resolve, reject) => {
@@ -379,4 +382,28 @@ export const checkSpaceSaveNode = async () => {
     console.debug('checkSpaceSaveNode error: ', e);
     throw e;
   }
+};
+
+export const getNodeBLSKey = async (device, listAccount) => {
+  let blsKey = '';
+  let account = null;
+  try {
+    account = listAccount.find(item => device?.PaymentAddress && item.PaymentAddress === device?.PaymentAddress);
+    /** case VNode: first call RPC get blsKey */
+    if (!device?.IsPNode) {
+      blsKey = await VirtualNodeService.getPublicKeyMining(device);
+      return { blsKey, account };
+    }
+    if (account) {
+      return { blsKey: device.Account.BLSPublicKey, account };
+    }
+    if (device?.IsPNode) {
+      const { description } = await getPNodeBackLog();
+      blsKey = description?.MiningPublickey || '';
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  return { blsKey, account };
 };

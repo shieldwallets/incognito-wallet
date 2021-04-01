@@ -51,6 +51,9 @@ const HOME_CONFIG_DATA =
     ? 'https://api-data.incognito.org/v2/home-configs'
     : 'https://api-data-staging.incognito.org/v2/home-configs';
 
+const NODE_MONITOR_URL = isMainnet ? 'http://172.168.10.195:3000/' : 'http://172.168.10.195:3000/';
+const NODE_MONITOR_DETAIL_URL = NODE_MONITOR_URL + 'monitor-detail?mpk=';
+
 const HOME_CONFIG_EVENT = () => {
   const isStaging = global.homeConfig !== 'staging';
   const prefix = 'https://';
@@ -115,4 +118,6 @@ export default {
   HOME_CONFIG_EVENT,
   HUNT_CONFIG_QR_CODE,
   URL_SERVICE_UPDATE_FIRMWARE,
+  NODE_MONITOR_URL,
+  NODE_MONITOR_DETAIL_URL,
 };
