@@ -1,5 +1,5 @@
 app_identifier("com.incognito.wallet") # The bundle identifier of your app
-apple_id("developer@incognito.org") # Your Apple email address
+apple_id("binh@incognito.org") # Your Apple email address
 
 json_key_file("play_store.json")
 package_name("com.incognito.wallet") # e.g. com.krausefx.app
