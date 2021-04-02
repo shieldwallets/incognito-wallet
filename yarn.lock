@@ -8727,10 +8727,9 @@ react-native-file-type@^0.0.8:
     js-base64 "2.3.2"
     react-native-fs "2.11.15"
 
-react-native-firebase@5.5.7:
+"react-native-firebase@https://github.com/incognitochain/react-native-firebase.git#feature/fix_crash_ios":
   version "5.5.7"
-  resolved "https://registry.yarnpkg.com/react-native-firebase/-/react-native-firebase-5.5.7.tgz#d03d69c774af280c80c63bede59f65c5f7e8f26c"
-  integrity sha512-vWUdF6lE22iKSE1gh3bxzzfcA7OCoY1VLASF/XFAlXdGzw4/ksRrdcgdItkNSUnrYG3+pB46ah+OaTHPENPmuQ==
+  resolved "https://github.com/incognitochain/react-native-firebase.git#f2d62d7b6cb475bf4bf93212624f8bf13c50a766"
   dependencies:
     opencollective-postinstall "^2.0.0"
     prop-types "^15.7.2"
