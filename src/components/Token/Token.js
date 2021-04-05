@@ -235,10 +235,10 @@ export const Amount = (props) => {
     decimalDigits,
     false,
   );
-
+  const style = hideBlance && fromBlance ? { fontSize: 56 } : {};
   return (
     <NormalText
-      style={[styled.bottomText, styled.boldText, customStyle]}
+      style={[styled.bottomText, styled.boldText, customStyle, style]}
       text={
         hideBlance
           ? fromBlance

@@ -79,6 +79,8 @@ import ManageStorage from '@screens/ManageStorage';
 import BackUpAllData from '@screens/BackUpAllData';
 import RestoreAll from '@screens/RestoreAllData';
 import UpdateFirmware from '@screens/Node/UpdateFirmware';
+import ExportCSV from '@screens/ExportCSV';
+import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
 
 const masterKeyRoutes = [
   {
@@ -408,6 +410,14 @@ const routes = [
   {
     screen: UpdateFirmware,
     name: routeNames.UpdateNodeFirmware,
+  },
+  {
+    screen: ExportCSV,
+    name: routeNames.ExportCSV,
+  },
+  {
+    screen: TermOfUseShield,
+    name: routeNames.TermOfUseShield,
   },
 ];
 

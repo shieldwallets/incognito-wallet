@@ -20,10 +20,39 @@ const styled = StyleSheet.create({
   qrCode: {
     marginVertical: 30,
   },
+  boldText: {
+    fontFamily: FONT.NAME.bold,
+    color: COLORS.black,
+  },
+  smallText: {
+    fontSize: 13,
+    lineHeight: 15,
+    marginTop: 5,
+    color: COLORS.orange,
+    fontFamily: FONT.NAME.NormalText,
+    marginBottom: 20,
+  },
+  text: {
+    fontFamily: FONT.NAME.regular,
+    lineHeight: FONT.SIZE.regular + 9,
+    fontSize: FONT.SIZE.regular,
+    color: COLORS.colorGreyBold,
+    textAlign: 'center',
+  },
 });
 
-const QrCodeAddress = props => {
-  const { address, label } = props;
+const NormalText = React.memo((props) => {
+  const { text, style = null, children = null } = props;
+  return (
+    <Text style={[styled.text, style]}>
+      {text}
+      {children}
+    </Text>
+  );
+});
+
+const QrCodeAddress = (props) => {
+  const { address, label, isPending, min, symbol } = props;
   if (!address) {
     return <LoadingContainer />;
   }
@@ -33,6 +62,17 @@ const QrCodeAddress = props => {
       <View style={styled.qrCode}>
         <QrCodeGenerate value={address} size={150} />
       </View>
+      {isPending && min && (
+        <>
+          <NormalText text="Minimum amount: ">
+            <Text style={[styled.boldText]}>{`${min} ${symbol}`}</Text>
+          </NormalText>
+          <NormalText
+            text="Smaller amounts will not be processed."
+            style={styled.smallText}
+          />
+        </>
+      )}
       <CopiableText data={address} />
     </View>
   );
@@ -41,6 +81,9 @@ const QrCodeAddress = props => {
 QrCodeAddress.propTypes = {
   address: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  isPending: PropTypes.bool.isRequired,
+  min: PropTypes.number,
+  symbol: PropTypes.string,
 };
 
 export default QrCodeAddress;

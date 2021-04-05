@@ -3,7 +3,7 @@ import { MESSAGES, PRV_ID } from '@screens/Dex/constants';
 import { COINS } from '@src/constants';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
-import { deposit as depositAPI, trade as tradeAPI } from '@services/api/pdefi';
+import { deposit as depositAPI, trade as tradeAPI, submitRawDataPdexHandler } from '@services/api/pdefi';
 import { MAX_PDEX_TRADE_STEPS } from '@screens/DexV2/constants';
 import { apiTradePKyber } from '@screens/DexV2';
 import convertUtil from '@utils/convert';
@@ -63,6 +63,7 @@ const withTrade = (WrappedComp) => (props) => {
       receiverAddress: account.PaymentAddress,
       type,
       priority,
+      RawData: true,
     });
   };
 
@@ -146,6 +147,7 @@ const withTrade = (WrappedComp) => (props) => {
         await tradeAPI(payload);
       }
       dispatch(actionLogEvent({ desc: 'TRADE START SEND COIN TO WALLET' }));
+      const depositId = depositObject.depositId;
       const result = await accountService.createAndSendToken(
         account,
         wallet,
@@ -155,8 +157,13 @@ const withTrade = (WrappedComp) => (props) => {
         prvNetworkFee,
         tokenNetworkFee,
         prvAmount,
+        '',
+        null,
+        depositId,
+        submitRawDataPdexHandler
       );
       dispatch(actionLogEvent({ desc: 'TRADE END SEND COIN TO WALLET' }));
+      dispatch(actionLogEvent({ desc: `txId: ${result.txId}, rawData: ${result.rawData}` }));
       if (result && result.txId) {
         onTradeSuccess(true);
       }

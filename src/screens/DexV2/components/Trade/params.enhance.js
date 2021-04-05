@@ -11,8 +11,14 @@ const withParams = WrappedComp => (props) => {
   const inputTokenId = useNavigationParam('inputTokenId');
   const outputTokenId = useNavigationParam('outputTokenId');
   const outputValue = useNavigationParam('outputValue');
+  const fromWalletDetail = useNavigationParam('fromWalletDetail');
 
-  const { pair, inputBalance, inputText } = props;
+  const { pair, inputBalance, inputText, onLoadPairs } = props;
+
+  React.useEffect(async () => {
+    if (fromWalletDetail) 
+      await onLoadPairs();
+  }, []);
 
 
   React.useEffect(() => {

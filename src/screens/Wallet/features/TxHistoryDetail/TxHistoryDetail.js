@@ -31,6 +31,8 @@ import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
+import { COLORS } from '@src/styles';
+import { FontStyle } from '@src/styles/TextStyle';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -49,7 +51,9 @@ export const Hook = (props) => {
     handleRetryHistoryStatus,
     fetchingHistory,
     handleOpenLink = null,
-    moreLines = false
+    moreLines = false,
+    flexExtra = 5,
+    notShowRetry
   } = props;
   const shouldShowMsg = !!message;
   const [state, setState] = React.useState({
@@ -81,7 +85,7 @@ export const Hook = (props) => {
         >
           {`${label}:`}
         </Text>
-        <View style={styled.extra}>
+        <View style={[styled.extra, { flex: flexExtra }]}>
           <Text
             style={[
               styled.valueText,
@@ -104,6 +108,7 @@ export const Hook = (props) => {
           )}
           {showReload &&
             !canRetryExpiredDeposit &&
+            notShowRetry &&
             (fetchingHistory ? (
               <View style={{ marginLeft: 10 }}>
                 <ActivityIndicator size="small" />
@@ -180,6 +185,7 @@ const TxHistoryDetail = (props) => {
     onPullRefresh,
     isRefresh,
     historyId,
+    minShield
   } = props;
   const toggleHistoryDetail = dev[CONSTANT_KEYS.DEV_TEST_TOGGLE_HISTORY_DETAIL];
   const { typeText, statusColor, statusMessage, history } = data;
@@ -194,6 +200,8 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
+  const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
+  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
   const historyFactories = [
     {
       label: 'ID',
@@ -223,12 +231,13 @@ const TxHistoryDetail = (props) => {
       valueText: statusMessage,
       valueTextStyle: { color: statusColor },
       disabled: !toggleHistoryDetail && !statusMessage,
-      canRetryExpiredDeposit: history?.canRetryExpiredDeposit,
+      canRetryExpiredDeposit: history?.canRetryExpiredDeposit || isBTCInvalidAmount,
       handleRetryExpiredDeposit: onRetryExpiredDeposit,
       message: history?.statusDetail,
       handleRetryHistoryStatus: onRetryHistoryStatus,
       showReload,
       fetchingHistory,
+      notShowRetry: !(!history.isShieldTx && (history.decentralized && history.statusCode === 15 || history.statusCode === 16 || history.statusCode === 9 || history.statusCode === 10) || (!history.decentralized && history.statusCode === 15)),
     },
     {
       label: 'Time',
@@ -286,6 +295,12 @@ const TxHistoryDetail = (props) => {
       copyable: true,
       disabled: !history?.erc20TokenAddress,
     },
+    {
+      label: 'Shield Address',
+      valueText: history.depositAddress,
+      copyable: false,
+      disabled: !history.depositAddress || history.statusText !== 'EXPIRED' || history.isShieldTx === false,
+    },
   ];
   const onCopyData = () => {
     Clipboard.setString(JSON.stringify(data));
@@ -316,12 +331,15 @@ const TxHistoryDetail = (props) => {
       }
     >
       {historyFactories.map((hook, index) => (
-        <Hook key={index} {...hook} />
+        <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5}/>
       ))}
-      {!!history?.depositAddress && (
+      {!!history?.depositAddress && (history.statusCode === 0 || isInvalidAmount) && (
         <QrCodeAddressDefault
           label="Shielding address"
           address={history?.depositAddress}
+          isPending={history.statusCode === 0}
+          symbol={history.symbol}
+          min={minShield}
         />
       )}
       {toggleTxHistoryDetail && (
@@ -354,6 +372,7 @@ TxHistoryDetail.propTypes = {
   /* Handle pull refresh */
   isRefresh: PropTypes.bool.isRequired,
   onPullRefresh: PropTypes.func.isRequired,
+  minShield: PropTypes.number.isRequired,
 };
 
 export default React.memo(TxHistoryDetail);

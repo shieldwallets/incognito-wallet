@@ -143,6 +143,7 @@ const GenQRCode = (props) => {
         title={`Shield ${selectedPrivacy?.externalSymbol}`}
         titleStyled={styled.titleStyled}
         rightHeader={<BtnInfo isBlack onPress={handleToggleTooltip} />}
+        onGoBack={() => navigation.navigate(routeNames.Shield)}
       />
       {toggle && (
         <Tooltip

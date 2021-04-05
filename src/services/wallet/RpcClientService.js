@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import {
   getEstimateFee,
   getEstimateFeeForPToken as getEstimateFeeForPTokenService,
@@ -335,6 +334,37 @@ export const getReceiveHistoryByRPC = async ({
     throw new Error('Can\'t request API');
   } else if (response.data.Error) {
     throw response.data.Error;
+  }
+  return response.data.Result?.ReceivedTransactions;
+};
+
+export const getReceiveHistoryByRPCWithOutError = async ({
+  PaymentAddress,
+  ReadonlyKey,
+  Skip = 0,
+  Limit = 10,
+  TokenID,
+}) => {
+  const client = await getRpcClient();
+  const data = {
+    jsonrpc: '1.0',
+    method: 'gettransactionbyreceiverv2',
+    params: [
+      {
+        PaymentAddress,
+        ReadonlyKey,
+        Skip,
+        Limit,
+        TokenID,
+      },
+    ],
+    id: 1,
+  };
+  const response = await client.rpcHttpService.postRequest(data);
+  if (response.status !== 200) {
+    return [];
+  } else if (response.data.Error) {
+    return [];
   }
   return response.data.Result?.ReceivedTransactions;
 };

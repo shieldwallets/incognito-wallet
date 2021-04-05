@@ -45,6 +45,7 @@ export const useBtnTrade = () => {
     navigation.navigate(routeNames.Trade, {
       inputTokenId: CONSTANT_COMMONS.PRV.id,
       outputTokenId: selectedPrivacy?.tokenId,
+      fromWalletDetail: true
     });
   };
 

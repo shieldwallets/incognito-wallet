@@ -57,6 +57,7 @@ export default {
   SelectAccount: 'SelectAccount',
   FollowTokenOld: 'FollowTokenOld',
   ShieldGenQRCode: 'ShieldGenQRCode',
+  TermOfUseShield: 'TermOfUseShield',
   AddManually: 'AddManually',
   Send: 'Send',
   RepairingSetupNode: 'RepairingSetupNode',
@@ -130,4 +131,6 @@ export default {
   RestoreAllData: 'RestoreAllData',
   
   UpdateNodeFirmware: 'UpdateNodeFirmware',
+
+  ExportCSV: 'ExportCSV',
 };

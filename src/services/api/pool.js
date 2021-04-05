@@ -60,3 +60,9 @@ export async function getHistories(account, page, limit, coins) {
       total: data.Total,
     }));
 }
+
+export async function checkPNodeReward(Txs) {
+  return http.post('/pnode/check-tx', {
+    'Txs': Txs,
+  }, { timeout: 100000 }).then(data => data);
+}

@@ -400,6 +400,8 @@ PODS:
     - React
   - RNReanimated (1.2.0):
     - React
+  - RNShare (5.1.4):
+    - React-Core
   - RNSVG (9.6.4):
     - React
   - RNVectorIcons (6.6.0):
@@ -487,6 +489,7 @@ DEPENDENCIES:
   - RNOS (from `../node_modules/react-native-os`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - RNWifi (from `../node_modules/react-native-wifi-reborn`)
@@ -642,6 +645,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -659,9 +664,9 @@ SPEC CHECKSUMS:
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CodePush: 58d8b6595f46057ca1f49c55fb6860ad7fd38ce3
-  Crashlytics: 2dfd686bcb918dc10ee0e76f7f853fe42c7bd552
+  Crashlytics: d3e5090419ddee1003192c98ac0e6dfdb1dba266
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
+  Fabric: ea977e3cd9c20425516d3dafd3bf8c941c51223f
   FBLazyVector: 68b6a76960fbd8ecd9fb7ce0aadd3329c3340a99
   FBReactNativeSpec: 5a764c60abdc3336a213e5310c40b74741f32839
   Firebase: 8432d732974498afd5987e9001a05f90f1a3d625
@@ -739,6 +744,7 @@ SPEC CHECKSUMS:
   RNOS: c3ca1e6bdeb868076fca62f2188848f2b267d19c
   RNPermissions: 3635b407c15f2fe591bd2101c8f20aa0912caba8
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
+  RNShare: 8af5349f05fc042d230674dd650d19789187ff9c
   RNSVG: a53a5de0d90ec96a6502cc3a4534dfcc0c130622
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   RNWifi: 1747f039612dd494192ba6c8bc498606ad9f3ec4
@@ -747,6 +753,6 @@ SPEC CHECKSUMS:
   TouchID: ba4c656d849cceabc2e4eef722dea5e55959ecf4
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: df74644be0c6fe5ed11899e7fffe249c63f57f07
+PODFILE CHECKSUM: 7c7f83c6aea2b0cf56853f072b20ee935abe2fcd
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.10.1

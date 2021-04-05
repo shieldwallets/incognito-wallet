@@ -18,6 +18,7 @@ import { settingSelector } from './Setting.selector';
 import { actionFetchServers } from './Setting.actions';
 import withSetting from './Setting.enhance';
 import DecimalDigitsSection from './features/DecimalDigitsSection';
+import ExportCSVSection from './features/ExportCSVSection';
 
 const Setting = () => {
   const navigation = useNavigation();
@@ -34,6 +35,10 @@ const Setting = () => {
     },
   ];
 
+  const handlePressExportCSV = () => {
+    navigation?.navigate(routeNames.ExportCSV);
+  };
+
   return (
     <MainLayout header="Settings" scrollable>
       <View>
@@ -45,6 +50,7 @@ const Setting = () => {
         <DecimalDigitsSection />
         <CurrencySection />
         <AddressBookSection />
+        <ExportCSVSection handlePress={handlePressExportCSV} />
         <UTXOSection />
         {<RemoveStorage />}
         {global.isDebug() && <DevSection />}
@@ -55,7 +61,5 @@ const Setting = () => {
     </MainLayout>
   );
 };
-
-Setting.propTypes = {};
 
 export default withSetting(Setting);
