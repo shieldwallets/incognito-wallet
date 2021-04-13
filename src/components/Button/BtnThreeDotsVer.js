@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import {ThreeDotsVerIcon} from '@src/components/Icons';
 import PropTypes from 'prop-types';
 
@@ -7,6 +7,7 @@ const styled = StyleSheet.create({
   btnStyle: {
     height: 32,
     justifyContent: 'center',
+    marginRight: 12,
   },
 });
 

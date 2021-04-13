@@ -137,7 +137,7 @@ const style = StyleSheet.create({
   rightHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: 60,
+    maxWidth: 60,
     justifyContent: 'space-between',
   }
 });
