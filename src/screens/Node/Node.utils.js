@@ -398,8 +398,8 @@ export const getNodeBLSKey = async (device, listAccount) => {
       return { blsKey: device.Account.BLSPublicKey, account };
     }
     if (device?.IsPNode) {
-      const { description } = await getPNodeBackLog();
-      blsKey = description?.MiningPublickey || '';
+      const result = await getPNodeBackLog(device);
+      blsKey = result?.description?.getmininginfo?.Result?.MiningPublickey || '';
     }
   } catch (error) {
     console.log(error);

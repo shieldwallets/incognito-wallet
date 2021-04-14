@@ -16,6 +16,7 @@ const API_BASE_URL = isMainnet
 const API_BASE_URL2 = isMainnet
   ? 'https://device-network.incognito.org/'
   : 'https://device-network-staging.incognito.org/';
+const API_BASE_URL3 = 'https://device-network.incognito.org/';
 const ETHERSCAN_URL = isMainnet
   ? 'https://etherscan.io'
   : 'https://kovan.etherscan.io';
@@ -114,6 +115,7 @@ export default {
   TESTNET_FULLNODE,
   HOME_CONFIG_DATA,
   API_BASE_URL2,
+  API_BASE_URL3,
   APP_VERSION,
   HOME_CONFIG_EVENT,
   HUNT_CONFIG_QR_CODE,
