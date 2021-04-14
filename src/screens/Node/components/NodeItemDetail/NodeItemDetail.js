@@ -172,7 +172,7 @@ const NodeItemDetail = memo(({
 
   const renderRightHeader = () => (
     <View style={styles.rightHeader}>
-      {!!isEmpty(item?.PublicKeyMining) &&
+      {!isEmpty(item?.PublicKeyMining) &&
         <BtnThreeDotsVer onPress={() => onPressMonitorDetail && onPressMonitorDetail(item?.PublicKeyMining)} />
       }
       <BtnMoreInfo onPress={onHelpPress} />
