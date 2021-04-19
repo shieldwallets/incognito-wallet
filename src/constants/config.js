@@ -52,7 +52,7 @@ const HOME_CONFIG_DATA =
     ? 'https://api-data.incognito.org/v2/home-configs'
     : 'https://api-data-staging.incognito.org/v2/home-configs';
 
-const NODE_MONITOR_URL = isMainnet ? 'http://51.91.72.45:5000/' : 'http://51.91.72.45:36215/';
+const NODE_MONITOR_URL = isMainnet ? 'https://monitor.mainnet.incognito.org/' : 'http://51.91.72.45:36215/';
 const NODE_MONITOR_DETAIL_URL = NODE_MONITOR_URL + 'monitor-detail?mpk=';
 
 const HOME_CONFIG_EVENT = () => {
