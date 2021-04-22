@@ -16,6 +16,7 @@ const API_BASE_URL = isMainnet
 const API_BASE_URL2 = isMainnet
   ? 'https://device-network.incognito.org/'
   : 'https://device-network-staging.incognito.org/';
+const API_BASE_URL3 = 'https://device-network.incognito.org/';
 const ETHERSCAN_URL = isMainnet
   ? 'https://etherscan.io'
   : 'https://kovan.etherscan.io';
@@ -50,6 +51,9 @@ const HOME_CONFIG_DATA =
   global.homeConfig !== 'staging'
     ? 'https://api-data.incognito.org/v2/home-configs'
     : 'https://api-data-staging.incognito.org/v2/home-configs';
+
+const NODE_MONITOR_URL = isMainnet ? 'https://monitor.mainnet.incognito.org/' : 'http://51.91.72.45:36215/';
+const NODE_MONITOR_DETAIL_URL = NODE_MONITOR_URL + 'monitor-detail?mpk=';
 
 const HOME_CONFIG_EVENT = () => {
   const isStaging = global.homeConfig !== 'staging';
@@ -111,8 +115,11 @@ export default {
   TESTNET_FULLNODE,
   HOME_CONFIG_DATA,
   API_BASE_URL2,
+  API_BASE_URL3,
   APP_VERSION,
   HOME_CONFIG_EVENT,
   HUNT_CONFIG_QR_CODE,
   URL_SERVICE_UPDATE_FIRMWARE,
+  NODE_MONITOR_URL,
+  NODE_MONITOR_DETAIL_URL,
 };

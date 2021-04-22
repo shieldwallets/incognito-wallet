@@ -81,6 +81,7 @@ import RestoreAll from '@screens/RestoreAllData';
 import UpdateFirmware from '@screens/Node/UpdateFirmware';
 import ExportCSV from '@screens/ExportCSV';
 import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
+import MonitorDetail from '@screens/Node/MonitorDetail';
 
 const masterKeyRoutes = [
   {
@@ -418,6 +419,10 @@ const routes = [
   {
     screen: TermOfUseShield,
     name: routeNames.TermOfUseShield,
+  },
+  {
+    screen: MonitorDetail,
+    name: routeNames.MonitorDetail,
   },
 ];
 

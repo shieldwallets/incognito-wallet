@@ -26,7 +26,8 @@ import {
   formatNodeItemFromApi,
   combineNode,
   findNodeIndexByProductId,
-  getNodeToken
+  getNodeToken,
+  getNodeBLSKey
 } from '@screens/Node/Node.utils';
 import NodeService from '@services/NodeService';
 import moment from 'moment';
@@ -259,14 +260,18 @@ export const actionUpdatePNodeItem = (productId) => async (dispatch, getState) =
           console.debug('CHECK VERSION ERROR', device.QRCode, e);
         }
       }
-      if (device.PaymentAddress) {
-        device.Account = listAccount.find(item => item.PaymentAddress === device.PaymentAddress);
-        if (device.Account) {
-          device.ValidatorKey = device.Account.ValidatorKey;
-          device.PublicKey = device.Account.PublicKeyCheckEncode;
-          device.PublicKeyMining = device.Account.BLSPublicKey;
-        }
+      const { blsKey, account } = await getNodeBLSKey(device, listAccount);
+      if (!isEmpty(blsKey)) {
+        device.PublicKeyMining = blsKey;
       }
+
+      if (device.PaymentAddress && account) {
+        device.Account = account;
+        device.ValidatorKey = device.Account.ValidatorKey;
+        device.PublicKey = device.Account.PublicKeyCheckEncode;
+        device.Account = listAccount.find(item => item.PaymentAddress === device.PaymentAddress);
+      }
+
       await dispatch(actionUpdateNodeByProductId(productId, device));
       // Log Time load Node
       const end = new Date().getTime();
@@ -297,8 +302,7 @@ export const actionUpdateVNodeItem = (deviceItem) => async (dispatch, getState) 
     const start       = new Date().getTime();
     const state       = getState();
     const listAccount = listAllMasterKeyAccounts(state);
-    const newBLSKey   = await VirtualNodeService.getPublicKeyMining(deviceItem);
-
+    const { blsKey: newBLSKey } = await getNodeBLSKey(deviceItem, listAccount);
     const { listDevice }  = state?.node;
 
     const deviceIndex = findNodeIndexByProductId(listDevice, productId);

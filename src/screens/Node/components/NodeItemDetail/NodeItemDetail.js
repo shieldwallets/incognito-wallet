@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styles from '@screens/Node/components/style';
 import Header from '@components/Header';
 import BtnMoreInfo from '@components/Button/BtnMoreInfo';
+import BtnThreeDotsVer from '@components/Button/BtnThreeDotsVer';
 import Rewards from '@screens/Node/components/Rewards';
 import {
   Text,
@@ -40,7 +41,8 @@ const NodeItemDetail = memo(({
   onStakePress,
   onChangeWifiPress,
   onUnStakePress,
-  onRefresh
+  onRefresh,
+  onPressMonitorDetail
 }) => {
 
   const renderRewards = () => {
@@ -168,11 +170,20 @@ const NodeItemDetail = memo(({
     />
   );
 
+  const renderRightHeader = () => (
+    <View style={styles.rightHeader}>
+      {!isEmpty(item?.PublicKeyMining) &&
+        <BtnThreeDotsVer onPress={() => onPressMonitorDetail && onPressMonitorDetail(item?.PublicKeyMining)} />
+      }
+      <BtnMoreInfo onPress={onHelpPress} />
+    </View>
+  );
+
   return (
     <View style={styles.containerDetail}>
       <Header
         title="Node details"
-        rightHeader={<BtnMoreInfo onPress={onHelpPress} />}
+        rightHeader={renderRightHeader()}
       />
       <ScrollView
         refreshControl={renderRefreshControl()}
@@ -215,6 +226,7 @@ NodeItemDetail.propTypes = {
   onUnStakePress: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   onUpdateNode: PropTypes.func.isRequired,
+  onPressMonitorDetail: PropTypes.func.isRequired,
 };
 
 export default compose(

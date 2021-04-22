@@ -133,4 +133,5 @@ export default {
   UpdateNodeFirmware: 'UpdateNodeFirmware',
 
   ExportCSV: 'ExportCSV',
+  MonitorDetail: 'MonitorDetail',
 };

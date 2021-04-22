@@ -1,4 +1,5 @@
 import http2 from '@src/services/http2';
+import http3 from '@src/services/http3';
 import { cachePromise, KEYS } from '@services/cache';
 
 const getPDEStateNoCache = () => {
@@ -28,5 +29,19 @@ export const convertPRVFeeToTokenFee = ({ prvAmount, tokenId }) => {
   return http2.get('/chain/estimateFee', {
     'Prv': prvAmount,
     'TokenID': tokenId
+  });
+};
+
+/**
+ * Convert prv fee to token fee
+ * @param {object} device
+ */
+export const getPNodeBackLog = async (device) => {
+  if(!device || !device.QRCode) return null;
+  return http3.get(`/device?qrcode=${device.QRCode}`).then((data) => {
+    return {
+      ...data,
+      description: data?.description ? JSON.parse(data.description) : {}
+    };
   });
 };

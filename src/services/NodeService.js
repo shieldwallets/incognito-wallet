@@ -10,6 +10,7 @@ import API from '@services/api/miner/api';
 import axios from 'axios';
 import moment from 'moment';
 import { getLastUpdateFirmwareTime, setLastUpdatefirmwareTime } from '@services/api/node';
+import http2 from '@services/http2';
 import { CustomError, ExHandler } from './exception';
 import knownCode from './exception/customError/code/knownCode';
 import FirebaseService, {

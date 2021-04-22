@@ -1,7 +1,5 @@
 import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
-import { compose } from 'recompose';
-import nodeItemDetailEnhanceData from '@screens/Node/components/NodeItemDetail/NodeItemDetail.enhanceData';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@routers/routeNames';
 import { useDispatch } from 'react-redux';
@@ -77,6 +75,12 @@ const withEnhance = WrappedComp => props => {
     });
   };
 
+  const onPressMonitorDetail = (blsKey) => {
+    navigation.navigate(routeNames.MonitorDetail, {
+      blsKey,
+    });
+  };
+
   return (
     <ErrorBoundary>
       <WrappedComp
@@ -90,7 +94,8 @@ const withEnhance = WrappedComp => props => {
           onChangeWifiPress,
           onUnStakePress,
           onRefresh: onRefreshNodeItem,
-          onUpdateNode
+          onUpdateNode,
+          onPressMonitorDetail
         }}
       />
     </ErrorBoundary>
