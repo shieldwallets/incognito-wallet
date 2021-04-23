@@ -1,7 +1,7 @@
-import React, {memo} from 'react';
-import {View, StyleSheet, Modal, Text} from 'react-native';
+import React, { memo } from 'react';
+import { View, StyleSheet, Modal, Text } from 'react-native';
 import PropTypes from 'prop-types';
-import {COLORS, FONT} from '@src/styles';
+import { COLORS, FONT } from '@src/styles';
 import { ButtonBasic } from '@components/Button';
 
 const styles = StyleSheet.create({
@@ -10,11 +10,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 27
+    paddingHorizontal: 27,
   },
   wrapContent: {
     backgroundColor: COLORS.white,
-    width:'100%',
+    width: '100%',
     borderRadius: 13,
     paddingHorizontal: 15,
     paddingVertical: 30,
@@ -30,32 +30,35 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     textAlign: 'center',
     color: COLORS.newGrey,
-    marginTop: 15
+    marginTop: 15,
   },
   buttonStyle: {
     borderRadius: 25,
     height: 50,
     marginTop: 30,
-    width: '48%'
-  }
+    width: '48%',
+  },
 });
 
 const CONTENT = {
   title: 'Clear history',
-  subTitle: 'This will delete transaction histories from display. Are you sure you want to continue?',
+  subTitle:
+    'This will delete transaction histories from display. Are you sure you want to continue?',
   cancel: 'Cancel',
-  accept: 'OK'
+  accept: 'OK',
 };
 
 const RemoveDialog = (props) => {
-  const { visible, onPressCancel, onPressAccept } = props;
+  const { visible, onPressCancel, onPressAccept, title, subTitle } = props;
   return (
-    <Modal visible={visible} animationType='fade' transparent>
+    <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalBackground}>
         <View style={styles.wrapContent}>
-          <Text style={styles.title}>{CONTENT.title}</Text>
-          <Text style={styles.subTitle}>{CONTENT.subTitle}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.title}>{title || CONTENT.title}</Text>
+          <Text style={styles.subTitle}>{subTitle || CONTENT.subTitle}</Text>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
             <ButtonBasic
               onPress={onPressCancel}
               title={CONTENT.cancel}
@@ -77,10 +80,14 @@ RemoveDialog.propTypes = {
   visible: PropTypes.bool,
   onPressCancel: PropTypes.func.isRequired,
   onPressAccept: PropTypes.func.isRequired,
+  title: PropTypes.string,
+  subTitle: PropTypes.string,
 };
 
 RemoveDialog.defaultProps = {
-  visible: true
+  visible: true,
+  title: '',
+  subTitle: '',
 };
 
 export default memo(RemoveDialog);

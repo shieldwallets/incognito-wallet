@@ -4,7 +4,7 @@ import { getpTokenHistory } from '@src/services/api/history';
 import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
 import { loadHistoryByAccount } from '@src/services/wallet/WalletService';
 import { getFeeFromTxHistory } from '@src/screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.utils';
-import { endsWith, isEmpty } from 'lodash';
+import { endsWith, isEmpty, uniqBy } from 'lodash';
 
 export const normalizeHistoriesFromApi = ({
   historiesFromApi = [],
@@ -298,21 +298,18 @@ export const loadAccountHistory = () => async (dispatch, getState) => {
   }
 };
 
-export const getTypeHistoryReceive = ({ account, serialNumbers }) => {
+export const getTypeHistoryReceive = ({ spentCoins, serialNumbers }) => {
   let type = CONSTANT_COMMONS.HISTORY.TYPE.RECEIVE;
   if (!serialNumbers) {
     return type;
   }
-  if (serialNumbers) {
-    const accountSerialNumbers = account?.derivatorToSerialNumberCache;
+  if (serialNumbers && spentCoins) {
     try {
-      for (let key in accountSerialNumbers) {
-        const accountSerialNumber = accountSerialNumbers[key];
-        const isExisted = serialNumbers?.includes(accountSerialNumber);
-        if (isExisted) {
-          type = CONSTANT_COMMONS.HISTORY.TYPE.SEND;
-          break;
-        }
+      let indexType = spentCoins.findIndex((item) => {
+        return serialNumbers?.includes(item?.SerialNumber);
+      });
+      if (indexType > -1) {
+        type = CONSTANT_COMMONS.HISTORY.TYPE.SEND;
       }
     } catch (error) {
       throw error;
@@ -338,7 +335,8 @@ export const handleFilterHistoryReceiveByTokenId = ({ tokenId, histories }) => {
           : null;
         let amount = 0;
         let hasOutputs = false;
-        let hasInputs = !isEmpty(serialNumbers[tokenId]);
+        let hasInputs = !isEmpty(serialNumbers);
+
         try {
           for (let id in receivedAmounts) {
             if (id === tokenId) {
@@ -351,7 +349,8 @@ export const handleFilterHistoryReceiveByTokenId = ({ tokenId, histories }) => {
         } catch (error) {
           console.debug('ERROR', error);
         }
-        return {
+        const isMintedToken = !hasInputs && !!hasOutputs;
+        const payload = {
           txID: history?.Hash,
           time: endsWith(history?.LockTime, 'Z')
             ? history?.LockTime
@@ -362,13 +361,14 @@ export const handleFilterHistoryReceiveByTokenId = ({ tokenId, histories }) => {
           serialNumbers,
           metaData,
           privacyCustomTokenProofDetail: history?.PrivacyCustomTokenProofDetail,
-          isMintedToken: !hasInputs && !!hasOutputs,
+          isMintedToken,
         };
+        return payload;
       });
   } catch (error) {
     throw error;
   }
-  return result;
+  return uniqBy(result, (item) => item?.txID);
 };
 
 export const mergeReceiveAndLocalHistory = ({

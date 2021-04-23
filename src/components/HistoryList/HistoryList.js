@@ -15,6 +15,7 @@ import { TOKEN } from '@src/constants/elements';
 import Swipeout from 'react-native-swipeout';
 import { useNavigation } from 'react-navigation-hooks';
 import trim from 'lodash/trim';
+import toString from 'lodash/toString';
 import { useSelector } from 'react-redux';
 import { decimalDigitsSelector } from '@src/screens/Setting';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
@@ -137,7 +138,9 @@ const HistoryList = ({
 }) => (
   <FlatList
     data={histories.sort(
-      (a, b) => new Date(b?.time).getTime() - new Date(a?.time).getTime(),
+      (a, b) =>
+        new Date(toString(b?.time)).getTime() -
+        new Date(toString(a?.time)).getTime(),
     )}
     renderItem={({ item: history }) => {
       return <HistoryItemWrapper {...{ history, onCancelEtaHistory }} />;

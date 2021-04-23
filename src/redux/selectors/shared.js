@@ -4,25 +4,18 @@ import {
   pTokensSelector,
   internalTokensSelector,
   tokensFollowedSelector,
-  isGettingBalance as isGettingBalanceToken,
 } from '@src/redux/selectors/token';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { uniqBy, isNaN, compact, fromPairs } from 'lodash';
 import convert from '@src/utils/convert';
 import { BIG_COINS } from '@src/screens/DexV2/constants';
-import {
-  currencySelector,
-  decimalDigitsSelector
-} from '@screens/Setting';
+import { currencySelector, decimalDigitsSelector } from '@screens/Setting';
 import { formatAmount } from '@components/Token';
 import { PRV } from '@services/wallet/tokenService';
-import {
-  defaultAccountName,
-  defaultAccountBalanceSelector
-} from './account';
+import { defaultAccountName, defaultAccountBalanceSelector } from './account';
 
 export const isGettingBalance = createSelector(
-  isGettingBalanceToken,
+  (state) => state?.token?.isGettingBalance,
   (state) => state?.account?.isGettingBalance,
   defaultAccountName,
   (tokens, accounts, defaultAccountName) => {
@@ -68,11 +61,11 @@ export const pTokenSelector = createSelector(
   currencySelector,
   (getPrivacyDataByTokenID, isToggleUSD) => {
     const decimalDigit = getPrivacyDataByTokenID(
-      isToggleUSD ? BIG_COINS.USDT : BIG_COINS.PRV
+      isToggleUSD ? BIG_COINS.USDT : BIG_COINS.PRV,
     );
     return {
       pToken: decimalDigit,
-      isToggleUSD
+      isToggleUSD,
     };
   },
 );
@@ -80,9 +73,9 @@ export const pTokenSelector = createSelector(
 export const prefixCurrency = createSelector(
   currencySelector,
   (isToggleUSD) => {
-    return isToggleUSD ?
-      CONSTANT_COMMONS.USD_SPECIAL_SYMBOL:
-      CONSTANT_COMMONS.PRV_SPECIAL_SYMBOL;
+    return isToggleUSD
+      ? CONSTANT_COMMONS.USD_SPECIAL_SYMBOL
+      : CONSTANT_COMMONS.PRV_SPECIAL_SYMBOL;
   },
 );
 
@@ -93,7 +86,14 @@ export const totalShieldedTokensSelector = createSelector(
   tokensFollowedSelector,
   pTokenSelector,
   decimalDigitsSelector,
-  (availableTokens, getPrivacyDataByTokenID, accountBalance, followed, currency, decimalDigits) => {
+  (
+    availableTokens,
+    getPrivacyDataByTokenID,
+    accountBalance,
+    followed,
+    currency,
+    decimalDigits,
+  ) => {
     const { isToggleUSD, pToken: decimalDigit } = currency;
     const tokens = followed.map((token) =>
       availableTokens.find(
@@ -108,9 +108,9 @@ export const totalShieldedTokensSelector = createSelector(
     const totalShielded = compact([...tokens, prv]).reduce(
       (prevValue, currentValue) => {
         const totalShielded = prevValue;
-        const pDecimals     = currentValue?.pDecimals || 0;
-        const amount        = currentValue?.amount || 0;
-        const price         = isToggleUSD
+        const pDecimals = currentValue?.pDecimals || 0;
+        const amount = currentValue?.amount || 0;
+        const price = isToggleUSD
           ? currentValue?.priceUsd
           : currentValue?.pricePrv || 0;
         let currentAmount = formatAmount(
@@ -119,20 +119,18 @@ export const totalShieldedTokensSelector = createSelector(
           pDecimals,
           pDecimals,
           decimalDigits,
-          true
+          true,
         );
 
         if (isNaN(currentAmount)) {
           currentAmount = 0;
         }
         return currentAmount + totalShielded;
-      }, 0);
-
-    return convert.toOriginalAmount(
-      totalShielded,
-      PRV.pDecimals,
-      true,
+      },
+      0,
     );
+
+    return convert.toOriginalAmount(totalShielded, PRV.pDecimals, true);
   },
 );
 

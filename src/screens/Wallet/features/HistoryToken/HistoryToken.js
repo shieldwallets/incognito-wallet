@@ -16,12 +16,13 @@ const HistoryToken = (props) => {
     handleLoadHistory,
     showEmpty,
     refreshing,
+    handleRefresh,
   } = props;
   return (
     <HistoryList
       histories={histories}
       onCancelEtaHistory={handleCancelEtaHistory}
-      onRefreshHistoryList={() => handleLoadHistory(true)}
+      onRefreshHistoryList={handleRefresh}
       onLoadmoreHistory={() => !oversize && handleLoadHistory(false)}
       refreshing={refreshing}
       loading={isFetching}
@@ -37,6 +38,7 @@ HistoryToken.propTypes = {
   handleLoadHistory: PropTypes.func.isRequired,
   showEmpty: PropTypes.bool.isRequired,
   refreshing: PropTypes.bool.isRequired,
+  handleRefresh: PropTypes.func.isRequired,
 };
 
 export default withHistoryToken(HistoryToken);

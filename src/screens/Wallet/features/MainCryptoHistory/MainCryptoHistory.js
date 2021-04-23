@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
 import HistoryList, { useHistoryList } from '@src/components/HistoryList';
 import { useDispatch, useSelector } from 'react-redux';
-import { tokenSeleclor } from '@src/redux/selectors';
+import { accountSeleclor, tokenSeleclor } from '@src/redux/selectors';
 import { actionFetchHistoryMainCrypto } from '@src/redux/actions/token';
 import { ExHandler } from '@src/services/exception';
+import { getBalance as getAccountBalance } from '@src/redux/actions/account';
 import withMainCryptoHistory from './MainCryptoHistory.enhance';
 import EmptyHistory from './MainCryptoHistory.empty';
 
 const MainCryptoHistory = () => {
+  const account = useSelector(accountSeleclor.defaultAccountSelector);
   const { histories } = useSelector(tokenSeleclor.historyTokenSelector);
   const { isFetching, oversize } = useSelector(
     tokenSeleclor.receiveHistorySelector,
@@ -20,11 +22,25 @@ const MainCryptoHistory = () => {
       new ExHandler(error).showErrorToast();
     }
   };
-  const [showEmpty, refreshing] = useHistoryList({ handleLoadHistory });
+  const handleLoadBalance = () => {
+    try {
+      dispatch(getAccountBalance(account));
+    } catch (error) {
+      new ExHandler(error).showErrorToast();
+    }
+  };
+  const handleRefresh = () => {
+    handleLoadBalance();
+    handleLoadHistory(true);
+  };
+  const [showEmpty, refreshing] = useHistoryList({
+    handleLoadHistory,
+    handleLoadBalance,
+  });
   return (
     <HistoryList
       histories={histories}
-      onRefreshHistoryList={() => handleLoadHistory(true)}
+      onRefreshHistoryList={handleRefresh}
       onLoadmoreHistory={() => !oversize && handleLoadHistory(false)}
       refreshing={refreshing}
       loading={isFetching}

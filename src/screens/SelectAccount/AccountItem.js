@@ -66,7 +66,7 @@ const AccountItem = ({ accountName, PrivateKey, PaymentAddress, MasterKeyName })
         onSelect();
       }
       await Util.delay(0);
-      dispatch(actionSwitchAccountFetching());
+      await dispatch(actionSwitchAccountFetching());
       if (PrivateKey === account.PrivateKey) {
         Toast.showInfo(`Your current account is "${accountName}"`);
         return;

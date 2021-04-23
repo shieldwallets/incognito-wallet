@@ -2,6 +2,7 @@ import storage from '@src/services/storage';
 import _ from 'lodash';
 
 export const MAINNET_FULLNODE = 'https://lb-fullnode.incognito.org/fullnode';
+export const MAINNET_1_FULLNODE = 'http://51.83.237.20:9338';
 export const TESTNET_FULLNODE = 'https://testnet.incognito.org/fullnode';
 export const TESTNET1_FULLNODE = 'http://51.83.36.184:20002/fullnode';
 
@@ -22,6 +23,7 @@ const MAIN_NET_SERVER = {
   username: '',
   password: '',
   name: 'Mainnet',
+  coinServices: 'https://api-coinservice.incognito.org',
 };
 const TEST_NET_SERVER = {
   id: 'testnet',
@@ -30,6 +32,7 @@ const TEST_NET_SERVER = {
   username: '',
   password: '',
   name: 'Testnet',
+  coinServices: 'https://api-coinservice-staging.incognito.org',
 };
 const LOCAL_SERVER = {
   id: 'local',
@@ -47,6 +50,7 @@ const TEST_NET_1_SERVER = {
   password: '',
   name: 'Testnet 1',
 };
+
 const DEFAULT_LIST_SERVER = [
   LOCAL_SERVER,
   TEST_NET_SERVER,
@@ -74,11 +78,9 @@ export default class Server {
       if (!cachedList.find((item) => item.id === TEST_NODE_SERVER.id)) {
         cachedList.push(TEST_NODE_SERVER);
       }
-
       if (!cachedList.find((item) => item.id === TEST_NET_1_SERVER.id)) {
         cachedList.push(TEST_NET_1_SERVER);
       }
-
       if (
         cachedList.find(
           (item) =>
@@ -99,11 +101,15 @@ export default class Server {
       if (result && result.length) {
         for (const s of result) {
           if (s.default) {
-            return s;
+            const id = s?.id;
+            const server = DEFAULT_LIST_SERVER.find((item) => item?.id === id);
+            return {
+              ...s,
+              coinServices: server?.coinServices,
+            };
           }
         }
       }
-
       this.setDefault(MAIN_NET_SERVER);
       return MAIN_NET_SERVER;
     });

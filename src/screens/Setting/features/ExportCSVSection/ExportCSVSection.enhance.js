@@ -85,12 +85,16 @@ const enhance = (WrappedComp) => (props) => {
             tokenId: token?.tokenId || token?.id,
             histories,
           });
-
+          const spentCoins = await accountService.getListAccountSpentCoins(
+            account,
+            wallet,
+            token?.tokenId || token?.id,
+          );
           let data = await new Promise.all([
             ...historiesFilterByTokenId?.map(async (history) => {
               const txID = history?.txID;
               let type = getTypeHistoryReceive({
-                account,
+                spentCoins,
                 serialNumbers: history?.serialNumbers,
               });
               const h = {
@@ -314,8 +318,9 @@ const enhance = (WrappedComp) => (props) => {
           'Send Quantity': isNaN(sendCurrency) ? '' : sendCurrency,
           'Send Currency': item.sellTokenSymbol || '',
           'Fee Amount':
-            new BigNumber(convert.toNumber(item.networkFee || 0, true)).toFixed() ||
-            '',
+            new BigNumber(
+              convert.toNumber(item.networkFee || 0, true),
+            ).toFixed() || '',
           'Fee Currency': item.networkFeeTokenSymbol || '',
           Tag: item.type,
         };
@@ -517,7 +522,7 @@ const enhance = (WrappedComp) => (props) => {
           getShieldAndUnShieldTransactionHistory(),
           getTradeTransactionHistory(),
           getReceivedTransactionHistory(),
-          getSendTransactionHistory(), 
+          getSendTransactionHistory(),
           getpNodeTransactionHistory(),
         ]);
 
