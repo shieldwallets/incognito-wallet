@@ -20,6 +20,8 @@ const styles = StyleSheet.create({
 
 const ManageStorage = () => {
   const [items, setItems] = useState([]);
+  const [key, setKey] = useState('');
+  const [value, setValue] = useState('');
   const [size, setSize] = useState(5e5.toString());
   const [totalSize, setTotalSize] = useState(0);
 
@@ -88,6 +90,19 @@ const ManageStorage = () => {
     return `${(size).toFixed()} Byte`;
   };
 
+  const addData = async () => {
+    await AsyncStorage.setItem(key, value);
+    await loadItems();
+  };
+
+  const onChangeKey = (text) => {
+    setKey(text);
+  };
+
+  const onChangeValue = (text) => {
+    setValue(text);
+  };
+
   return (
     <MainLayout header="Manage storage" scrollable>
       <Text>Size in KB</Text>
@@ -107,6 +122,12 @@ const ManageStorage = () => {
           </Row>
         </Row>
       ))}
+
+      <Text>Key</Text>
+      <TextInput onChangeText={onChangeKey} />
+      <Text>Value</Text>
+      <TextInput onChangeText={onChangeValue} />
+      <RoundCornerButton title="Add data" onPress={addData} />
     </MainLayout>
   );
 };

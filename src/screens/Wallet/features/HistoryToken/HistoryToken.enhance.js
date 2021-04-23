@@ -5,7 +5,10 @@ import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeHistory } from '@src/services/api/history';
 import { Toast } from '@src/components/core';
-import { actionFetchHistoryToken } from '@src/redux/actions/token';
+import {
+  getBalance as getBalanceToken,
+  actionFetchHistoryToken,
+} from '@src/redux/actions/token';
 import { useHistoryList } from '@src/components/HistoryList';
 
 const enhance = (WrappedComp) => (props) => {
@@ -13,7 +16,9 @@ const enhance = (WrappedComp) => (props) => {
   const token = useSelector(
     selectedPrivacySeleclor.selectedPrivacyByFollowedSelector,
   );
-  const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
+  const signPublicKeyEncode = useSelector(
+    accountSeleclor.signPublicKeyEncodeSelector,
+  );
 
   const dispatch = useDispatch();
   const handleLoadHistory = async (refreshing) => {
@@ -44,9 +49,23 @@ const enhance = (WrappedComp) => (props) => {
       ).showErrorToast();
     }
   };
-
-  const [showEmpty, refreshing] = useHistoryList({ handleLoadHistory });
-
+  const handleLoadBalance = () => {
+    try {
+      if (token) {
+        dispatch(getBalanceToken(token));
+      }
+    } catch (error) {
+      new ExHandler(error).showErrorToast();
+    }
+  };
+  const handleRefresh = () => {
+    handleLoadBalance();
+    handleLoadHistory(true);
+  };
+  const [showEmpty, refreshing] = useHistoryList({
+    handleLoadHistory,
+    handleLoadBalance,
+  });
   return (
     <ErrorBoundary>
       <WrappedComp
@@ -56,6 +75,7 @@ const enhance = (WrappedComp) => (props) => {
           handleLoadHistory,
           showEmpty,
           refreshing,
+          handleRefresh,
         }}
       />
     </ErrorBoundary>

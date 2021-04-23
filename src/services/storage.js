@@ -48,7 +48,7 @@ const Storage = {
   },
 
   setItem(key:string, value:string, callback:function) {
-    console.debug('SET ITEM', key);
+    // console.debug('SET ITEM', key);
     return new Promise(async (resolve, reject) => {
       // If data is larger than 2mb we need to throw error
       // Because Android can not store a key larger than 2MB
@@ -75,7 +75,7 @@ const Storage = {
     });
   },
   getItem(key:string, callback:function) {
-    console.debug('GET ITEM', key);
+    // console.debug('GET ITEM', key);
     return new Promise((resolve, reject) => {
       AsyncStorage.getItem(key, async (err, rs) => {
         if (typeof callback === 'function') {

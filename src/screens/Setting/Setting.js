@@ -19,6 +19,7 @@ import { actionFetchServers } from './Setting.actions';
 import withSetting from './Setting.enhance';
 import DecimalDigitsSection from './features/DecimalDigitsSection';
 import ExportCSVSection from './features/ExportCSVSection';
+import RemoveBalanceCached from './features/RemoveBalanceCached';
 
 const Setting = () => {
   const navigation = useNavigation();
@@ -52,7 +53,8 @@ const Setting = () => {
         <AddressBookSection />
         <ExportCSVSection handlePress={handlePressExportCSV} />
         <UTXOSection />
-        {<RemoveStorage />}
+        <RemoveStorage />
+        <RemoveBalanceCached />
         {global.isDebug() && <DevSection />}
       </View>
       <Text style={settingStyle.textVersion}>

@@ -1,6 +1,6 @@
 # Incognito Chain Wallet
 
-Setup React Native following this guide: [React Native Setup](https://facebook.github.io/react-native/docs/getting-started)
+Setup React Native following this guide: [React Native Setup](https://facebook.github.io/react-native/docs/getting-started).
 
 ## Run project:
 Install dependencies, make sure [Yarn](https://yarnpkg.com/lang/en/docs/install/#mac-stable) was installed 
