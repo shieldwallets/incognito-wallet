@@ -142,12 +142,6 @@ class AddStake extends BaseScreen {
       <ScrollView paddingBottom>
         {this.renderStatusStakeOwnFund('Stake with your own funds', ()=>this.setState({blockStatus1: !blockStatus1}), blockStatus1)}
         {blockStatus1 && this.renderSelfStake()}
-        {this.renderStatusStakeOwnFund('Rent the required stake', ()=>this.setState({blockStatus2: !blockStatus2}), blockStatus2)}
-        {blockStatus2 && (
-          <Text style={[theme.text.regularTextMotto, theme.MARGIN.marginRightDefault, styles.desc]}>
-            Contact <Text style={styles.bold}>go@incognito.org</Text> to stake this Node with rented funds
-          </Text>
-        )}
       </ScrollView>
     );
   }

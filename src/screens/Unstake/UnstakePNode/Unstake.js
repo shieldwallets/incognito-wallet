@@ -18,6 +18,9 @@ const Unstake = ({ device, isUnstaking, onUnstake }) => {
         <Text style={[styles.desc, styles.firstLine]}>
           An unstaked Node will need to be staked again before it can be selected to work and earn.
         </Text>
+        <Text style={[styles.desc, styles.firstLine]}>
+          This Node is staked using rented funds. Please note that once you unstake, you will not be able to go back to funded staking. You can still stake using your own funds at any time.
+        </Text>
         {!isUnstaking && <Text style={styles.desc}>Are you sure you want to unstake this Node?</Text>}
         <RoundCornerButton
           disabled={isUnstaking}
