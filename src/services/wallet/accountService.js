@@ -251,10 +251,11 @@ export default class Account {
     const indexAccount = wallet.getAccountIndexByName(
       account.name || account.AccountName,
     );
-    let result;
-    result = await wallet.MasterAccount.child[
+    let accountInstance = wallet.MasterAccount.child[
       indexAccount
-    ].createAndSendStopAutoStakingTx(
+    ];
+    accountInstance.setStorageServices(storage);
+    const result = await accountInstance.createAndSendStopAutoStakingTx(
       feeNativeToken,
       candidatePaymentAddress,
       candidateMiningSeedKey,
