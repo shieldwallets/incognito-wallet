@@ -903,6 +903,12 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@haskkor/react-native-recaptchav3@https://github.com/incognitochain/react-native-recaptchav3":
+  version "1.2.1"
+  resolved "https://github.com/incognitochain/react-native-recaptchav3#fd7461fc1ed1679c9b538c501c9ae1b154ea5c4d"
+  dependencies:
+    react-native-webview "^9.0.1"
+
 "@jest/console@^24.7.1", "@jest/console@^24.9.0":
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.9.0.tgz#79b1bc06fb74a8cfb01cbdedf945584b1b9707f0"
@@ -8766,11 +8772,6 @@ react-native-get-random-values@^1.5.0:
   dependencies:
     fast-base64-decode "^1.0.0"
 
-react-native-google-recaptcha-v2@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-google-recaptcha-v2/-/react-native-google-recaptcha-v2-1.1.0.tgz#9dc129c71ffa61c06470d5c95c6ea165bfdf4100"
-  integrity sha512-J8bGXcNqfx3obiDn9wptElO5OzqO55QUUVTZJEIqjZ0GcTx6cPnttGkO96cbTHvG+k6FMLRSm2GeUXmk7otj+Q==
-
 react-native-image-picker@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-1.1.0.tgz#c2a0523886edb4cf2cdc008ad0a71433142a4d53"
@@ -9156,10 +9157,10 @@ react-native-version-number@^0.3.4:
   resolved "https://registry.yarnpkg.com/react-native-version-number/-/react-native-version-number-0.3.6.tgz#dd8b1435fc217df0a166d7e4a61fdc993f3e7437"
   integrity sha512-TdyXiK90NiwmSbmAUlUBOV6WI1QGoqtvZZzI5zQY4fKl67B3ZrZn/h+Wy/OYIKKFMfePSiyfeIs8LtHGOZ/NgA==
 
-react-native-webview@^7.4.3:
-  version "7.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-7.4.3.tgz#e00e92e17f7389d84d09f5900652501ff2665915"
-  integrity sha512-4n72B2D7n1xOQSoCSD1qk9D7JksyT4d6nk8QG9guZKZn3KXQL5EejwE2yhh1TxZRQpr+OD3a96rb+rA/UEnvrQ==
+react-native-webview@^9.0.1:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-9.4.0.tgz#108da34a6c7e1c032dcabc942b7e4947ca1d8028"
+  integrity sha512-BBOFUuza0p04+7fNi7TJmB0arpDJzGxHYwTCgI4vj5n/fl7u4jbm7ETp88mf7lo9lP6C6HGLo38KnEy1aXCQkg==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"

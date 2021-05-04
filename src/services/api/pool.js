@@ -29,6 +29,7 @@ export async function provide(paymentAddress, tx, signPublicKeyEncode, amount, v
     'SignPublicKeyEncode': signPublicKeyEncode,
     'Amount': amount,
     'g-recaptcha-response': verifyCode,
+    'CaptchaVersion': 'v3',
   });
 }
 
