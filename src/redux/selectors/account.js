@@ -1,6 +1,6 @@
 import _, { memoize } from 'lodash';
 import { createSelector } from 'reselect';
-import { walletSelector } from './wallet';
+import {walletSelector} from './wallet';
 
 export const isGettingBalance = createSelector(
   (state) => state?.account?.isGettingBalance || [],
@@ -69,11 +69,13 @@ export const defaultAccountSelector = createSelector(
   walletSelector,
   (list, defaultName, wallet) => {
     let account = list?.find((account) => account?.name === defaultName);
-    let indexAccount;
+    let indexAccount, derivatorToSerialNumberCache;
     try {
       indexAccount = wallet.getAccountIndexByName(
         account.name || account.AccountName,
       );
+      const walletAccount = wallet.MasterAccount.child[indexAccount];
+      derivatorToSerialNumberCache = walletAccount?.derivatorToSerialNumberCache;
     } catch (error) {
       console.debug('ERROR', error);
     }
@@ -86,6 +88,7 @@ export const defaultAccountSelector = createSelector(
     return {
       ...account,
       indexAccount,
+      derivatorToSerialNumberCache
     };
   },
 );

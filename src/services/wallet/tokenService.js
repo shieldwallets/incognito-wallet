@@ -4,8 +4,7 @@ import storage from '@src/services/storage';
 import { CONSTANT_KEYS } from '@src/constants';
 import { getTokenInfo } from '@services/api/token';
 import { PRIORITY_LIST } from '@screens/Dex/constants';
-/* eslint-disable import/no-cycle */
-import { getAccountWallet } from '@src/services/wallet/Wallet.shared';
+// eslint-disable-next-line import/no-cycle
 import { saveWallet, updateStatusHistory } from './WalletService';
 
 export const PRV = {
@@ -46,6 +45,11 @@ export default class Token {
     if (typeof TokenAmount !== 'number' || TokenAmount <= 0)
       throw new Error('TokenAmount is invalid');
 
+    // get index account by name
+    const indexAccount = wallet.getAccountIndexByName(
+      account.name || account.AccountName,
+    );
+
     let paymentInfos = [];
     if (isArray(paymentInfo)) {
       paymentInfos = [...paymentInfo];
@@ -76,9 +80,25 @@ export default class Token {
     const hasPrivacyForNativeToken = true;
     const hasPrivacyForPToken = true;
     const strInfo = typeof info !== 'string' ? JSON.stringify(info) : info;
+
     try {
-      const accountWallet = getAccountWallet(account, wallet);
-      response = await accountWallet.createAndSendPrivacyToken(
+      typeof actionLogEvent === 'function'
+        ? actionLogEvent({
+          desc: `create send 
+            \n_submitParam: ${JSON.stringify(_submitParam)},
+            \nfeeNativeToken: ${feeNativeToken},
+            \nfeePToken: ${feePToken},
+            \npaymentInfos: ${JSON.stringify(paymentInfos)},
+            \ninfo: ${info}
+            \nhasPrivacyForNativeToken: ${hasPrivacyForNativeToken},
+            \nhasPrivacyForPToken: ${hasPrivacyForPToken},
+            \ntrInfo: ${strInfo}
+          `,
+        })
+        : null;
+      response = await wallet.MasterAccount.child[
+        indexAccount
+      ].createAndSendPrivacyToken(
         paymentInfos,
         _submitParam,
         feeNativeToken,
@@ -90,7 +110,7 @@ export default class Token {
         false,
         txHandler,
         depositId,
-        tradeHandler,
+        tradeHandler
       );
 
       await saveWallet(wallet);
@@ -116,10 +136,24 @@ export default class Token {
     txHandler,
   ) {
     await Wallet.resetProgressTx();
+    // get index account by name
+    let indexAccount = wallet.getAccountIndexByName(
+      account.name || account.AccountName,
+    );
+    // prepare param for create and send privacy custom token
+    // payment info
+    // @@ Note: it is use for receivers constant
+    // let paymentInfos = [];
+    //   paymentInfos[0] = {
+    //     paymentAddressStr: submitParam.TokenReceivers.PaymentAddress,
+    //     amount: 100
+    //   };
+
     let response;
     try {
-      const accountWallet = getAccountWallet(account, wallet);
-      response = await accountWallet.createAndSendBurningRequestTx(
+      response = await wallet.MasterAccount.child[
+        indexAccount
+      ].createAndSendBurningRequestTx(
         paymentInfos,
         submitParam,
         feeNativeToken,
@@ -149,11 +183,15 @@ export default class Token {
     wallet,
   ) {
     await Wallet.resetProgressTx();
+    let indexAccount = wallet.getAccountIndexByName(
+      account.name || account.AccountName,
+    );
     let paymentInfos = [];
     let response;
     try {
-      const accountWallet = this.getAccount(account, wallet);
-      response = await accountWallet.createAndSendBurningRequestTx(
+      response = await wallet.MasterAccount.child[
+        indexAccount
+      ].createAndSendBurningRequestTx(
         paymentInfos,
         submitParam,
         feeNativeToken,
@@ -171,6 +209,37 @@ export default class Token {
 
   static getPrivacyTokens() {
     return getTokenInfo();
+  }
+
+  static getFollowingTokens({ account, wallet }) {
+    try {
+      const accountWallet = wallet.getAccountByName(account.name);
+      const followingTokens = accountWallet.listFollowingTokens();
+
+      return followingTokens;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static getFollowingPrivacyTokens({ account, wallet }) {
+    try {
+      const followingTokens = Token.getFollowingTokens({ account, wallet });
+
+      return followingTokens.filter((token) => token?.IsPrivacy);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static getFollowingNormalTokens({ account, wallet }) {
+    try {
+      const followingTokens = Token.getFollowingTokens({ account, wallet });
+
+      return followingTokens.filter((token) => !token?.IsPrivacy);
+    } catch (e) {
+      throw e;
+    }
   }
 
   static async getTokenHistory({ account, wallet, token }) {

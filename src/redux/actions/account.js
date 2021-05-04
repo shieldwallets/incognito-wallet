@@ -64,18 +64,26 @@ export const removeAccount = (account) => async (dispatch, getState) => {
         'Wallet is not existed, can not remove account right now',
       );
     }
+
     const { PrivateKey } = account;
+
     const passphrase = await getPassphrase();
+
     const masterKey = currentMasterKeySelector(state);
-    const walletAccount = accountService.getAccount(account, wallet);
+
+    const walletAccountIndex = wallet.getAccountIndexByName(account.name);
+    const walletAccount = wallet.MasterAccount.child[walletAccountIndex];
     const accountInfo = await walletAccount.getDeserializeInformation();
     if (!masterKey.deletedAccountIds) {
       masterKey.deletedAccountIds = [];
     }
+
     masterKey.deletedAccountIds.push(accountInfo.ID);
     wallet.deletedAccountIds = masterKey.deletedAccountIds;
     dispatch(updateMasterKey(masterKey));
+
     await accountService.removeAccount(PrivateKey, passphrase, wallet);
+
     dispatch({
       type: type.REMOVE_BY_PRIVATE_KEY,
       data: PrivateKey,
