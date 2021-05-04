@@ -17,7 +17,7 @@ const TermOfUseShield = (props) => {
   const dispatch = useDispatch();
 
   const tokenId = navigation.getParam('tokenId');
-  const terms = ['I will send tokens from centralized exchanges', 
+  const terms = ['I will send tokens from centralized exchanges',
     'I will send tokens from a smart contract', 'I will send tokens from my own wallet'];
   const [choose, setChoose] = React.useState(undefined);
 
@@ -39,8 +39,8 @@ const TermOfUseShield = (props) => {
         </Text>
         {terms && terms.map((item, index) => {
           return (
-            <TouchableOpacity 
-              style={index === choose ? styled.selectedButton : styled.unSelectedButon} 
+            <TouchableOpacity
+              style={index === choose ? styled.selectedButton : styled.unSelectedButon}
               key={`key-${index}`}
               onPress={() => handlePress(index)}
             >
@@ -54,10 +54,10 @@ const TermOfUseShield = (props) => {
         <RoundCornerButton
           style={styled.button}
           title="Next"
-          disabled={(choose !== 1 && choose !== terms.length - 1)}
+          disabled={(choose !== terms.length - 1)}
           onPress={handlePressNext}
         />
-        {choose === 0 && <Text style={styled.errorText}>{MESSAGES.WARNING_TERMSOFUSE}</Text>}
+        {choose !== undefined && choose !== terms.length - 1 && <Text style={styled.errorText}>{MESSAGES.WARNING_TERMSOFUSE}</Text>}
       </ScrollView>
     </View>
   );

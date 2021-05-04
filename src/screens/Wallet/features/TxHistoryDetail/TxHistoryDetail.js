@@ -14,7 +14,7 @@ import {
   Toast,
   RefreshControl,
 } from '@src/components/core';
-import { CONSTANT_CONFIGS, CONSTANT_KEYS } from '@src/constants';
+import { CONSTANT_COMMONS, CONSTANT_CONFIGS, CONSTANT_KEYS } from '@src/constants';
 import formatUtil from '@src/utils/format';
 import linkingService from '@src/services/linking';
 import { QrCodeAddressDefault } from '@src/components/QrCodeAddress';
@@ -31,8 +31,6 @@ import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
 import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
-import { COLORS } from '@src/styles';
-import { FontStyle } from '@src/styles/TextStyle';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -247,7 +245,7 @@ const TxHistoryDetail = (props) => {
     {
       label: 'Expired at',
       valueText: formatUtil.formatDateTime(history?.expiredAt),
-      disabled: history?.decentralized ? true : !history?.expiredAt,
+      disabled: !history?.status || history?.status.toLowerCase() !== CONSTANT_COMMONS.HISTORY.STATUS_TEXT.PENDING.toLowerCase() || !history?.expiredAt,
     },
     {
       label: 'TxID',
@@ -331,7 +329,7 @@ const TxHistoryDetail = (props) => {
       }
     >
       {historyFactories.map((hook, index) => (
-        <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5}/>
+        <Hook key={index} {...hook} flexExtra={isBTCInvalidAmount ? 12 : 5} />
       ))}
       {!!history?.depositAddress && (history.statusCode === 0 || isInvalidAmount) && (
         <QrCodeAddressDefault

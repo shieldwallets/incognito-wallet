@@ -12,6 +12,8 @@ import {
   defaultAccountSelector,
   signPublicKeyEncodeSelector
 } from '@src/redux/selectors/account';
+import formatUtil from '@utils/format';
+import moment from 'moment';
 import {
   ACTION_FETCHING,
   ACTION_FETCHED,
@@ -43,14 +45,14 @@ export const actionGetMinMaxShield = async ({ tokenId }) => {
 
 export const actionGetAddressToShield = async ({ selectedPrivacy, account, signPublicKeyEncode }) => {
   try {
-    let address;
+    let generateResult = {};
     if (!selectedPrivacy?.isPToken) {
       return null;
     }
     if (
       selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH
     ) {
-      address = await genETHDepositAddress({
+      generateResult = await genETHDepositAddress({
         paymentAddress: account.PaymentAddress,
         walletAddress: account.PaymentAddress,
         tokenId: selectedPrivacy?.tokenId,
@@ -58,7 +60,7 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         signPublicKeyEncode,
       });
     } else if (selectedPrivacy?.isErc20Token) {
-      address = await genERC20DepositAddress({
+      generateResult = await genERC20DepositAddress({
         paymentAddress: account.PaymentAddress,
         walletAddress: account.PaymentAddress,
         tokenId: selectedPrivacy?.tokenId,
@@ -67,7 +69,7 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         signPublicKeyEncode
       });
     } else {
-      address = await genCentralizedDepositAddress({
+      generateResult = await genCentralizedDepositAddress({
         paymentAddress: account.PaymentAddress,
         walletAddress: account.PaymentAddress,
         tokenId: selectedPrivacy?.tokenId,
@@ -75,10 +77,11 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         signPublicKeyEncode
       });
     }
+    const { address, expiredAt } = generateResult;
     if (!address) {
       throw 'Can not gen new deposit address';
     }
-    return address;
+    return { address, expiredAt };
   } catch (error) {
     throw error;
   }
@@ -98,13 +101,17 @@ export const actionFetch = ({ tokenId }) => async (dispatch, getState) => {
     await dispatch(actionFetching());
     await dispatch(actionAddFollowToken(tokenId));
     const dataMinMax = await actionGetMinMaxShield({ tokenId });
-    const address = await actionGetAddressToShield({ selectedPrivacy, account, signPublicKeyEncode });
+    let { address, expiredAt } = await actionGetAddressToShield({ selectedPrivacy, account, signPublicKeyEncode });
     const [min, max] = dataMinMax;
+    if (expiredAt) {
+      expiredAt = formatUtil.formatDateTime(expiredAt);
+    }
     await dispatch(
       actionFetched({
         min,
         max,
         address,
+        expiredAt
       }),
     );
   } catch (error) {
