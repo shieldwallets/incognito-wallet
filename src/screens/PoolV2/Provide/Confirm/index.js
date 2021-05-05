@@ -23,6 +23,7 @@ const Confirm = ({
   onConfirm,
   providing,
   error,
+  disable,
 }) => {
   return (
     <View>
@@ -48,7 +49,7 @@ const Confirm = ({
           style={[styles.button, mainStyles.button]}
           title="Confirm"
           onPress={onConfirm}
-          disabled={!!error}
+          disabled={!!error || disable}
         />
       </ScrollView>
       <Loading open={providing} />
@@ -68,6 +69,7 @@ Confirm.propTypes = {
   providing: PropTypes.bool.isRequired,
 
   error: PropTypes.string,
+  disable: PropTypes.bool.isRequired,
 };
 
 Confirm.defaultProps = {

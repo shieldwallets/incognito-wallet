@@ -15,6 +15,7 @@ const initialState = {
     min: null,
     max: null,
     address: '',
+    expiredAt: ''
   },
   storage: {
     guide: false,

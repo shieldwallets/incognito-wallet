@@ -15,9 +15,9 @@ import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import routeNames from '@routers/routeNames';
 import { useNavigation } from 'react-navigation-hooks';
+import { isEmpty } from 'lodash';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
-import { useCountDown } from './GenQRCode.useEffect';
 
 const NormalText = React.memo((props) => {
   const { text, style = null, children = null } = props;
@@ -50,9 +50,8 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min } = useSelector(shieldDataSelector);
+  const { address, min, expiredAt } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const [remainTime] = useCountDown({ time: 7200 });
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
@@ -64,11 +63,15 @@ const Extra = () => {
           <QrCodeGenerate value={address} size={175} />
         </View>
         <View style={styled.hook}>
-          <NormalText text="Expires in: ">
-            <Text style={[styled.boldText, styled.countdown]}>
-              {remainTime}
-            </Text>
-          </NormalText>
+          {
+            !isEmpty(expiredAt) && (
+              <NormalText text="Expires at: ">
+                <Text style={[styled.boldText, styled.countdown]}>
+                  {expiredAt}
+                </Text>
+              </NormalText>
+            )
+          }
           {min && (
             <>
               <NormalText text="Minimum: ">

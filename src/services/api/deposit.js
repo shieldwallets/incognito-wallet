@@ -25,8 +25,11 @@ export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, to
     body.SignPublicKeyEncode = signPublicKeyEncode;
   }
 
-  return http.post('ota/generate', body).then(res => res?.Address);
-};
+  return http.post('ota/generate', body)
+    .then(res => ({
+      address: res?.Address,
+      expiredAt: res?.ExpiredAt
+    }));};
 
 export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, currencyType, signPublicKeyEncode }) => {
   if (!paymentAddress) return throw new Error('Missing paymentAddress');
@@ -52,8 +55,10 @@ export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, c
     body.SignPublicKeyEncode = signPublicKeyEncode;
   }
   return http.post('eta/generate', body)
-    .then(res => res?.Address);
-};
+    .then(res => ({
+      address: res?.Address,
+      expiredAt: res?.ExpiredAt
+    }));};
 
 export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId, tokenContractID, currencyType, signPublicKeyEncode }) => {
   if (!paymentAddress) return throw new Error('Missing paymentAddress');
@@ -82,5 +87,8 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
   }
 
   return http.post('eta/generate', body)
-    .then(res => res?.Address);
+    .then(res => ({
+      address: res?.Address,
+      expiredAt: res?.ExpiredAt
+    }));
 };

@@ -4,13 +4,19 @@ import accountService from '@services/wallet/accountService';
 import { provide } from '@services/api/pool';
 import { getSignPublicKey } from '@services/gomobile';
 import LocalDatabase from '@utils/LocalDatabase';
-import ConfirmGoogleCaptcha from 'react-native-google-recaptcha-v2';
+import { useSelector } from 'react-redux';
+import { accountSeleclor } from '@src/redux/selectors';
+import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
 
-const CAPTCHA_KEY = '6LdQUuQZAAAAAK_gLJ5GCvddkPHDObjpEH53VsiL';
+const CAPTCHA_KEY = '6LeZpsUaAAAAAChIj86fhwS5fa1krkQ4QPEkcQv9';
 
 const withConfirm = WrappedComp => (props) => {
+  const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
   const [error, setError] = React.useState('');
   const [providing, setProviding] = React.useState(false);
+  const [sendTx, setSendTx] = React.useState(null);
+  const [disable, setDisable] = React.useState(true);
+  const captchaRef = React.useRef(null);
   const {
     value,
     coin,
@@ -22,19 +28,30 @@ const withConfirm = WrappedComp => (props) => {
     originProvide,
   } = props;
 
-  const captchaForm = React.useRef(null);
-
-  const confirm = async (verifyCode) => {
-    if (!verifyCode) return;
-    setProviding(true);
-
+  const handleProvideApi = async (verifyCode) => {
     try {
+      setDisable(false);
+      if (!sendTx) return;
+      const { txHistory, txInfo, provideValue } = sendTx;
+      if (!global.isDEV && txInfo && txInfo.txId) {
+        await provide(account.PaymentAddress, txInfo.txId, signPublicKeyEncode, provideValue, verifyCode);
+        txHistory.splice(txHistory.length - 1, 1);
+        await LocalDatabase.saveProvideTxs(txHistory);
+        onSuccess(true);
+      }
+    } catch (e) {
+      setError(new ExHandler(e).getMessage());
+    } finally {
+      setProviding(false);
+    }
+  };
+
+  const handleSendTransaction = async () => {
+    try {
+      if (sendTx) return;
       let provideValue = isPrv ? originProvide : value;
       let providerFee  = fee;
-
-      const signPublicKeyEncode = await getSignPublicKey(account.PrivateKey);
       const txs = await LocalDatabase.getProvideTxs();
-
       const txHandler = async (txHash) => {
         txs.push({
           paymentAddress: account.PaymentAddress,
@@ -59,62 +76,41 @@ const withConfirm = WrappedComp => (props) => {
         '',
         txHandler,
       );
-      if (!global.isDEV && result && result.txId) {
-        await provide(account.PaymentAddress, result.txId, signPublicKeyEncode, provideValue, verifyCode);
-        txs.splice(txs.length - 1, 1);
-        await LocalDatabase.saveProvideTxs(txs);
-        onSuccess(true);
+      setSendTx({ txHistory: txs, txInfo: result, provideValue });
+      if (captchaRef.current) {
+        setTimeout(() => {
+          captchaRef.current?.refreshToken();
+        }, 1000);
       }
-    } catch (error) {
-      setError(new ExHandler(error).getMessage());
-    } finally {
+    } catch (e) {
+      setSendTx(null);
       setProviding(false);
-    }
-  };
-
-  const onMessage = event => {
-    if (event && event.nativeEvent.data) {
-      if (['cancel', 'error', 'expired'].includes(event.nativeEvent.data)) {
-        if (captchaForm.current) {
-          captchaForm.current.hide();
-        }
-      } else {
-        const verifyCode = event.nativeEvent.data;
-        console.log('Verified code from Google', event.nativeEvent.data);
-        setTimeout(() => {
-          if (captchaForm.current) {
-            captchaForm.current.hide();
-          }
-        }, 1500);
-        setTimeout(() => {
-          confirm(verifyCode).then();
-        }, 2500);
-      }
+      setError(new ExHandler(e).getMessage());
     }
   };
 
   const onConfirmPress = () => {
-    if (providing || !captchaForm.current) return;
-    captchaForm.current.show();
+    if (providing || !captchaRef.current) return;
+    setProviding(true);
+    handleSendTransaction().then();
   };
 
   return (
     <>
+      <ReCaptchaV3
+        ref={captchaRef}
+        captchaDomain="https://incognito.org"
+        siteKey={CAPTCHA_KEY}
+        onReceiveToken={handleProvideApi}
+      />
       <WrappedComp
         {...{
           ...props,
           providing,
           onConfirm: onConfirmPress,
           error,
+          disable,
         }}
-      />
-      <ConfirmGoogleCaptcha
-        ref={captchaForm}
-        siteKey={CAPTCHA_KEY}
-        baseUrl="https://incognito.org"
-        languageCode='en'
-        onMessage={onMessage}
-        ca
       />
     </>
   );

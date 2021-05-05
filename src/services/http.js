@@ -5,7 +5,7 @@ import {CustomError, ErrorCode, ExHandler} from './exception';
 
 const CancelToken = axios.CancelToken;
 const HEADERS = {'Content-Type': 'application/json'};
-const TIMEOUT = 20000;
+const TIMEOUT = 45000;
 const sources = {};
 
 const CANCEL_MESSAGE = 'Request cancelled';
