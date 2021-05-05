@@ -11,10 +11,11 @@ import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
 const CAPTCHA_KEY = '6LeZpsUaAAAAAChIj86fhwS5fa1krkQ4QPEkcQv9';
 
 const withConfirm = WrappedComp => (props) => {
+  const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
   const [error, setError] = React.useState('');
   const [providing, setProviding] = React.useState(false);
   const [sendTx, setSendTx] = React.useState(null);
-  const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
+  const [disable, setDisable] = React.useState(true);
   const captchaRef = React.useRef(null);
   const {
     value,
@@ -29,6 +30,7 @@ const withConfirm = WrappedComp => (props) => {
 
   const handleProvideApi = async (verifyCode) => {
     try {
+      setDisable(false);
       if (!sendTx) return;
       const { txHistory, txInfo, provideValue } = sendTx;
       if (!global.isDEV && txInfo && txInfo.txId) {
@@ -45,12 +47,10 @@ const withConfirm = WrappedComp => (props) => {
   };
 
   const handleSendTransaction = async () => {
-    if (sendTx) return;
     try {
+      if (sendTx) return;
       let provideValue = isPrv ? originProvide : value;
       let providerFee  = fee;
-
-      const signPublicKeyEncode = await getSignPublicKey(account.PrivateKey);
       const txs = await LocalDatabase.getProvideTxs();
       const txHandler = async (txHash) => {
         txs.push({
@@ -78,7 +78,9 @@ const withConfirm = WrappedComp => (props) => {
       );
       setSendTx({ txHistory: txs, txInfo: result, provideValue });
       if (captchaRef.current) {
-        captchaRef.current?.refreshToken();
+        setTimeout(() => {
+          captchaRef.current?.refreshToken();
+        }, 1000);
       }
     } catch (e) {
       setSendTx(null);
@@ -107,6 +109,7 @@ const withConfirm = WrappedComp => (props) => {
           providing,
           onConfirm: onConfirmPress,
           error,
+          disable,
         }}
       />
     </>
