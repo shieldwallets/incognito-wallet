@@ -18,6 +18,7 @@ const Provide = ({
   onConfirm,
   error,
   withdrawing,
+  disable,
 }) => {
   const coin = COINS.PRV;
   return (
@@ -38,7 +39,7 @@ const Provide = ({
         <RoundCornerButton
           title="Withdraw rewards"
           style={[mainStyle.button, styles.button]}
-          disabled={!!error}
+          disabled={!!error || disable}
           onPress={onConfirm}
         />
         <Text style={mainStyle.coinExtra}>
@@ -57,6 +58,7 @@ Provide.propTypes = {
   onConfirm: PropTypes.func.isRequired,
   withdrawing: PropTypes.bool,
   error: PropTypes.string,
+  disable: PropTypes.bool.isRequired,
 };
 
 Provide.defaultProps = {

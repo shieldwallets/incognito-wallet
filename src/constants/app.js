@@ -40,10 +40,17 @@ const STATUS_MESSAGE = {
   EXPIRED:    'Expired'
 };
 
+const CAPTCHA_KEY = '6LeZpsUaAAAAAChIj86fhwS5fa1krkQ4QPEkcQv9';
+
+const CAPTCHA_DOMAIN = 'https://incognito.org';
+
 export default {
   STATUS,
   DISABLED,
   STATUS_MESSAGE,
   FEATURES_ROUTE_MAP,
   FEATURES_TYPE_MAP,
+  CAPTCHA_KEY,
+  CAPTCHA_DOMAIN,
 };
+
