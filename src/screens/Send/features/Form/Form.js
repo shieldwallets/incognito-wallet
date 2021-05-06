@@ -19,6 +19,7 @@ import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import LoadingTx from '@src/components/LoadingTx';
 import format from '@src/utils/format';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
+import appConstant from '@src/constants/app';
 import { styledForm as styled } from './Form.styled';
 import withSendForm, { formName } from './Form.enhance';
 
@@ -73,12 +74,12 @@ const SendForm = (props) => {
   );
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const [onCentralizedPress, isCentralizedDisabled] = useFeatureConfig(
-    'centralized',
+    appConstant.DISABLED.UNSHIELD_CENTRALIZED,
     handleSend,
   );
   const [onDecentralizedPress, isDecentralizedDisabled] = useFeatureConfig(
-    'decentralized',
-    handleSend,
+    appConstant.DISABLED.UNSHIELD_DECENTRALIZED,
+    handleSend
   );
   const placeholderAddress = `Incognito${
     selectedPrivacy?.isMainCrypto || selectedPrivacy?.isIncognitoToken

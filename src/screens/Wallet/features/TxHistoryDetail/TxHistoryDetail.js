@@ -30,7 +30,7 @@ import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
-import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
+import { isEmpty } from 'lodash';
 import styled from './styles';
 import { getFeeFromTxHistory } from './TxHistoryDetail.utils';
 
@@ -245,7 +245,7 @@ const TxHistoryDetail = (props) => {
     {
       label: 'Expired at',
       valueText: formatUtil.formatDateTime(history?.expiredAt),
-      disabled: !history?.status || history?.status.toLowerCase() !== CONSTANT_COMMONS.HISTORY.STATUS_TEXT.PENDING.toLowerCase() || !history?.expiredAt,
+      disabled: isEmpty(history?.status) || history?.status.toLowerCase() !== CONSTANT_COMMONS.HISTORY.STATUS_TEXT.PENDING.toLowerCase() || !history?.expiredAt,
     },
     {
       label: 'TxID',
@@ -347,7 +347,6 @@ const TxHistoryDetail = (props) => {
           onPress={onCopyData}
         />
       )}
-      <HuntQRCode txId={history?.id} code={history?.type} />
       <View style={{ height: 50 }} />
     </ScrollView>
   );

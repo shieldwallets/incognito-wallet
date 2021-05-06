@@ -25,6 +25,7 @@ const Provide = ({
   onChangeInputText,
   withdrawing,
   inputText,
+  disable
 }) => {
   const handleMax = () => {
     const humanAmount = convertUtil.toHumanAmount(coin.balance, coin.pDecimals);
@@ -54,7 +55,7 @@ const Provide = ({
           title="Withdraw provisions"
           style={[mainStyle.button, styles.button]}
           onPress={onConfirm}
-          disabled={!!error || !inputText}
+          disabled={!!error || !inputText || disable}
         />
         <ExtraInfo
           left="Balance"
@@ -78,6 +79,7 @@ Provide.propTypes = {
   inputText: PropTypes.string,
   withdrawing: PropTypes.bool,
   error: PropTypes.string,
+  disable: PropTypes.bool.isRequired,
 };
 
 Provide.defaultProps = {

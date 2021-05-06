@@ -33,6 +33,7 @@ import { showWalletBlanceSelector } from '@src/screens/Setting/Setting.selector'
 import { actionUpdateShowWalletBlance } from '@src/screens/Setting/Setting.actions';
 import srcHideBlanceIcon from '@src/assets/images/icons/ic_hide_blance.png';
 import srcShowBlanceIcon from '@src/assets/images/icons/ic_show_blance.png';
+import appConstant from '@src/constants/app';
 import {
   styled,
   styledHook,
@@ -56,7 +57,7 @@ const GroupButton = React.memo(() => {
     }
   };
 
-  const [onFeaturePress, isDisabled] = useFeatureConfig('shield', handleShield);
+  const [onFeaturePress, isDisabled] = useFeatureConfig(appConstant.DISABLED.SHIELD, handleShield);
 
   return (
     <View
@@ -178,12 +179,12 @@ const FollowToken = React.memo((props) => {
     <View style={styledFollow.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={
+        refreshControl={(
           <RefreshControl
             refreshing={isReloading}
             onRefresh={() => fetchData(true)}
           />
-        }
+        )}
         nestedScrollEnabled
       >
         <Token

@@ -8,7 +8,13 @@ const STATUS = {
 const DISABLED = {
   APP:        'app',
   TRADE:      'trade',
-  BUY_NODE:   'buynode'
+  BUY_NODE:   'buynode',
+  SHIELD:     'shield',
+  SEND:       'send',
+  UNSHIELD_DECENTRALIZED: 'unshield-decentralized',
+  UNSHIELD_CENTRALIZED:   'unshield-centralized',
+  SHIELD_DECENTRALIZED:   'shield-decentralized',
+  SHIELD_CENTRALIZED:     'shield-centralized',
 };
 
 const FEATURES_ROUTE_MAP = {
@@ -34,10 +40,17 @@ const STATUS_MESSAGE = {
   EXPIRED:    'Expired'
 };
 
+const CAPTCHA_KEY = '6LeZpsUaAAAAAChIj86fhwS5fa1krkQ4QPEkcQv9';
+
+const CAPTCHA_DOMAIN = 'https://incognito.org';
+
 export default {
   STATUS,
   DISABLED,
   STATUS_MESSAGE,
   FEATURES_ROUTE_MAP,
   FEATURES_TYPE_MAP,
+  CAPTCHA_KEY,
+  CAPTCHA_DOMAIN,
 };
+

@@ -2,13 +2,11 @@ import React from 'react';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
 import { provide } from '@services/api/pool';
-import { getSignPublicKey } from '@services/gomobile';
 import LocalDatabase from '@utils/LocalDatabase';
 import { useSelector } from 'react-redux';
 import { accountSeleclor } from '@src/redux/selectors';
 import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
-
-const CAPTCHA_KEY = '6LeZpsUaAAAAAChIj86fhwS5fa1krkQ4QPEkcQv9';
+import appConstant from '@src/constants/app';
 
 const withConfirm = WrappedComp => (props) => {
   const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
@@ -99,8 +97,8 @@ const withConfirm = WrappedComp => (props) => {
     <>
       <ReCaptchaV3
         ref={captchaRef}
-        captchaDomain="https://incognito.org"
-        siteKey={CAPTCHA_KEY}
+        captchaDomain={appConstant.CAPTCHA_DOMAIN}
+        siteKey={appConstant.CAPTCHA_KEY}
         onReceiveToken={handleProvideApi}
       />
       <WrappedComp

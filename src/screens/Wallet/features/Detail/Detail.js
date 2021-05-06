@@ -24,6 +24,7 @@ import { isGettingBalance as isGettingMainCryptoBalanceSelector } from '@src/red
 import { useBtnTrade } from '@src/components/UseEffect/useBtnTrade';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import { pTokenSelector } from '@src/redux/selectors/shared';
+import appConstant from '@src/constants/app';
 import withDetail from './Detail.enhance';
 import {
   styled,
@@ -36,7 +37,7 @@ const GroupButton = React.memo(() => {
   const navigation = useNavigation();
   const handleSend = () => navigation.navigate(routeNames.Send);
   const handleReceive = () => navigation.navigate(routeNames.ReceiveCrypto);
-  const [onPressSend, isSendDisabled] = useFeatureConfig('send', handleSend);
+  const [onPressSend, isSendDisabled] = useFeatureConfig(appConstant.DISABLED.SEND, handleSend);
   return (
     <View style={groupBtnStyled.groupButton}>
       <ButtonBasic

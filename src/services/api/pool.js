@@ -34,23 +34,27 @@ export async function provide(paymentAddress, tx, signPublicKeyEncode, amount, v
 }
 
 
-export async function withdrawReward(paymentAddress, signEncode) {
+export async function withdrawReward(paymentAddress, signEncode, verifyCode) {
   const url = '/pool/staker/withdraw-reward';
   return http.post(url, {
     'PStakeAddress': paymentAddress,
     'SignEncode': signEncode,
     'PaymentAddress': paymentAddress,
     'Amount': 0,
+    'g-recaptcha-response': verifyCode,
+    'CaptchaVersion': 'v3',
   });
 }
 
-export async function withdrawProvision(paymentAddress, signEncode, amount, tokenId) {
+export async function withdrawProvision(paymentAddress, signEncode, amount, tokenId, verifyCode) {
   const url = '/pool/staker/create-unstake';
   return http.post(url, {
     'PStakeAddress': paymentAddress,
     'SignEncode': signEncode,
     'Amount': amount,
     'TokenID': tokenId,
+    'g-recaptcha-response': verifyCode,
+    'CaptchaVersion': 'v3',
   });
 }
 
