@@ -6,7 +6,6 @@ import { withLayout_2 } from '@components/Layout';
 import Header from '@components/Header/index';
 import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
 import { CONSTANT_COMMONS, MESSAGES } from '@src/constants';
-import HuntQRCode from '@components/HuntQRCode/HuntQRCode';
 import { HISTORY_STATUS } from '@src/constants/trading';
 import { useSelector } from 'react-redux';
 import { maxPriceSelector } from '@screens/DexV2/components/Trade/TradeV2/Trade.selector';
@@ -26,7 +25,7 @@ const HistoryDetail = ({ history }) => {
     history?.sellAmount,
     buyAmount,
   );
-  
+
   let factories = [
     {
       left: 'ID',
@@ -86,7 +85,6 @@ const HistoryDetail = ({ history }) => {
         {factories.map(
           (item) => !item?.disabled && <ExtraInfo key={item?.left} {...item} />,
         )}
-        <HuntQRCode code={CONSTANT_COMMONS.HISTORY.TYPE.SEND} />
       </ScrollView>
     </FlexView>
   );
