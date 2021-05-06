@@ -8,7 +8,13 @@ const STATUS = {
 const DISABLED = {
   APP:        'app',
   TRADE:      'trade',
-  BUY_NODE:   'buynode'
+  BUY_NODE:   'buynode',
+  SHIELD:     'shield',
+  SEND:       'send',
+  UNSHIELD_DECENTRALIZED: 'unshield-decentralized',
+  UNSHIELD_CENTRALIZED:   'unshield-centralized',
+  SHIELD_DECENTRALIZED:   'shield-decentralized',
+  SHIELD_CENTRALIZED:     'shield-centralized',
 };
 
 const FEATURES_ROUTE_MAP = {

@@ -6,6 +6,7 @@ import useFeatureConfig from '@src/shared/hooks/featureConfig';
 import AppMaintain from '@components/AppMaintain/index';
 import { useSelector } from 'react-redux';
 import { isIOS } from '@src/utils/platform';
+import appConstant from '@src/constants/app';
 import styles from './style';
 import withHome from './Home.enhance';
 import Category from './features/Category';
@@ -19,7 +20,7 @@ export const styled = StyleSheet.create({
 });
 
 const Home = (props) => {
-  const [onPress, isDisabled, message] = useFeatureConfig('app');
+  const [_, isDisabled, message] = useFeatureConfig(appConstant.DISABLED.APP);
   const { getHomeConfiguration, categories, isFetching } = props?.homeProps;
   const { outdatedVersion, Link: link } = useSelector(homeSelector)?.appVersion;
   const onUpdateApp = async () => {

@@ -15,6 +15,7 @@ import CryptoIcon from '@components/CryptoIcon';
 import { COINS } from '@src/constants';
 import PropTypes from 'prop-types';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
+import appConstant from '@src/constants/app';
 
 const generateMenu = (tokens, onSelect) => {
   const newMenu = [];
@@ -59,8 +60,8 @@ const enhance = WrappedComp => props => {
     settings: settingsSelector.settings(state),
   }));
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const [onCentralizedPress, isCentralizedDisabled] = useFeatureConfig('centralized');
-  const [onDecentralizedPress, isDecentralizedDisabled] = useFeatureConfig('decentralized');
+  const [onCentralizedPress, isCentralizedDisabled] = useFeatureConfig(appConstant.DISABLED.SHIELD_CENTRALIZED);
+  const [onDecentralizedPress, isDecentralizedDisabled] = useFeatureConfig(appConstant.DISABLED.SHIELD_DECENTRALIZED);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
