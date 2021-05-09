@@ -17,6 +17,8 @@ const initialState = {
     address: '',
     expiredAt: '',
     isShieldAddressDecentralized: undefined,
+    tokenFee: 0,
+    estimateFee: 0,
   },
   storage: {
     guide: false,

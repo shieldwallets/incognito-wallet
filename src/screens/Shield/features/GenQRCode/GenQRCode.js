@@ -15,6 +15,8 @@ import { ScrollView } from '@src/components/core';
 import { isEmpty } from 'lodash';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@routers/routeNames';
+import { CONSTANT_COMMONS } from '@src/constants';
+import convert from '@utils/convert';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
 
@@ -49,9 +51,46 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min, expiredAt, isShieldAddressDecentralized } = useSelector(shieldDataSelector);
+  const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const navigation = useNavigation();
+
+  const renderMinShieldAmount = () => {
+    let minComp;
+    if (min) {
+      minComp = (
+        <>
+          <NormalText text="Minimum: ">
+            <Text style={[styled.boldText]}>
+              {`${min} ${selectedPrivacy?.externalSymbol ||
+              selectedPrivacy?.symbol}`}
+            </Text>
+          </NormalText>
+          <NormalText
+            text="Smaller amounts will not be processed."
+            style={styled.smallText}
+          />
+        </>
+      );
+    }
+    return minComp;
+  };
+
+  const renderEstimateFee = () => {
+    const isETH = selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
+    let humanFee = convert.toNumber((isETH ? estimateFee : tokenFee) || 0, true);
+    const originalFee = convert.toOriginalAmount(humanFee, selectedPrivacy?.pDecimals);
+    humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
+    if (!humanFee) return null;
+    return(
+      <NormalText text="Estimate Fee: ">
+        <Text style={[styled.boldText]}>
+          {`${humanFee} ${selectedPrivacy?.externalSymbol ||
+          selectedPrivacy?.symbol}`}
+        </Text>
+      </NormalText>
+    );
+  };
 
   const renderShieldIncAddress = () => (
     <>
@@ -72,20 +111,7 @@ const Extra = () => {
             </NormalText>
           )
         }
-        {min && (
-          <>
-            <NormalText text="Minimum: ">
-              <Text style={[styled.boldText]}>
-                {`${min} ${selectedPrivacy?.externalSymbol ||
-                selectedPrivacy?.symbol}`}
-              </Text>
-            </NormalText>
-            <NormalText
-              text="Smaller amounts will not be processed."
-              style={styled.smallText}
-            />
-          </>
-        )}
+        {renderMinShieldAmount()}
       </View>
       <CopiableText data={address} />
       <NormalText
@@ -109,18 +135,20 @@ const Extra = () => {
       <View style={styled.qrCode}>
         <QrCodeGenerate value={address} size={175} />
       </View>
+      <View style={styled.hook}>
+        {renderMinShieldAmount()}
+        {renderEstimateFee()}
+      </View>
       <CopiableText data={address} />
-      <View style={{ flexDirection: 'row', marginTop: 15 }}>
-        <NormalText
-          text="Test show description."
-        />
-        <BtnInfo
-          isBlack
-          onPress={() => {
-            console.log('SANG');
-            navigation.navigate(routeNames.ShieldDecentralizeDescription);
-          }}
-        />
+      <View style={{ marginTop: 15 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <NormalText text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
+          <BtnInfo
+            isBlack
+            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
+          />
+        </View>
+        <NormalText text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`} />
       </View>
     </>
   );
