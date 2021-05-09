@@ -7,12 +7,14 @@ import QrCodeGenerate from '@src/components/QrCodeGenerate';
 import PropTypes from 'prop-types';
 import { CopiableTextDefault as CopiableText } from '@src/components/CopiableText';
 import LoadingContainer from '@src/components/LoadingContainer';
-import { ButtonBasic } from '@src/components/Button';
+import { BtnInfo, ButtonBasic } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
 import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import { isEmpty } from 'lodash';
+import { useNavigation } from 'react-navigation-hooks';
+import routeNames from '@routers/routeNames';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
 
@@ -49,6 +51,7 @@ const ShieldError = React.memo(({ handleShield }) => {
 const Extra = () => {
   const { address, min, expiredAt, isShieldAddressDecentralized } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const navigation = useNavigation();
 
   const renderShieldIncAddress = () => (
     <>
@@ -102,13 +105,23 @@ const Extra = () => {
 
   const renderShieldUserAddress = () => (
     <>
-      <NormalText style={styled.title}>
-        Send to this shielding address
-      </NormalText>
+      <NormalText style={styled.title} text="Send to this shielding address" />
       <View style={styled.qrCode}>
         <QrCodeGenerate value={address} size={175} />
       </View>
       <CopiableText data={address} />
+      <View style={{ flexDirection: 'row', marginTop: 15 }}>
+        <NormalText
+          text="Test show description."
+        />
+        <BtnInfo
+          isBlack
+          onPress={() => {
+            console.log('SANG');
+            navigation.navigate(routeNames.ShieldDecentralizeDescription);
+          }}
+        />
+      </View>
     </>
   );
 

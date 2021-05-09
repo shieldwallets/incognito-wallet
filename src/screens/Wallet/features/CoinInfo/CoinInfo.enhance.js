@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
-import {useNavigation, useNavigationParam} from 'react-navigation-hooks';
+import { useNavigation } from 'react-navigation-hooks';
 import format from '@src/utils/format';
 import { CONSTANT_CONFIGS, CONSTANT_COMMONS } from '@src/constants';
 import routeNames from '@src/router/routeNames';
@@ -16,7 +16,6 @@ const enhance = (WrappedComp) => (props) => {
   });
   const { info } = state;
   const navigation = useNavigation();
-  const isShieldAddressDecentralized = useNavigationParam('isShieldAddressDecentralized');
 
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const {
@@ -117,7 +116,6 @@ const enhance = (WrappedComp) => (props) => {
           handlePressVerifiedInfo,
           tokenId,
           isVerified,
-          isShieldAddressDecentralized
         }}
       />
     </ErrorBoundary>

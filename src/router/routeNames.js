@@ -129,9 +129,11 @@ export default {
   ManageStorage: 'ManageStorage',
   BackUpAllData: 'BackUpAllData',
   RestoreAllData: 'RestoreAllData',
-  
+
   UpdateNodeFirmware: 'UpdateNodeFirmware',
 
   ExportCSV: 'ExportCSV',
   MonitorDetail: 'MonitorDetail',
+
+  ShieldDecentralizeDescription: 'ShieldDecentralizeDescription',
 };
