@@ -85,7 +85,8 @@ class History {
       isShieldTx,
       isDecentralized,
       incognitoTx: data?.IncognitoTx,
-      memo: data?.Memo || data?.Info
+      memo: data?.Memo || data?.Info,
+      isShieldAddressDecentralized: data?.NewShieldDecentralized,
     };
     return history;
   }

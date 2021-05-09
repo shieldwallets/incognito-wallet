@@ -306,9 +306,12 @@ const TxHistoryDetail = (props) => {
   };
 
   const handleRefresh = () => {
-    const currencyType = data?.history?.currencyType;
-    const decentralized = data?.history?.decentralized;
-    onPullRefresh && onPullRefresh(historyId, currencyType, decentralized);
+    if (typeof onPullRefresh === 'function') {
+      const currencyType = data?.history?.currencyType;
+      const decentralized = data?.history?.decentralized;
+      const isShieldAddressDecentralized = data?.history?.isShieldAddressDecentralized;
+      onPullRefresh({ historyId, currencyType, decentralized, isShieldAddressDecentralized });
+    }
   };
 
   React.useEffect(() => {

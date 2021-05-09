@@ -28,7 +28,8 @@ export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, to
   return http.post('ota/generate', body)
     .then(res => ({
       address: res?.Address,
-      expiredAt: res?.ExpiredAt
+      expiredAt: res?.ExpiredAt,
+      newShieldDecentralized: res?.NewShieldDecentralized
     }));};
 
 export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, currencyType, signPublicKeyEncode }) => {
@@ -57,7 +58,8 @@ export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, c
   return http.post('eta/generate', body)
     .then(res => ({
       address: res?.Address,
-      expiredAt: res?.ExpiredAt
+      expiredAt: res?.ExpiredAt,
+      newShieldDecentralized: res?.NewShieldDecentralized
     }));};
 
 export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId, tokenContractID, currencyType, signPublicKeyEncode }) => {
@@ -89,6 +91,7 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
   return http.post('eta/generate', body)
     .then(res => ({
       address: res?.Address,
-      expiredAt: res?.ExpiredAt
+      expiredAt: res?.ExpiredAt,
+      newShieldDecentralized: res?.NewShieldDecentralized
     }));
 };

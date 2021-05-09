@@ -15,7 +15,8 @@ const initialState = {
     min: null,
     max: null,
     address: '',
-    expiredAt: ''
+    expiredAt: '',
+    isShieldAddressDecentralized: undefined,
   },
   storage: {
     guide: false,

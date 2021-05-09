@@ -27,12 +27,8 @@ const enhance = (WrappedComp) => (props) => {
       if (!isTokenSelectable(item?.tokenId)) {
         return;
       }
-      if (item?.currencyType === 1 || item?.currencyType === 3) {
-        navigation.navigate(routeNames.TermOfUseShield, { tokenId: item?.tokenId });
-      } else {
-        navigation.navigate(routeNames.ShieldGenQRCode);
-        await dispatch(fetchDataShield({ tokenId: item?.tokenId }));
-      }
+      navigation.navigate(routeNames.ShieldGenQRCode);
+      await dispatch(fetchDataShield({ tokenId: item?.tokenId }));
     } catch (error) {
       console.debug('SHIELD ERROR', error);
     }

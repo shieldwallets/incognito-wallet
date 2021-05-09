@@ -1,29 +1,24 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Image } from 'react-native';
-import { withLayout_2 } from '@src/components/Layout';
 import Header from '@src/components/Header';
 import { COLORS, FONT } from '@src/styles';
 import PropTypes from 'prop-types';
 import { RoundCornerButton } from '@components/core';
-import routeNames from '@src/router/routeNames';
-import { useDispatch } from 'react-redux';
 import { MESSAGES } from '@src/constants';
 import ic_radio from '@src/assets/images/icons/ic_radio.png';
 import ic_radio_check from '@src/assets/images/icons/ic_radio_check.png';
-import { actionFetch as fetchDataShield } from '../../Shield.actions';
 
 const TermOfUseShield = (props) => {
-  const { navigation } = props;
-  const dispatch = useDispatch();
+  const { onNextPress } = props;
 
-  const tokenId = navigation.getParam('tokenId');
   const terms = ['I will send tokens from centralized exchanges',
     'I will send tokens from a smart contract', 'I will send tokens from my own wallet'];
   const [choose, setChoose] = React.useState(undefined);
 
   const handlePressNext = async () => {
-    navigation.navigate(routeNames.ShieldGenQRCode);
-    await dispatch(fetchDataShield({ tokenId }));
+    if (typeof onNextPress === 'function') {
+      onNextPress();
+    }
   };
 
   const handlePress = (index) => {
@@ -64,10 +59,10 @@ const TermOfUseShield = (props) => {
 };
 
 TermOfUseShield.propTypes = {
-  navigation: PropTypes.any.isRequired,
+  onNextPress: PropTypes.any.isRequired,
 };
 
-export default withLayout_2(TermOfUseShield);
+export default TermOfUseShield;
 
 const styled = StyleSheet.create({
   container: {

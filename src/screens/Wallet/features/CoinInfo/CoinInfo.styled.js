@@ -45,6 +45,7 @@ export const styled = StyleSheet.create({
   },
   wrapper: {
     marginTop: 27,
+    flex: 1
   },
   btnInfo: {
     flex: 1,

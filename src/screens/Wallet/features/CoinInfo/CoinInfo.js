@@ -70,6 +70,7 @@ const CoinInfo = (props) => {
     tokenId,
     isVerified,
     handlePressVerifiedInfo,
+    isShieldAddressDecentralized
   } = props;
   const navigation = useNavigation();
   const onGoBack = () => navigation.goBack();
@@ -112,6 +113,7 @@ const CoinInfo = (props) => {
           {infosFactories.map((info, key) => (
             <InfoItem {...info} key={key} />
           ))}
+          {isShieldAddressDecentralized && <Text>Change Text When Anh Duc Update</Text>}
         </ScrollView>
       </View>
     </View>
@@ -137,6 +139,7 @@ InfoItem.propTypes = {
   link: PropTypes.string,
   labelStyle: PropTypes.any,
   onlyLabel: PropTypes.bool,
+  isShieldAddressDecentralized: PropTypes.bool,
 };
 
 InfoItem.defaultProps = {
@@ -146,6 +149,7 @@ InfoItem.defaultProps = {
   labelStyle: null,
   copyable: false,
   onlyLabel: false,
+  isShieldAddressDecentralized: false
 };
 
 export default withCoinInfo(CoinInfo);
