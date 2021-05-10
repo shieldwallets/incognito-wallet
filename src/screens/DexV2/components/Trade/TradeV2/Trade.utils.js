@@ -1,6 +1,7 @@
 import { COINS } from '@src/constants';
 import _, { isNaN, floor, cloneDeep, ceil, isEmpty } from 'lodash';
 import { MAX_DEX_FEE } from '@components/EstimateFee/EstimateFee.utils';
+// eslint-disable-next-line import/no-cycle
 import {
   calculateOutputValue,
   calculateOutputValueCrossPool,
@@ -528,7 +529,11 @@ export const calculatorInputERC20Network = async (payload) => {
     newPriorityList = priorityList;
 
     if (maxAmountIn !== 0 && !isNaN(maxAmountIn)) {
-      inputValue = ceil(formatUtils.convertDecimalsToPDecimals(maxAmountIn, inputToken)) || 0;
+      inputValue = ceil(formatUtils.convertDecimalsToPDecimals({
+        number: maxAmountIn,
+        decimals: inputToken.decimals,
+        pDecimals: inputToken.pDecimals,
+      })) || 0;
       inputText = formatUtils.amountFull(inputValue, inputToken?.pDecimals) || '0';
     }
 

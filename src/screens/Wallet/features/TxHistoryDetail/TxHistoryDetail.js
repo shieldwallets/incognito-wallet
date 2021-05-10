@@ -200,6 +200,44 @@ const TxHistoryDetail = (props) => {
     formatUtil.number(history?.requestedAmount);
   const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
   const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
+
+  const receiveFund = React.useMemo(() => {
+    return (
+      `${formatUtil.convertDecimalsHumanAmount({
+        number: history?.receivedAmount,
+        pDecimals: history?.pDecimals || selectedPrivacy?.pDecimals,
+        decimals: history?.decimals || selectedPrivacy?.decimals,
+      })} ${history.symbol}`
+    );
+  }, [history]);
+
+  const shieldingFee = React.useMemo(() => {
+    return (
+      `${formatUtil.convertDecimalsHumanAmount({
+        number: history?.shieldFee,
+        pDecimals: history?.pDecimals || selectedPrivacy?.pDecimals,
+        decimals: history?.decimals || selectedPrivacy?.decimals,
+      })} ${history.symbol}`
+    );
+  }, [history]);
+
+  const historyShieldDecentralizeFactories = history?.isShieldAddressDecentralized ? [
+    {
+      label: 'Received funds',
+      valueText: receiveFund,
+    },
+    {
+      label: 'Shielding fees',
+      valueText: shieldingFee,
+    },
+    {
+      label: 'Received TxID',
+      valueText: history?.receivedTx,
+      openUrl: true,
+      disabled: !history?.receivedTx,
+    }
+  ] : [];
+
   const historyFactories = [
     {
       label: 'ID',
@@ -219,10 +257,11 @@ const TxHistoryDetail = (props) => {
       valueText: `${amountStr} ${history.symbol}`,
       disabled: !amount,
     },
+    ...historyShieldDecentralizeFactories,
     {
       label: 'Fee',
       valueText: `${formatFee} ${feeUnit}`,
-      disabled: !fee,
+      disabled: !fee || history?.isShieldAddressDecentralized === 1,
     },
     {
       label: 'Status',

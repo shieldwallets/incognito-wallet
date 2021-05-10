@@ -59,7 +59,7 @@ class History {
       erc20TokenAddress: data.Erc20TokenAddress,
       privacyTokenAddress: data.PrivacyTokenAddress,
       requestedAmount: data.RequestedAmount,
-      receivedAmount: data.ReceivedAmount,
+      receivedAmount: data?.ReceivedAmount || 0,
       incognitoAmount: data.IncognitoAmount,
       outchainTx: data.OutChainTx,
       inchainTx: data.InChainTx,
@@ -87,6 +87,8 @@ class History {
       incognitoTx: data?.IncognitoTx,
       memo: data?.Memo || data?.Info,
       isShieldAddressDecentralized: data?.NewShieldDecentralized,
+      shieldFee: data?.TokenFee || 0,
+      receivedTx: data?.TxReceive || '',
     };
     return history;
   }

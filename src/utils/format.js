@@ -6,7 +6,7 @@ import {
   getDecimalSeparator,
   getGroupSeparator,
 } from '@src/resources/separator';
-import convertUtil from './convert';
+import convertUtil from '@utils/convert';
 
 export const SHORT_DATE_TIME_FORMAT = 'DD MMM hh:mm A';
 export const LONG_DATE_TIME_FORMAT = 'DD MMM YYYY hh:mm A';
@@ -181,12 +181,20 @@ const fixedNumber = (number, digits = 3) => {
   return Math.trunc(number*Math.pow(10, digits))/Math.pow(10, digits);
 };
 
-const convertDecimalsToPDecimals = (number, pToken) => {
+const convertDecimalsToPDecimals = ({ number, decimals, pDecimals }) => {
   return BigNumber(number).dividedBy(BigNumber(10)
-    .pow(pToken?.decimals))
-    .multipliedBy(BigNumber(10).pow(pToken?.pDecimals))
+    .pow(decimals))
+    .multipliedBy(BigNumber(10).pow(pDecimals))
     .dividedToIntegerBy(1)
     .toNumber();
+};
+
+const convertDecimalsHumanAmount = ({ number, decimals, pDecimals }) => {
+  if (typeof number === 'string') {
+    number = convertUtil.toNumber(number, true) || 0;
+  }
+  const originalAmount = convertDecimalsToPDecimals({ number, decimals, pDecimals });
+  return convertUtil.toHumanAmount(originalAmount, pDecimals);
 };
 
 export default {
@@ -203,4 +211,5 @@ export default {
   formatWithNotation,
   fixedNumber,
   convertDecimalsToPDecimals,
+  convertDecimalsHumanAmount,
 };

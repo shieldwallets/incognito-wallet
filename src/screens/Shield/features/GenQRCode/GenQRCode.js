@@ -7,14 +7,12 @@ import QrCodeGenerate from '@src/components/QrCodeGenerate';
 import PropTypes from 'prop-types';
 import { CopiableTextDefault as CopiableText } from '@src/components/CopiableText';
 import LoadingContainer from '@src/components/LoadingContainer';
-import { BtnInfo, ButtonBasic } from '@src/components/Button';
+import { ButtonBasic } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
 import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import { isEmpty } from 'lodash';
-import { useNavigation } from 'react-navigation-hooks';
-import routeNames from '@routers/routeNames';
 import { CONSTANT_COMMONS } from '@src/constants';
 import convert from '@utils/convert';
 import withGenQRCode from './GenQRCode.enhance';
@@ -53,7 +51,6 @@ const ShieldError = React.memo(({ handleShield }) => {
 const Extra = () => {
   const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const navigation = useNavigation();
 
   const renderMinShieldAmount = () => {
     let minComp;
@@ -136,19 +133,19 @@ const Extra = () => {
         <QrCodeGenerate value={address} size={175} />
       </View>
       <View style={styled.hook}>
-        {renderMinShieldAmount()}
         {renderEstimateFee()}
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <NormalText text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
-          <BtnInfo
-            isBlack
-            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
-          />
-        </View>
-        <NormalText text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`} />
+        <NormalText text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
+        <NormalText
+          style={{ marginTop: 10 }}
+          text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
+        />
+        <NormalText
+          text="The fees will be taken from your funds."
+          style={[styled.smallText, { marginTop: 10 }]}
+        />
       </View>
     </>
   );
