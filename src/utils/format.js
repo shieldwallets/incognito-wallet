@@ -193,8 +193,8 @@ const convertDecimalsHumanAmount = ({ number, decimals, pDecimals }) => {
   if (typeof number === 'string') {
     number = convertUtil.toNumber(number, true) || 0;
   }
-  const originalAmount = convertDecimalsToPDecimals({ number, decimals, pDecimals });
-  return convertUtil.toHumanAmount(originalAmount, pDecimals);
+  const originalAmount = convertDecimalsToPDecimals({ number, decimals, pDecimals }) || 0;
+  return amount(originalAmount, pDecimals, true);
 };
 
 export default {
