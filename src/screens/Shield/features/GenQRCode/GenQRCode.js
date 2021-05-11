@@ -134,6 +134,10 @@ const Extra = () => {
       </View>
       <View style={styled.hook}>
         {renderEstimateFee()}
+        <NormalText
+          text="The fees will be taken from your funds."
+          style={[styled.smallText, { marginTop: 10 }]}
+        />
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
@@ -143,7 +147,7 @@ const Extra = () => {
           text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
         />
         <NormalText
-          text="The fees will be taken from your funds."
+          text="Use at your own risk."
           style={[styled.smallText, { marginTop: 10 }]}
         />
       </View>
