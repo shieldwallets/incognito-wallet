@@ -80,7 +80,7 @@ const Extra = () => {
     humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
     if (!humanFee) return null;
     return(
-      <NormalText text="Estimate Fee: ">
+      <NormalText text="Estimated fees: ">
         <Text style={[styled.boldText]}>
           {`${humanFee} ${selectedPrivacy?.externalSymbol ||
           selectedPrivacy?.symbol}`}
