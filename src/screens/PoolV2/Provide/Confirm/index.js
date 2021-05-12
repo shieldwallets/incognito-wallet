@@ -9,6 +9,7 @@ import Header from '@components/Header/index';
 import Loading from '@screens/DexV2/components/Loading';
 import withDefaultAccount from '@components/Hoc/withDefaultAccount';
 import mainStyles from '@screens/PoolV2/style';
+import { RefreshControl } from 'react-native';
 import withSuccess from './success.enhance';
 import withConfirm from './confirm.enhance';
 import withData from './data.enhance';
@@ -24,11 +25,19 @@ const Confirm = ({
   providing,
   error,
   disable,
+  onRefresh,
+  refreshing
 }) => {
+  const renderRefreshControl = () => (
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+    />
+  );
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Header title="Order preview" />
-      <ScrollView>
+      <ScrollView refreshControl={renderRefreshControl()}>
         <View style={styles.mainInfo}>
           <Text style={styles.bigText}>Provide</Text>
           <Text style={styles.bigText} numberOfLines={3}>{provide} {coin.symbol}</Text>
@@ -70,6 +79,9 @@ Confirm.propTypes = {
 
   error: PropTypes.string,
   disable: PropTypes.bool.isRequired,
+
+  onRefresh: PropTypes.func.isRequired,
+  refreshing: PropTypes.bool,
 };
 
 Confirm.defaultProps = {
@@ -77,6 +89,7 @@ Confirm.defaultProps = {
   deposit: '',
   provide: '',
   error: '',
+  refreshing: false
 };
 
 export default compose(

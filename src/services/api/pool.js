@@ -33,6 +33,39 @@ export async function provide(paymentAddress, tx, signPublicKeyEncode, amount, v
   });
 }
 
+export async function submitProvideRawTx({
+  paymentAddress,
+  signPublicKeyEncode,
+  tx,
+  rawData,
+  amount,
+  captchaCode,
+  tokenId
+}) {
+  const url = '/pool/staker/submit-rawdata';
+  return http.post(url, {
+    'PStakeAddress': paymentAddress,
+    'SignPublicKeyEncode': signPublicKeyEncode,
+    'IncognitoTx': tx,
+    'RawData': rawData,
+    'Amount': amount,
+    'g-recaptcha-response': captchaCode,
+    'CaptchaVersion': 'v3',
+    'TokenID': tokenId,
+  });
+}
+
+export async function checkPreviousProvision({
+  tokenId,
+  paymentAddress,
+}) {
+  const url = '/pool/staker/check-provision-pending';
+  return http.post(url, {
+    'PStakeAddress': paymentAddress,
+    'TokenID': tokenId,
+  });
+}
+
 
 export async function withdrawReward(paymentAddress, signEncode, verifyCode) {
   const url = '/pool/staker/withdraw-reward';

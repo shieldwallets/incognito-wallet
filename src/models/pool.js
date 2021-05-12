@@ -103,6 +103,8 @@ export class PoolHistory {
       'Successful',
       'Unsuccessful',
       'Pending',
+      'Pending',
+      'Successful',
     ][data.Status];
 
     this.type = [
