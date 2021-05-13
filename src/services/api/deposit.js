@@ -27,6 +27,7 @@ export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, to
     PaymentAddress: paymentAddress,
     WalletAddress: walletAddress ?? paymentAddress,
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1
   };
 
   if (signPublicKeyEncode) {
@@ -56,6 +57,7 @@ export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, c
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: '',
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1,
   };
   if (signPublicKeyEncode) {
     body.SignPublicKeyEncode = signPublicKeyEncode;
@@ -84,6 +86,7 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: tokenContractID,
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1,
   };
 
   if (signPublicKeyEncode) {
