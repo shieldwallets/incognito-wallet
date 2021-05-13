@@ -3,6 +3,7 @@ import { useNavigationParam } from 'react-navigation-hooks';
 import formatUtil from '@utils/format';
 
 const withData = WrappedComp => (props) => {
+  const coins       = useNavigationParam('coins');
   const coin        = useNavigationParam('coin');
   const value       = useNavigationParam('value');
   const fee         = useNavigationParam('fee');
@@ -38,6 +39,7 @@ const withData = WrappedComp => (props) => {
         payOnOrigin,
         isPrv,
         originProvide,
+        coins,
       }}
     />
   );

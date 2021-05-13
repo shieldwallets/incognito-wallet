@@ -4,6 +4,7 @@ import { MAX_FEE_PER_TX } from '@components/EstimateFee/EstimateFee.utils';
 import { COINS } from '@src/constants';
 
 const withCoinData = WrappedComp => (props) => {
+  const coins       = useNavigationParam('coins');
   const coin        = useNavigationParam('coin');
   const prvBalance  = useNavigationParam('prvBalance');
   const isPrv       = useNavigationParam('isPrv');
@@ -12,6 +13,7 @@ const withCoinData = WrappedComp => (props) => {
     <WrappedComp
       {...{
         ...props,
+        coins,
         coin,
         inputToken: coin,
         inputBalance: coin.balance,

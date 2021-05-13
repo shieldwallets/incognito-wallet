@@ -18,6 +18,7 @@ const withConfirm = WrappedComp => (props) => {
 
   const captchaRef = React.useRef(null);
   const {
+    coins,
     value,
     coin,
     fee,
@@ -97,7 +98,9 @@ const withConfirm = WrappedComp => (props) => {
         paymentAddress: account.PaymentAddress
       });
       if (hasPrevious) {
-        return setError('The fees will be taken from your funds.');
+        setProviding(false);
+        setError('Please wait for the previous provision to be completed.');
+        return;
       }
       handleSendTransaction().then();
     } catch (error) {

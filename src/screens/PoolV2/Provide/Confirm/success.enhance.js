@@ -5,9 +5,9 @@ import ROUTE_NAMES from '@routers/routeNames';
 import mainStyles from '@screens/PoolV2/style';
 
 const withSuccess = WrappedComp => (props) => {
+  const { coins } = props;
   const [success, setSuccess] = React.useState(false);
   const navigation = useNavigation();
-
   const {
     provide,
     coin,
@@ -15,7 +15,7 @@ const withSuccess = WrappedComp => (props) => {
 
   const closeSuccess = () => {
     setSuccess(false);
-    navigation.navigate(ROUTE_NAMES.PoolV2);
+    navigation.navigate(ROUTE_NAMES.PoolV2History, { coins });
   };
 
   return (
