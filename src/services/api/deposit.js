@@ -1,6 +1,14 @@
 import http from '@src/services/http';
 import { CONSTANT_COMMONS } from '@src/constants';
 
+const formatResponse = (res) => ({
+  address: res?.Address,
+  expiredAt: res?.ExpiredAt,
+  newShieldDecentralized: res?.NewShieldDecentralized,
+  estimateFee: res?.EstimateFee,
+  tokenFee: res?.TokenFee,
+});
+
 export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, tokenId, currencyType, signPublicKeyEncode }) => {
   if (!paymentAddress) return throw new Error('Missing paymentAddress');
   if (!walletAddress) return throw new Error('Missing walletAddress');
@@ -19,6 +27,7 @@ export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, to
     PaymentAddress: paymentAddress,
     WalletAddress: walletAddress ?? paymentAddress,
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1
   };
 
   if (signPublicKeyEncode) {
@@ -26,10 +35,8 @@ export const genCentralizedDepositAddress = ({ paymentAddress, walletAddress, to
   }
 
   return http.post('ota/generate', body)
-    .then(res => ({
-      address: res?.Address,
-      expiredAt: res?.ExpiredAt
-    }));};
+    .then(formatResponse);
+};
 
 export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, currencyType, signPublicKeyEncode }) => {
   if (!paymentAddress) return throw new Error('Missing paymentAddress');
@@ -50,15 +57,14 @@ export const genETHDepositAddress = ({ paymentAddress, walletAddress, tokenId, c
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: '',
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1,
   };
   if (signPublicKeyEncode) {
     body.SignPublicKeyEncode = signPublicKeyEncode;
   }
   return http.post('eta/generate', body)
-    .then(res => ({
-      address: res?.Address,
-      expiredAt: res?.ExpiredAt
-    }));};
+    .then(formatResponse);
+};
 
 export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId, tokenContractID, currencyType, signPublicKeyEncode }) => {
   if (!paymentAddress) return throw new Error('Missing paymentAddress');
@@ -80,6 +86,7 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: tokenContractID,
     PrivacyTokenAddress: tokenId,
+    NewShieldDecentralized: 1,
   };
 
   if (signPublicKeyEncode) {
@@ -87,8 +94,5 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
   }
 
   return http.post('eta/generate', body)
-    .then(res => ({
-      address: res?.Address,
-      expiredAt: res?.ExpiredAt
-    }));
+    .then(formatResponse);
 };

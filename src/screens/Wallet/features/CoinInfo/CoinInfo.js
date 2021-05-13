@@ -9,7 +9,6 @@ import { COLORS } from '@src/styles';
 import { TokenBasic } from '@src/components/Token';
 import { BtnInfo } from '@src/components/Button';
 import { useNavigation } from 'react-navigation-hooks';
-import routeNames from '@src/router/routeNames';
 import withCoinInfo from './CoinInfo.enhance';
 import { styled } from './CoinInfo.styled';
 

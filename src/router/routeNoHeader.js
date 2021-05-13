@@ -82,6 +82,7 @@ import UpdateFirmware from '@screens/Node/UpdateFirmware';
 import ExportCSV from '@screens/ExportCSV';
 import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
 import MonitorDetail from '@screens/Node/MonitorDetail';
+import ShieldDecentralizeDescription from '@screens/Shield/features/ShieldDecentralizeDescription';
 
 const masterKeyRoutes = [
   {
@@ -424,6 +425,10 @@ const routes = [
     screen: MonitorDetail,
     name: routeNames.MonitorDetail,
   },
+  {
+    screen: ShieldDecentralizeDescription,
+    name: routeNames.ShieldDecentralizeDescription,
+  }
 ];
 
 export const getRoutesNoHeader = () =>

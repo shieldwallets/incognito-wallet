@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Header from '@src/components/Header';
 import { useSelector } from 'react-redux';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { shieldDataSelector } from '@screens/Shield/Shield.selector';
@@ -8,14 +7,14 @@ import QrCodeGenerate from '@src/components/QrCodeGenerate';
 import PropTypes from 'prop-types';
 import { CopiableTextDefault as CopiableText } from '@src/components/CopiableText';
 import LoadingContainer from '@src/components/LoadingContainer';
-import { ButtonBasic, BtnInfo } from '@src/components/Button';
+import { ButtonBasic } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
 import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
-import routeNames from '@routers/routeNames';
-import { useNavigation } from 'react-navigation-hooks';
 import { isEmpty } from 'lodash';
+import { CONSTANT_COMMONS } from '@src/constants';
+import convert from '@utils/convert';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
 
@@ -50,56 +49,115 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min, expiredAt } = useSelector(shieldDataSelector);
+  const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+
+  const renderMinShieldAmount = () => {
+    let minComp;
+    if (min) {
+      minComp = (
+        <>
+          <NormalText text="Minimum: ">
+            <Text style={[styled.boldText]}>
+              {`${min} ${selectedPrivacy?.externalSymbol ||
+              selectedPrivacy?.symbol}`}
+            </Text>
+          </NormalText>
+          <NormalText
+            text="Smaller amounts will not be processed."
+            style={styled.smallText}
+          />
+        </>
+      );
+    }
+    return minComp;
+  };
+
+  const renderEstimateFee = () => {
+    const isETH = selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
+    let humanFee = convert.toNumber((isETH ? estimateFee : tokenFee) || 0, true);
+    const originalFee = convert.toOriginalAmount(humanFee, selectedPrivacy?.pDecimals);
+    humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
+    if (!humanFee) return null;
+    return(
+      <NormalText text="Estimated fees: ">
+        <Text style={[styled.boldText]}>
+          {`${humanFee} ${selectedPrivacy?.externalSymbol ||
+          selectedPrivacy?.symbol}`}
+        </Text>
+      </NormalText>
+    );
+  };
+
+  const renderShieldIncAddress = () => (
+    <>
+      <NormalText style={styled.title}>
+        {'Send to this shielding\naddress '}
+        <Text style={[styled.boldText]}>once only.</Text>
+      </NormalText>
+      <View style={styled.qrCode}>
+        <QrCodeGenerate value={address} size={175} />
+      </View>
+      <View style={styled.hook}>
+        {
+          !isEmpty(expiredAt) && (
+            <NormalText text="Expires at: ">
+              <Text style={[styled.boldText, styled.countdown]}>
+                {expiredAt}
+              </Text>
+            </NormalText>
+          )
+        }
+        {renderMinShieldAmount()}
+      </View>
+      <CopiableText data={address} />
+      <NormalText
+        text={
+          'If sending from an exchange, please take\nwithdrawal times into account.'
+        }
+        style={{ marginTop: 30 }}
+      />
+      <NormalText
+        text={
+          'It may be more reliable to use a normal\nwallet as an intermediary.'
+        }
+        style={{ marginTop: 10 }}
+      />
+    </>
+  );
+
+  const renderShieldUserAddress = () => (
+    <>
+      <NormalText style={styled.title} text="Send to this shielding address" />
+      <View style={styled.qrCode}>
+        <QrCodeGenerate value={address} size={175} />
+      </View>
+      <View style={styled.hook}>
+        {renderEstimateFee()}
+        <NormalText
+          text="The fees will be taken from your funds."
+          style={[styled.smallText, { marginTop: 10 }]}
+        />
+      </View>
+      <CopiableText data={address} />
+      <View style={{ marginTop: 15 }}>
+        <NormalText text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
+        <NormalText
+          style={{ marginTop: 10 }}
+          text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
+        />
+        <NormalText
+          text="Use at your own risk."
+          style={[styled.smallText, { marginTop: 10 }]}
+        />
+      </View>
+    </>
+  );
+
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        <NormalText style={styled.title}>
-          {'Send to this shielding\naddress '}
-          <Text style={[styled.boldText]}>once only.</Text>
-        </NormalText>
-        <View style={styled.qrCode}>
-          <QrCodeGenerate value={address} size={175} />
-        </View>
-        <View style={styled.hook}>
-          {
-            !isEmpty(expiredAt) && (
-              <NormalText text="Expires at: ">
-                <Text style={[styled.boldText, styled.countdown]}>
-                  {expiredAt}
-                </Text>
-              </NormalText>
-            )
-          }
-          {min && (
-            <>
-              <NormalText text="Minimum: ">
-                <Text style={[styled.boldText]}>
-                  {`${min} ${selectedPrivacy?.externalSymbol ||
-                    selectedPrivacy?.symbol}`}
-                </Text>
-              </NormalText>
-              <NormalText
-                text="Smaller amounts will not be processed."
-                style={styled.smallText}
-              />
-            </>
-          )}
-        </View>
-        <CopiableText data={address} />
-        <NormalText
-          text={
-            'If sending from an exchange, please take\nwithdrawal times into account.'
-          }
-          style={{ marginTop: 30 }}
-        />
-        <NormalText
-          text={
-            'It may be more reliable to use a normal\nwallet as an intermediary.'
-          }
-          style={{ marginTop: 10 }}
-        />
+        {isShieldAddressDecentralized ? renderShieldUserAddress() : renderShieldIncAddress()}
       </View>
     </ScrollView>
   );
@@ -116,11 +174,8 @@ const Content = () => {
 };
 
 const GenQRCode = (props) => {
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const navigation      = useNavigation();
   const { hasError, handleShield, isFetching } = props;
   const [toggle, setToggle] = React.useState(true);
-  const handleToggleTooltip = () => navigation.navigate(routeNames.CoinInfo);
   React.useEffect(() => {
     if (toggle) {
       const timeout = setTimeout(() => {
@@ -142,12 +197,6 @@ const GenQRCode = (props) => {
   };
   return (
     <View style={styled.container}>
-      <Header
-        title={`Shield ${selectedPrivacy?.externalSymbol}`}
-        titleStyled={styled.titleStyled}
-        rightHeader={<BtnInfo isBlack onPress={handleToggleTooltip} />}
-        onGoBack={() => navigation.navigate(routeNames.Shield)}
-      />
       {toggle && (
         <Tooltip
           content={<Content />}

@@ -16,6 +16,7 @@ const enhance = (WrappedComp) => (props) => {
   });
   const { info } = state;
   const navigation = useNavigation();
+
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const {
     tokenId,
@@ -91,6 +92,7 @@ const enhance = (WrappedComp) => (props) => {
       link: info?.ownerWebsite,
     },
   ];
+
   const handleGetIncognitoTokenInfo = async () => {
     if (!tokenId) return;
     try {

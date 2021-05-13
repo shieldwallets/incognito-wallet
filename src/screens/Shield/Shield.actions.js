@@ -13,7 +13,6 @@ import {
   signPublicKeyEncodeSelector
 } from '@src/redux/selectors/account';
 import formatUtil from '@utils/format';
-import moment from 'moment';
 import {
   ACTION_FETCHING,
   ACTION_FETCHED,
@@ -77,11 +76,12 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         signPublicKeyEncode
       });
     }
-    const { address, expiredAt } = generateResult;
+    const { address, expiredAt, newShieldDecentralized: isShieldAddressDecentralized, estimateFee, tokenFee } = generateResult;
+
     if (!address) {
       throw 'Can not gen new deposit address';
     }
-    return { address, expiredAt };
+    return { address, expiredAt, isShieldAddressDecentralized: Boolean(isShieldAddressDecentralized || 0), estimateFee, tokenFee };
   } catch (error) {
     throw error;
   }
@@ -101,7 +101,13 @@ export const actionFetch = ({ tokenId }) => async (dispatch, getState) => {
     await dispatch(actionFetching());
     await dispatch(actionAddFollowToken(tokenId));
     const dataMinMax = await actionGetMinMaxShield({ tokenId });
-    let { address, expiredAt } = await actionGetAddressToShield({ selectedPrivacy, account, signPublicKeyEncode });
+    let {
+      address,
+      expiredAt,
+      isShieldAddressDecentralized,
+      tokenFee,
+      estimateFee,
+    } = await actionGetAddressToShield({ selectedPrivacy, account, signPublicKeyEncode });
     const [min, max] = dataMinMax;
     if (expiredAt) {
       expiredAt = formatUtil.formatDateTime(expiredAt);
@@ -111,7 +117,10 @@ export const actionFetch = ({ tokenId }) => async (dispatch, getState) => {
         min,
         max,
         address,
-        expiredAt
+        expiredAt,
+        isShieldAddressDecentralized,
+        tokenFee,
+        estimateFee,
       }),
     );
   } catch (error) {

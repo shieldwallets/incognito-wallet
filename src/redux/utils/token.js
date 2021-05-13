@@ -29,6 +29,7 @@ export const normalizeHistoriesFromApi = ({
         statusCode: h?.status,
         depositAddress: h?.depositTmpAddress,
         fromApi: true,
+        isShieldAddressDecentralized: h?.isShieldAddressDecentralized,
       };
       return history;
     })) ||
