@@ -3,17 +3,15 @@ import ErrorBoundary from '@src/components/ErrorBoundary';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
 import withTokenSelect from '@src/components/TokenSelect/TokenSelect.enhance';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import PropTypes from 'prop-types';
 import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { withTokenVerified } from '@src/components/Token';
-import { actionFetch as fetchDataShield } from './Shield.actions';
 
 const enhance = (WrappedComp) => (props) => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const { allTokens, isTokenSelectable } = props;
   const getPrivacyDataByTokenID = useSelector(
     selectedPrivacySeleclor.getPrivacyDataByTokenID,
@@ -27,8 +25,10 @@ const enhance = (WrappedComp) => (props) => {
       if (!isTokenSelectable(item?.tokenId)) {
         return;
       }
-      navigation.navigate(routeNames.ShieldGenQRCode);
-      await dispatch(fetchDataShield({ tokenId: item?.tokenId }));
+      navigation.navigate(routeNames.ShieldGenQRCode, {
+        tokenId: item?.tokenId,
+        tokenSymbol: item?.externalSymbol || item?.symbol,
+      });
     } catch (error) {
       console.debug('SHIELD ERROR', error);
     }

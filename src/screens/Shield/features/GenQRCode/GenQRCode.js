@@ -7,14 +7,17 @@ import QrCodeGenerate from '@src/components/QrCodeGenerate';
 import PropTypes from 'prop-types';
 import { CopiableTextDefault as CopiableText } from '@src/components/CopiableText';
 import LoadingContainer from '@src/components/LoadingContainer';
-import { ButtonBasic } from '@src/components/Button';
+import { ButtonBasic , BtnInfo } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
 import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import { isEmpty } from 'lodash';
 import { CONSTANT_COMMONS } from '@src/constants';
+import { isAndroid } from '@utils/platform';
+import { useNavigation } from 'react-navigation-hooks';
 import convert from '@utils/convert';
+import routeNames from '@routers/routeNames';
 import withGenQRCode from './GenQRCode.enhance';
 import { styled } from './GenQRCode.styled';
 
@@ -51,6 +54,7 @@ const ShieldError = React.memo(({ handleShield }) => {
 const Extra = () => {
   const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const navigation = useNavigation();
 
   const renderMinShieldAmount = () => {
     let minComp;
@@ -80,7 +84,7 @@ const Extra = () => {
     humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
     if (!humanFee) return null;
     return(
-      <NormalText text="Estimated fees: ">
+      <NormalText text="Estimated shielding fee: ">
         <Text style={[styled.boldText]}>
           {`${humanFee} ${selectedPrivacy?.externalSymbol ||
           selectedPrivacy?.symbol}`}
@@ -135,16 +139,21 @@ const Extra = () => {
       <View style={styled.hook}>
         {renderEstimateFee()}
         <NormalText
-          text="The fees will be taken from your funds."
+          text="This fee will be deducted from the shielded funds."
           style={[styled.smallText, { marginTop: 10 }]}
         />
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
-        <NormalText text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={styled.text}>
+            {`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`}
+          </Text>
+          <BtnInfo isBlack style={[isAndroid() && { marginTop: 0 }]} onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)} />
+        </View>
         <NormalText
           style={{ marginTop: 10 }}
-          text={`Sending coin or token other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
+          text={`Sending coins or tokens other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
         />
         <NormalText
           text="Use at your own risk."
