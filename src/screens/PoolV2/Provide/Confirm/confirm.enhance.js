@@ -1,21 +1,24 @@
 import React from 'react';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
-import { provide } from '@services/api/pool';
-import LocalDatabase from '@utils/LocalDatabase';
+import { submitProvideRawTx, checkPreviousProvision } from '@services/api/pool';
 import { useSelector } from 'react-redux';
 import { accountSeleclor } from '@src/redux/selectors';
 import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
 import appConstant from '@src/constants/app';
+import { isEmpty } from 'lodash';
 
 const withConfirm = WrappedComp => (props) => {
   const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
   const [error, setError] = React.useState('');
   const [providing, setProviding] = React.useState(false);
-  const [sendTx, setSendTx] = React.useState(null);
+  const [provideTx, setProvideTx] = React.useState(null);
   const [disable, setDisable] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const captchaRef = React.useRef(null);
   const {
+    coins,
     value,
     coin,
     fee,
@@ -26,71 +29,94 @@ const withConfirm = WrappedComp => (props) => {
     originProvide,
   } = props;
 
-  const handleProvideApi = async (verifyCode) => {
+  const handleProvideApi = async (captchaCode) => {
     try {
       setDisable(false);
-      if (!sendTx) return;
-      const { txHistory, txInfo, provideValue } = sendTx;
-      if (!global.isDEV && txInfo && txInfo.txId) {
-        await provide(account.PaymentAddress, txInfo.txId, signPublicKeyEncode, provideValue, verifyCode);
-        txHistory.splice(txHistory.length - 1, 1);
-        await LocalDatabase.saveProvideTxs(txHistory);
-        onSuccess(true);
-      }
+      if (!provideTx) return;
+      const { txId, rawData } = provideTx;
+      let provideValue = isPrv ? originProvide : value;
+      if (isEmpty(txId)) return;
+      await submitProvideRawTx({
+        paymentAddress: account.PaymentAddress,
+        signPublicKeyEncode,
+        tx: txId,
+        rawData,
+        amount: provideValue,
+        captchaCode,
+        tokenId: coin.id
+      });
+      onSuccess(true);
     } catch (e) {
+      setProvideTx(null);
       setError(new ExHandler(e).getMessage());
     } finally {
       setProviding(false);
     }
   };
 
+  const submitProvideRawData = (params) => {
+    if (!params || captchaRef.current) {
+      const { TxID: txId, RawData: rawData } = params;
+      setProvideTx({ txId, rawData });
+      setTimeout(() => {
+        captchaRef.current?.refreshToken();
+      }, 1000);
+    }
+  };
+
   const handleSendTransaction = async () => {
     try {
-      if (sendTx) return;
+      if (provideTx) return;
       let provideValue = isPrv ? originProvide : value;
-      let providerFee  = fee;
-      const txs = await LocalDatabase.getProvideTxs();
-      const txHandler = async (txHash) => {
-        txs.push({
-          paymentAddress: account.PaymentAddress,
-          txId: txHash,
-          signPublicKeyEncode,
-          provideValue,
-          value: provideValue,
-          time: new Date().getTime(),
-        });
-        await LocalDatabase.saveProvideTxs(txs);
-      };
-
-      const result = await accountService.createAndSendToken(
+      await accountService.createAndSendToken(
         account,
         wallet,
         coin.masterAddress,
         provideValue,
         coin.id,
-        providerFee,
+        fee,
         0,
         0,
         '',
-        txHandler,
+        null,
+        null,
+        submitProvideRawData
       );
-      setSendTx({ txHistory: txs, txInfo: result, provideValue });
-      if (captchaRef.current) {
-        setTimeout(() => {
-          captchaRef.current?.refreshToken();
-        }, 1000);
-      }
     } catch (e) {
-      setSendTx(null);
+      setProvideTx(null);
       setProviding(false);
       setError(new ExHandler(e).getMessage());
     }
   };
 
-  const onConfirmPress = () => {
-    if (providing || !captchaRef.current) return;
-    setProviding(true);
-    handleSendTransaction().then();
+  const onConfirmPress = async () => {
+    try {
+      if (providing || !captchaRef.current) return;
+      setProviding(true);
+      const hasPrevious = await checkPreviousProvision({
+        tokenId: coin.id,
+        paymentAddress: account.PaymentAddress
+      });
+      if (hasPrevious) {
+        setProviding(false);
+        setError('Please wait for the previous provision to be completed.');
+        return;
+      }
+      handleSendTransaction().then();
+    } catch (error) {
+      handleSendTransaction().then();
+    }
+  };
+
+  const onRefresh = () => {
+    if (disable) return;
+    setRefreshing(true);
+    setError('');
+    setProviding(false);
+    setProvideTx(null);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 500);
   };
 
   return (
@@ -105,9 +131,12 @@ const withConfirm = WrappedComp => (props) => {
         {...{
           ...props,
           providing,
-          onConfirm: onConfirmPress,
           error,
           disable,
+          refreshing,
+
+          onRefresh,
+          onConfirm: onConfirmPress,
         }}
       />
     </>

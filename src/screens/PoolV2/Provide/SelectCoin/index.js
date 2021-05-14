@@ -23,6 +23,7 @@ const SelectCoin = ({
       coin,
       isPrv: coin.id && coin.id === COINS.PRV_ID,
       prvBalance: prv.balance,
+      coins,
     });
   };
 

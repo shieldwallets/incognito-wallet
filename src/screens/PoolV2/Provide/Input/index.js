@@ -17,6 +17,7 @@ import formatUtil from '@utils/format';
 import styles from './style';
 
 const Provide = ({
+  coins,
   coin,
   inputValue,
   inputText,
@@ -32,6 +33,7 @@ const Provide = ({
 
   const handleProvide = () => {
     navigation.navigate(ROUTE_NAMES.PoolV2ProvideConfirm, {
+      coins,
       coin,
       value: inputValue,
       text: inputText,
@@ -39,7 +41,7 @@ const Provide = ({
       feeToken,
       prvBalance,
       payOnOrigin,
-      isPrv
+      isPrv,
     });
   };
 
@@ -90,6 +92,7 @@ const Provide = ({
 };
 
 Provide.propTypes = {
+  coins: PropTypes.array,
   coin: PropTypes.object.isRequired,
   inputValue: PropTypes.number,
   inputText: PropTypes.string,
@@ -110,6 +113,7 @@ Provide.defaultProps = {
   fee: 0,
   feeToken: null,
   error: '',
+  coins: []
 };
 
 export default compose(

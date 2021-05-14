@@ -1,27 +1,86 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
-import { useDispatch } from 'react-redux';
+import LoadingContainer from '@components/LoadingContainer';
+import Header from '@components/Header';
+import { styled } from '@screens/Shield/features/GenQRCode/GenQRCode.styled';
+import { BtnInfo } from '@components/Button';
+import routeNames from '@routers/routeNames';
+import { useNavigation } from 'react-navigation-hooks';
+import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
+import { withLayout_2 } from '@components/Layout';
+import withShieldData from '@screens/Shield/features/GenQRCode/GenQRCode.data';
 import { compose } from 'recompose';
-import { withLayout_2 } from '@src/components/Layout';
-import { actionFetch as fetchDataShield } from '@screens/Shield/Shield.actions';
-import withShieldUserAddress from '@screens/Shield/features/GenQRCode/GenQRCode.enhanceShieldUserAddress';
 
 const enhance = (WrappedComp) => (props) => {
-  const { selectedPrivacy } = props;
+  const {
+    tokenSymbol,
+    isShieldAddressDecentralized,
+    selectedPrivacy,
+    isFetched,
+    isFetching,
+    loading,
+  } = props;
 
-  const dispatch = useDispatch();
-  const handleShield = async () =>
-    await dispatch(fetchDataShield({ tokenId: selectedPrivacy?.tokenId }));
+  // console.log('SANG TEST: ', loading, isFetched, isFetching);
+  const [showTerm, setShowTerm] = useState(true);
+  const navigation = useNavigation();
+
+  const handleToggleTooltip = () => {
+    navigation.navigate(routeNames.CoinInfo, { isShieldAddressDecentralized });
+  };
+  const hasError = !isFetched && !isFetching;
+
+  const handleGoBack = () => {
+    navigation.navigate(routeNames.Shield);
+  };
+
+  const renderHeader = React.useCallback(() => (
+    <Header
+      title={`Shield ${tokenSymbol}`}
+      titleStyled={styled.titleStyled}
+      rightHeader={<BtnInfo isBlack onPress={handleToggleTooltip} />}
+      onGoBack={handleGoBack}
+    />
+  ), [tokenSymbol]);
+
+  const renderLoading = React.useCallback(() => (
+    <>
+      {renderHeader()}
+      <LoadingContainer />
+    </>
+  ), []);
+
+  const renderTermOfUse = () => {
+    return <TermOfUseShield onNextPress={() => setShowTerm(false)} />;
+  };
+
+  /** render loading */
+  if (isFetching || loading) {
+    return renderLoading();
+  }
+
+  /** render term off user */
+  if (
+    isShieldAddressDecentralized === false
+    && (selectedPrivacy?.currencyType === 1 || selectedPrivacy?.currencyType === 3)
+    && !selectedPrivacy?.isVerified
+    && selectedPrivacy?.priceUsd <= 0
+    && !hasError
+    && showTerm
+  ) {
+    return renderTermOfUse();
+  }
 
   return (
     <ErrorBoundary>
-      <WrappedComp {...{ ...props, handleShield }} />
+      {renderHeader()}
+      <WrappedComp {...{ ...props, isFetching, isFetched, hasError }} />
     </ErrorBoundary>
   );
 };
 
 export default compose(
   withLayout_2,
-  withShieldUserAddress,
+  withShieldData,
   enhance,
 );

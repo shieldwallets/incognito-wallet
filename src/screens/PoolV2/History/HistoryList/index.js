@@ -45,10 +45,9 @@ const History = ({
   const renderFooter = () => isLoadingMoreHistories ?
     <ActivityIndicator /> : null;
 
-
   return (
     <View style={styles.wrapper}>
-      <Header title="Provider history" />
+      <Header title="Provider history" onGoBack={() => navigation.navigate(ROUTE_NAMES.PoolV2)} />
       <View style={[styles.wrapper, styles.historyTitle]}>
         {histories.length ? (
           <VirtualizedList
