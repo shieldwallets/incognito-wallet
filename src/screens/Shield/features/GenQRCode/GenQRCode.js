@@ -14,7 +14,6 @@ import { COLORS } from '@src/styles';
 import { ScrollView } from '@src/components/core';
 import { isEmpty } from 'lodash';
 import { CONSTANT_COMMONS } from '@src/constants';
-import { isAndroid } from '@utils/platform';
 import { useNavigation } from 'react-navigation-hooks';
 import convert from '@utils/convert';
 import routeNames from '@routers/routeNames';
@@ -138,19 +137,20 @@ const Extra = () => {
       </View>
       <View style={styled.hook}>
         {renderEstimateFee()}
-        <NormalText
-          text="This fee will be deducted from the shielded funds."
-          style={[styled.smallText, { marginTop: 10 }]}
-        />
+        <View style={styled.centerRaw}>
+          <Text style={styled.smallText}>
+            This fee will be deducted from the shielded funds.
+          </Text>
+          <BtnInfo
+            isBlack
+            style={styled.btnInfo}
+            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
+          />
+        </View>
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={styled.text}>
-            {`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`}
-          </Text>
-          <BtnInfo isBlack style={[isAndroid() && { marginTop: 0 }]} onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)} />
-        </View>
+        <NormalText style={styled.text} text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
         <NormalText
           style={{ marginTop: 10 }}
           text={`Sending coins or tokens other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}

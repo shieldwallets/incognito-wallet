@@ -91,4 +91,13 @@ export const styled = StyleSheet.create({
     color: COLORS.white,
     textAlign: 'center',
   },
+  centerRaw: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  btnInfo: {
+    marginTop: 10
+  }
 });
