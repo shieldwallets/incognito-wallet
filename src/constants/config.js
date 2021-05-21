@@ -31,7 +31,7 @@ const INCOGNITO_TOKEN_ICON_URL = isMainnet
   : 'https://storage.googleapis.com/incognito/wallet-testnet/tokens/icons';
 const BUILD_VERSION = pkg.version;
 const EXPLORER_CONSTANT_CHAIN_URL = isMainnet
-  ? 'https://mainnet.incognito.org'
+  ? 'https://incscan.io'
   : 'https://testnet.incognito.org';
 const MASTER_NODE_ADDRESS = isMainnet ? MAINNET_FULLNODE : TESTNET_FULLNODE;
 const NODE_URL = 'https://node.incognito.org/node.html';
