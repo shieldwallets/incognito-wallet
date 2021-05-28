@@ -10,11 +10,11 @@ import LoadingContainer from '@src/components/LoadingContainer';
 import { ButtonBasic , BtnInfo } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
-import { COLORS } from '@src/styles';
-import { ScrollView } from '@src/components/core';
-import { isEmpty } from 'lodash';
-import { CONSTANT_COMMONS } from '@src/constants';
+import {COLORS} from '@src/styles';
+import {ScrollView} from '@src/components/core';
+import {isEmpty} from 'lodash';
 import { useNavigation } from 'react-navigation-hooks';
+import {CONSTANT_COMMONS} from '@src/constants';
 import convert from '@utils/convert';
 import routeNames from '@routers/routeNames';
 import withGenQRCode from './GenQRCode.enhance';
@@ -54,7 +54,6 @@ const Extra = () => {
   const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const navigation = useNavigation();
-
   const renderMinShieldAmount = () => {
     let minComp;
     if (min) {
@@ -166,7 +165,7 @@ const Extra = () => {
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        {isShieldAddressDecentralized ? renderShieldUserAddress() : renderShieldIncAddress()}
+        { isShieldAddressDecentralized ? renderShieldUserAddress() : renderShieldIncAddress()}
       </View>
     </ScrollView>
   );

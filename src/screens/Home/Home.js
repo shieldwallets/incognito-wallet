@@ -7,6 +7,8 @@ import AppMaintain from '@components/AppMaintain/index';
 import { useSelector } from 'react-redux';
 import { isIOS } from '@src/utils/platform';
 import appConstant from '@src/constants/app';
+import { useNavigation } from 'react-navigation-hooks';
+import routeNames from '@routers/routeNames';
 import styles from './style';
 import withHome from './Home.enhance';
 import Category from './features/Category';
@@ -23,6 +25,7 @@ const Home = (props) => {
   const [_, isDisabled, message] = useFeatureConfig(appConstant.DISABLED.APP);
   const { getHomeConfiguration, categories, isFetching } = props?.homeProps;
   const { outdatedVersion, Link: link } = useSelector(homeSelector)?.appVersion;
+  const navigation = useNavigation();
   const onUpdateApp = async () => {
     try {
       const APP_STORE_LINK =
@@ -40,6 +43,10 @@ const Home = (props) => {
       Linking.openURL(link);
     }
   };
+  //
+  // React.useEffect(() => {
+  //   navigation.navigate(routeNames.ShieldGenQRCode);
+  // }, []);
   if (isDisabled) {
     return <AppMaintain message={message} />;
   }

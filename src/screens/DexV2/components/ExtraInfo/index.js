@@ -5,13 +5,13 @@ import { BtnChevron } from '@src/components/Button';
 import stylesheet from './style';
 
 const ExtraInfo = (props) => {
-  const { left, right, style, rightStyle, wrapperStyle, message } = props;
+  const { left, right, style, rightStyle, wrapperStyle, message, ellipsizeMode } = props;
 
   const LeftWrapper = typeof left === 'object' ? View : Text;
   const RightWrapper = typeof right === 'object' ? View : Text;
 
   const shouldShowMsg = !!message;
-  
+
   const [state, setState] = React.useState({
     toggleMessage: false,
   });
@@ -27,7 +27,7 @@ const ExtraInfo = (props) => {
         <LeftWrapper style={[stylesheet.text, stylesheet.textLeft, style]}>{left}</LeftWrapper>
         <RightWrapper
           numberOfLines={1}
-          ellipsizeMode='tail'
+          ellipsizeMode={ellipsizeMode}
           style={[stylesheet.text, stylesheet.textRight, style, rightStyle, { flex: 1 }]}
         >
           {right}
@@ -60,13 +60,15 @@ ExtraInfo.propTypes = {
   wrapperStyle: PropTypes.object,
   rightStyle: PropTypes.object,
   message: PropTypes.string,
+  ellipsizeMode: PropTypes.string,
 };
 
 ExtraInfo.defaultProps = {
   style: null,
   rightStyle: null,
   wrapperStyle: null,
-  message: null
+  message: null,
+  ellipsizeMode: 'tail'
 };
 
 export default ExtraInfo;

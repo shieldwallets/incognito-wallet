@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, FONT } from '@src/styles';
+import { COLORS, FONT, UTILS } from '@src/styles';
+import { isAndroid } from '@utils/platform';
 
 export const styled = StyleSheet.create({
   container: {
@@ -99,5 +100,63 @@ export const styled = StyleSheet.create({
   },
   btnInfo: {
     marginTop: 10
+  },
+  input: {
+    fontFamily: FONT.NAME.bold,
+    fontSize: 26,
+    height: isAndroid() ? 52 : 'auto',
+    padding: 0,
+    flex: 1,
+    marginRight: 15,
+    marginTop: 20,
+    marginBottom: isAndroid() ? -UTILS.heightScale(16) : 10,
+    textAlign: 'center'
+  },
+
+  disconnectButton: {
+    fontFamily: FONT.NAME.bold,
+    width: '50%',
+    backgroundColor: 'red',
+    marginTop: 2,
+  },
+
+  wrapConnect: {
+    minWidth: 80,
+    maxWidth: 120,
+  },
+
+  btnConnect: {
+    backgroundColor: COLORS.colorGrey,
+    height: 40,
+    paddingHorizontal: 15,
+    width: '100%',
+  },
+  connectStyle: {
+    fontFamily: FONT.NAME.medium,
+    fontSize: 15,
+    lineHeight: 19,
+    color: COLORS.black,
+    marginRight: 5,
+  },
+  connectHook: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnShield: {
+    marginTop: 40,
+    backgroundColor: COLORS.black,
+  },
+  wrapMessage: {
+    alignSelf: 'center',
+    marginTop: 10
+  },
+  shieldMessage: {
+    fontSize: 13,
+    lineHeight: 15,
+    marginTop: 5,
+    color: COLORS.orange,
+    fontFamily: FONT.NAME.bold,
+    textAlign: 'center'
   }
 });
