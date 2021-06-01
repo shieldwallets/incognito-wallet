@@ -83,7 +83,6 @@ const TermOfUseShield = (props) => {
           disabled={isPressed}
           onPress={handlePressNext}
         />
-        {selectedTerm !== undefined && selectedTerm !== terms.length - 1 && <Text style={styled.errorText}>{MESSAGES.WARNING_TERMSOFUSE}</Text>}
       </ScrollView>
     </View>
   );
@@ -137,13 +136,5 @@ const styled = StyleSheet.create({
   button: {
     marginTop: 30,
     backgroundColor: COLORS.black,
-  },
-  errorText: {
-    ...FONT.STYLE.regular,
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: FONT.SIZE.regular,
-    lineHeight: FONT.SIZE.medium + 4,
-    color: COLORS.orange,
   },
 });
