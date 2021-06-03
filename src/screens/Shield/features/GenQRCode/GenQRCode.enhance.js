@@ -10,6 +10,9 @@ import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
 import { withLayout_2 } from '@components/Layout';
 import withShieldData from '@screens/Shield/features/GenQRCode/GenQRCode.data';
 import { compose } from 'recompose';
+import { CONSTANT_COMMONS } from '@src/constants';
+import withAccount from '@screens/DexV2/components/account.enhance';
+import ShieldDecentralized from '@screens/Shield/features/ShieldDecentralized';
 
 const enhance = (WrappedComp) => (props) => {
   const {
@@ -21,8 +24,8 @@ const enhance = (WrappedComp) => (props) => {
     loading,
   } = props;
 
-  // console.log('SANG TEST: ', loading, isFetched, isFetching);
   const [showTerm, setShowTerm] = useState(true);
+  const [selectedTerm, setSelectedTerm] = React.useState(undefined);
   const navigation = useNavigation();
 
   const handleToggleTooltip = () => {
@@ -51,7 +54,17 @@ const enhance = (WrappedComp) => (props) => {
   ), []);
 
   const renderTermOfUse = () => {
-    return <TermOfUseShield onNextPress={() => setShowTerm(false)} />;
+    return (
+      <TermOfUseShield
+        {
+        ...{
+          ...props,
+          selectedTerm,
+          onNextPress: () => setShowTerm(false),
+          onSelected: index => setSelectedTerm(index)
+        }}
+      />
+    );
   };
 
   /** render loading */
@@ -61,26 +74,34 @@ const enhance = (WrappedComp) => (props) => {
 
   /** render term off user */
   if (
-    isShieldAddressDecentralized === false
+    ((isShieldAddressDecentralized === false
     && (selectedPrivacy?.currencyType === 1 || selectedPrivacy?.currencyType === 3)
     && !selectedPrivacy?.isVerified
     && selectedPrivacy?.priceUsd <= 0
-    && !hasError
+    && !hasError)
+    || (selectedPrivacy?.contractId || selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH))
     && showTerm
   ) {
     return renderTermOfUse();
   }
 
+  if (selectedTerm === 1 && isShieldAddressDecentralized) {
+    return (
+      <ShieldDecentralized {...{ ...props, setShowTerm}} />
+    );
+  }
+
   return (
     <ErrorBoundary>
       {renderHeader()}
-      <WrappedComp {...{ ...props, isFetching, isFetched, hasError }} />
+      <WrappedComp {...{ ...props, isFetching, isFetched, hasError, selectedTerm, setSelectedTerm}} />
     </ErrorBoundary>
   );
 };
 
 export default compose(
-  withLayout_2,
+  withAccount,
   withShieldData,
+  withLayout_2,
   enhance,
 );

@@ -7,22 +7,53 @@ import { RoundCornerButton } from '@components/core';
 import { MESSAGES } from '@src/constants';
 import ic_radio from '@src/assets/images/icons/ic_radio.png';
 import ic_radio_check from '@src/assets/images/icons/ic_radio_check.png';
+import withBridgeConnect from '@src/screens/Wallet/features/BridgeConnect/WalletConnect.enhance';
+import { ExHandler } from '@services/exception';
+import { compose } from 'recompose';
 
 const TermOfUseShield = (props) => {
-  const { onNextPress } = props;
+  const { onNextPress, handleConnect, onSelected, selectedTerm } = props;
+  const [isPressed, setIsPressed] = React.useState(false);
 
-  const terms = ['I will send tokens from centralized exchanges',
-    'I will send tokens from a smart contract', 'I will send tokens from my own wallet'];
-  const [choose, setChoose] = React.useState(undefined);
+  const terms = [
+    'I will shield from other platform (e.g. exchange, etc)',
+    'I will shield from my own wallet (e.g. Metamask, Trust Wallet, etc)'
+  ];
 
-  const handlePressNext = async () => {
-    if (typeof onNextPress === 'function') {
-      onNextPress();
+  const handlePressNext = () => {
+    if (!isPressed) {
+      setIsPressed(true);
+      setTimeout(
+        () => {setIsPressed(false);},
+        500
+      );
+      if (typeof onNextPress === 'function') {
+        // selected shield decentralize
+        if (selectedTerm === (terms.length - 1)) {
+          if (typeof handleConnect === 'function') {
+            ( async () =>{
+              try {
+                const isConnected = await handleConnect();
+                if (!isConnected) {
+                  new ExHandler(null, 'WalletConnect connection rejected').showErrorToast();
+                  return;
+                }
+              } catch (e) {
+                new ExHandler(e).showErrorToast();
+                return;
+              }
+              onNextPress();
+            })();
+          }
+        } else {
+          onNextPress();
+        }
+      }
     }
   };
 
   const handlePress = (index) => {
-    setChoose(index);
+    onSelected(index);
   };
 
   return (
@@ -35,13 +66,13 @@ const TermOfUseShield = (props) => {
         {terms && terms.map((item, index) => {
           return (
             <TouchableOpacity
-              style={index === choose ? styled.selectedButton : styled.unSelectedButon}
+              style={index === selectedTerm ? styled.selectedButton : styled.unSelectedButon}
               key={`key-${index}`}
               onPress={() => handlePress(index)}
             >
               <View style={styled.contentView}>
-                <Image style={styled.icon} source={index === choose ? ic_radio_check : ic_radio} />
-                <Text style={[styled.text, { marginRight: 20, color: index === choose ? COLORS.black : COLORS.colorGreyBold }]}>{item}</Text>
+                <Image style={styled.icon} source={index === selectedTerm ? ic_radio_check : ic_radio} />
+                <Text style={[styled.text, { marginRight: 20, color: index === selectedTerm ? COLORS.black : COLORS.colorGreyBold }]}>{item}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -49,20 +80,24 @@ const TermOfUseShield = (props) => {
         <RoundCornerButton
           style={styled.button}
           title="Next"
-          disabled={(choose !== terms.length - 1)}
+          disabled={isPressed}
           onPress={handlePressNext}
         />
-        {choose !== undefined && choose !== terms.length - 1 && <Text style={styled.errorText}>{MESSAGES.WARNING_TERMSOFUSE}</Text>}
       </ScrollView>
     </View>
   );
 };
 
 TermOfUseShield.propTypes = {
-  onNextPress: PropTypes.any.isRequired,
+  onNextPress: PropTypes.func.isRequired,
+  handleConnect: PropTypes.func.isRequired,
+  onSelected: PropTypes.func.isRequired,
+  selectedTerm: PropTypes.array.isRequired,
 };
 
-export default TermOfUseShield;
+export default compose(
+  withBridgeConnect,
+)(TermOfUseShield);
 
 const styled = StyleSheet.create({
   container: {
@@ -101,13 +136,5 @@ const styled = StyleSheet.create({
   button: {
     marginTop: 30,
     backgroundColor: COLORS.black,
-  },
-  errorText: {
-    ...FONT.STYLE.regular,
-    textAlign: 'center',
-    marginTop: 40,
-    fontSize: FONT.SIZE.regular,
-    lineHeight: FONT.SIZE.medium + 4,
-    color: COLORS.orange,
   },
 });
