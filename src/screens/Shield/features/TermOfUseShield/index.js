@@ -17,7 +17,7 @@ const TermOfUseShield = (props) => {
 
   const terms = [
     'I will shield from other platform (e.g. exchange, etc)',
-    'I will shield from my own wallet'
+    'I will shield from my own wallet (e.g. Metamask, Trust Wallet, etc)'
   ];
 
   const handlePressNext = () => {
