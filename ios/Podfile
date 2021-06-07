@@ -4,10 +4,10 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 # Required by RNFirebase
 pod 'Firebase/Analytics'
-pod 'Firebase/Core', '~> 6.3.0'
-pod 'Firebase/Messaging', '~> 6.3.0'
-pod 'Firebase/Auth', '~> 6.3.0'
-pod 'Firebase/Database', '~> 6.3.0'
+pod 'Firebase/Core', '~> 6.7.0'
+pod 'Firebase/Messaging', '~> 6.7.0'
+pod 'Firebase/Auth', '~> 6.7.0'
+pod 'Firebase/Database', '~> 6.7.0'
 pod 'Fabric', '~> 1.10.2'
 pod 'Crashlytics', '~> 3.13.2'
 pod 'GoogleIDFASupport', '~> 3.14.0'
