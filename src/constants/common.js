@@ -158,6 +158,8 @@ export default {
     BNB: 4,
     BNB_BEP2: 5,
     USD: 6,
+    BSC_BNB: 7,
+    BSC_BEP20: 8,
   },
   PRIVATE_TOKEN_TYPE: {
     COIN: 0,

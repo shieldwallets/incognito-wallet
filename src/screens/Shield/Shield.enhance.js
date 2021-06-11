@@ -26,8 +26,7 @@ const enhance = (WrappedComp) => (props) => {
         return;
       }
       navigation.navigate(routeNames.ShieldGenQRCode, {
-        tokenId: item?.tokenId,
-        tokenSymbol: item?.externalSymbol || item?.symbol,
+        tokenShield: item
       });
     } catch (error) {
       console.debug('SHIELD ERROR', error);

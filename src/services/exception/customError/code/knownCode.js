@@ -84,6 +84,10 @@ const addErc20Token = {
   addErc20Token_not_found: knownError(-31)
 };
 
+const addBep20Token = {
+  addBep20Token_not_found: knownError(-45)
+};
+
 const dex = {
   WITHDRAW_FAIL: knownError(-40),
   NOT_ENOUGH_NETWORK_FEE_ADD: knownError(-61),
@@ -121,6 +125,7 @@ export default {
   ...papps,
   ...addBep2Token,
   ...addErc20Token,
+  ...addBep20Token,
   ...dex,
   ...document_picker,
   ...chain,

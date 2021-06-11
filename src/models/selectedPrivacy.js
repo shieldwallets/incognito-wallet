@@ -74,6 +74,9 @@ class SelectedPrivacy {
       this.isPrivateToken &&
       this.currencyType ===
         CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB_BEP2;
+    this.isBep20Token =
+      this.isPrivateToken &&
+      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20;
     this.symbol = combineData.call(
       this,
       pTokenData?.pSymbol,
@@ -108,7 +111,8 @@ class SelectedPrivacy {
     this.isDecentralized =
       (this.isToken &&
         this.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH) ||
-      this.isErc20Token;
+      this.isErc20Token || this.isBep20Token || (this.isToken &&
+      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
     this.isCentralized = this.isToken && !this.isDecentralized;
     this.incognitoTotalSupply =
       (this.isIncognitoToken && Number(token?.totalSupply)) || 0;

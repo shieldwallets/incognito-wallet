@@ -34,6 +34,7 @@ export default {
   [CODE.api_add_private_token_already_existed]: COIN_ADDED,
   [CODE.api_not_supported_token]: 'This coin is not supported by the app.',
   [CODE.addErc20Token_not_found]: COIN_ADDED,
+  [CODE.addBep20Token_not_found]: COIN_ADDED,
   [CODE.api_qrcode_fail_ProductNotFound]: 'This QR code is unfamiliar. Please try again.',
   [CODE.api_qrcode_fail_QRCodeAlreadyStaked]: 'You\'ve already set up this Node.',
   [CODE.node_auth_firebase_fail]: 'Something’s not right. Please try to set up your Node again.',

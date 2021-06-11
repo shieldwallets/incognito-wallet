@@ -231,9 +231,15 @@ export const CONSTANTS = {
   INC_CONTRACT_ADDRESS: isMainnet
     ? '0x43D037A562099A4C2c95b1E2120cc43054450629'
     : '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
+  INC_BSC_CONTRACT_ADDRESS: isMainnet
+    ? '0x43D037A562099A4C2c95b1E2120cc43054450629'
+    : '0x2f601ba66187b003036aE4D5aeaeec10E113F9c2',
   ETH_HOST: isMainnet
     ? 'wss://mainnet.infura.io/ws/v3/a59348d27e9c4784a877c0fc2f9b798a'
     : 'wss://kovan.infura.io/ws/v3/a59348d27e9c4784a877c0fc2f9b798a',
+  BSC_HOST: isMainnet
+    ? 'https://bsc-dataseed1.ninicoin.io'
+    : 'https://data-seed-prebsc-1-s1.binance.org:8545',
   ETH_ERC20_DEPOSIT_GAS: 100000,
 };
 

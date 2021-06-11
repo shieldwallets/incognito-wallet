@@ -76,18 +76,30 @@ const Extra = () => {
   };
 
   const renderEstimateFee = () => {
-    const isETH = selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
-    let humanFee = convert.toNumber((isETH ? estimateFee : tokenFee) || 0, true);
+    const isNativeToken = (selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH) || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+    let humanFee = convert.toNumber((isNativeToken ? estimateFee : tokenFee) || 0, true);
     const originalFee = convert.toOriginalAmount(humanFee, selectedPrivacy?.pDecimals);
     humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
     if (!humanFee) return null;
     return(
-      <NormalText text="Estimated shielding fee: ">
-        <Text style={[styled.boldText]}>
-          {`${humanFee} ${selectedPrivacy?.externalSymbol ||
-          selectedPrivacy?.symbol}`}
-        </Text>
-      </NormalText>
+      <>
+        <NormalText text="Estimated shielding fee: ">
+          <Text style={[styled.boldText]}>
+            {`${humanFee} ${selectedPrivacy?.externalSymbol ||
+            selectedPrivacy?.symbol}`}
+          </Text>
+        </NormalText>
+        <View style={styled.centerRaw}>
+          <Text style={styled.smallText}>
+            This fee will be deducted from the shielded funds.
+          </Text>
+          <BtnInfo
+            isBlack
+            style={styled.btnInfo}
+            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
+          />
+        </View>
+      </>
     );
   };
 
@@ -136,16 +148,6 @@ const Extra = () => {
       </View>
       <View style={styled.hook}>
         {renderEstimateFee()}
-        <View style={styled.centerRaw}>
-          <Text style={styled.smallText}>
-            This fee will be deducted from the shielded funds.
-          </Text>
-          <BtnInfo
-            isBlack
-            style={styled.btnInfo}
-            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
-          />
-        </View>
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
