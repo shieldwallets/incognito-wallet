@@ -29,6 +29,8 @@ import Utils from '@src/utils/Util';
 import { devSelector } from '@src/screens/Dev';
 import { formName } from './Form.enhance';
 
+const BurningPBSCRequestMeta = 252;
+
 export const enhanceUnshield = (WrappedComp) => (props) => {
   const {
     isETH,
@@ -51,6 +53,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
     contractId,
     currencyType,
     isErc20Token,
+    isBep20Token,
     externalSymbol,
     paymentAddress: walletAddress,
     symbol,
@@ -88,6 +91,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         isUsedPRVFee,
         paymentAddress,
         feeForBurn,
+        isBSC,
       } = payload;
       const { FeeAddress: masterAddress } = userFeesData;
       //Token Object Decentralized
@@ -116,6 +120,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         ]
         : [];
 
+      let metatype = isBSC ? BurningPBSCRequestMeta : undefined;
       const res = await tokenService.createBurningRequest(
         tokenObject,
         isUsedPRVFee ? feeForBurn : 0,
@@ -126,6 +131,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         paymentInfos,
         info,
         txHandler,
+        metatype,
       );
       if (res.txId) {
         return { ...res, burningTxId: res?.txId };
@@ -152,6 +158,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         burningTxId: '',
         currencyType: currencyType,
         isErc20Token: isErc20Token,
+        isBep20Token: isBep20Token,
         externalSymbol: externalSymbol,
         isUsedPRVFee,
         userFeesData,
@@ -359,6 +366,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         feeForBurn,
         feeForBurnText: _fee,
         fee: _fee,
+        isBSC: isBep20Token || currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB,
       };
       let res;
       if (isDecentralized) {

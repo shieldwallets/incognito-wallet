@@ -6,10 +6,13 @@ function getNetworkName() {
   let name = 'Unknown';
   const isETH = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
   const isBNB = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB;
+  const isBSC = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
   if (this.isPrivateCoin) {
     name = `${this.name}`;
   } else if (this.isErc20Token) {
     name = 'ERC20';
+  } else if (this.isBep20Token) {
+    name = 'BEP20';
   } else if (this.isBep2Token) {
     name = 'BEP2';
   } else if (this.isIncognitoToken || this.isMainCrypto) {
@@ -20,6 +23,8 @@ function getNetworkName() {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM;
   } else if (isBNB || this?.isBep2Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BINANCE;
+  } else if (isBSC ||this?.isBep20Token ) {
+    rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BSC;
   }
   return {
     networkName: name,

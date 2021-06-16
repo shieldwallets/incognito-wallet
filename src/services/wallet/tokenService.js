@@ -134,6 +134,7 @@ export default class Token {
     paymentInfos = [],
     info = '',
     txHandler,
+    metatype,
   ) {
     await Wallet.resetProgressTx();
     // get index account by name
@@ -160,7 +161,7 @@ export default class Token {
         feePToken,
         remoteAddress,
         info,
-        undefined,
+        metatype,
         undefined,
         undefined,
         txHandler,
