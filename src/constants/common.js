@@ -113,7 +113,7 @@ const NETWORK_NAME = {
   BINANCE: 'Binance',
   ETHEREUM: 'Ethereum',
   TOMO: 'TomoChain',
-  BSC: 'BSC',
+  BSC: 'Binance Smart Chain',
 };
 
 export default {
