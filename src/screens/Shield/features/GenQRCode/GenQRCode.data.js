@@ -21,7 +21,7 @@ const enhance = WrappedComp => props => {
   const { tokenId } = tokenShield;
 
   const {
-    isShieldAddressDecentralized
+    decentralized
   } = useSelector(shieldDataSelector);
   const {
     isFetching,
@@ -62,7 +62,7 @@ const enhance = WrappedComp => props => {
             selectedPrivacy: tokenShield,
             isFetching,
             isFetched,
-            isShieldAddressDecentralized,
+            decentralized,
             tokenShield,
             handleShield,
           }}

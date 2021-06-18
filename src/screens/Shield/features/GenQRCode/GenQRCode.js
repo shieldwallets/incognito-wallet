@@ -51,7 +51,7 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
+  const { address, min, expiredAt, decentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const navigation = useNavigation();
   const renderMinShieldAmount = () => {
@@ -167,7 +167,7 @@ const Extra = () => {
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        { isShieldAddressDecentralized ? renderShieldUserAddress() : renderShieldIncAddress()}
+        { (decentralized === 2 || decentralized === 3) ? renderShieldUserAddress() : renderShieldIncAddress()}
       </View>
     </ScrollView>
   );

@@ -86,11 +86,11 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         signPublicKeyEncode
       });
     }
-    const { address, expiredAt, newShieldDecentralized: isShieldAddressDecentralized, estimateFee, tokenFee } = generateResult;
+    const { address, expiredAt, decentralized, estimateFee, tokenFee } = generateResult;
     if (!address) {
       throw 'Can not gen new deposit address';
     }
-    return { address, expiredAt, isShieldAddressDecentralized: Boolean(isShieldAddressDecentralized || 0), estimateFee, tokenFee };
+    return { address, expiredAt, decentralized, estimateFee, tokenFee };
   } catch (error) {
     throw error;
   }
@@ -113,7 +113,7 @@ export const actionFetch = ({ tokenId, selectedPrivacy, account }) => async (dis
     let {
       address,
       expiredAt,
-      isShieldAddressDecentralized,
+      decentralized,
       tokenFee,
       estimateFee,
     } = addressShield;
@@ -128,7 +128,7 @@ export const actionFetch = ({ tokenId, selectedPrivacy, account }) => async (dis
         max,
         address,
         expiredAt,
-        isShieldAddressDecentralized,
+        decentralized,
         tokenFee,
         estimateFee,
       }),

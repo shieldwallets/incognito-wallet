@@ -4,7 +4,7 @@ import { CONSTANT_COMMONS } from '@src/constants';
 const formatResponse = (res) => ({
   address: res?.Address,
   expiredAt: res?.ExpiredAt,
-  newShieldDecentralized: res?.NewShieldDecentralized,
+  decentralized: res?.Decentralized,
   estimateFee: res?.EstimateFee,
   tokenFee: res?.TokenFee,
 });

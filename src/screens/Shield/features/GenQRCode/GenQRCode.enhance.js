@@ -17,7 +17,7 @@ import ShieldDecentralized from '@screens/Shield/features/ShieldDecentralized';
 const enhance = (WrappedComp) => (props) => {
   const {
     tokenSymbol,
-    isShieldAddressDecentralized,
+    decentralized,
     isFetched,
     isFetching,
     loading,
@@ -29,7 +29,7 @@ const enhance = (WrappedComp) => (props) => {
   const navigation = useNavigation();
 
   const handleToggleTooltip = () => {
-    navigation.navigate(routeNames.CoinInfo, { isShieldAddressDecentralized });
+    navigation.navigate(routeNames.CoinInfo, { decentralized });
   };
   const hasError = !isFetched && !isFetching;
 
@@ -74,7 +74,7 @@ const enhance = (WrappedComp) => (props) => {
 
   /** render term off user */
   if (
-    ((isShieldAddressDecentralized === false
+    (((decentralized === 0 || decentralized === 1)
     && (selectedPrivacy?.currencyType === 1 || selectedPrivacy?.currencyType === 3)
     && !selectedPrivacy?.isVerified
     && selectedPrivacy?.priceUsd <= 0
@@ -86,7 +86,7 @@ const enhance = (WrappedComp) => (props) => {
     return renderTermOfUse();
   }
 
-  if (selectedTerm === 1 && isShieldAddressDecentralized) {
+  if (selectedTerm === 1 && (decentralized === 2 || decentralized === 3)) {
     return (
       <ShieldDecentralized {...{ ...props, setShowTerm}} />
     );

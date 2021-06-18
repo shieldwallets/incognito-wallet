@@ -221,7 +221,7 @@ const TxHistoryDetail = (props) => {
     );
   }, [history]);
 
-  const historyShieldDecentralizeFactories = history?.isShieldAddressDecentralized ? [
+  const historyShieldDecentralizeFactories = (history?.decentralized === 2 || history?.decentralized === 3) ? [
     {
       label: 'Received funds',
       valueText: receiveFund,
@@ -261,7 +261,7 @@ const TxHistoryDetail = (props) => {
     {
       label: 'Fee',
       valueText: `${formatFee} ${feeUnit}`,
-      disabled: !fee || history?.isShieldAddressDecentralized,
+      disabled: !fee || (history?.decentralized === 2 || history?.decentralized === 3),
     },
     {
       label: 'Status',
@@ -348,8 +348,7 @@ const TxHistoryDetail = (props) => {
     if (typeof onPullRefresh === 'function') {
       const currencyType = data?.history?.currencyType;
       const decentralized = data?.history?.decentralized;
-      const isShieldAddressDecentralized = data?.history?.isShieldAddressDecentralized;
-      onPullRefresh({ historyId, currencyType, decentralized, isShieldAddressDecentralized });
+      onPullRefresh({ historyId, currencyType, decentralized });
     }
   };
 
