@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { View, Divider, Container, Text, ScrollView, Modal, TouchableOpacity } from '@src/components/core';
 import AddERC20Token from '@src/components/AddERC20Token';
 import AddBep2Token from '@src/components/AddBep2Token';
+import AddBep20Token from '@src/components/AddBep20Token';
 import AddInternalToken from '@src/components/AddInternalToken';
 import { COLORS } from '@src/styles';
 import Icons from 'react-native-vector-icons/Fontisto';
@@ -13,6 +14,7 @@ const TYPES = {
   INCOGNITO: { label: 'Incognito network', value: 'Incognito' },
   ERC20: { label: 'ERC20 network', value: 'ERC20' },
   BEP2: { label: 'BEP2 network', value: 'BEP2' },
+  BEP20: { label: 'BEP20 network', value: 'BEP20' },
 };
 
 class AddToken extends Component {
@@ -71,6 +73,7 @@ class AddToken extends Component {
           {type === TYPES.INCOGNITO.value && <AddInternalToken />}
           {type === TYPES.BEP2.value && <AddBep2Token />}
           {type === TYPES.ERC20.value && <AddERC20Token />}
+          {type === TYPES.BEP20.value && <AddBep20Token />}
         </ScrollView>
       </Container>
     );

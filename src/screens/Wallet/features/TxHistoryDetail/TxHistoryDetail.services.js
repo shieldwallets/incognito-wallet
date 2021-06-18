@@ -5,7 +5,7 @@ export const apiRefreshHistory = async ({ txID, currencyType, signPublicKeyEncod
     return http
       .post('eta/history/detail', {
         ID: txID,
-        Decentralized: Number(decentralized),
+        Decentralized: decentralized,
         CurrencyType: currencyType,
         SignPublicKeyEncode: signPublicKeyEncode,
         NewShieldDecentralized: isShieldAddressDecentralized || 0

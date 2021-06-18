@@ -18,7 +18,7 @@ export const getpTokenHistory = ({ paymentAddress, tokenId, signPublicKeyEncode 
     });
 };
 
-export const removeHistory = ({ historyId, currencyType, isDecentralized, signPublicKeyEncode }) => {
+export const removeHistory = ({ historyId, currencyType, decentralized, signPublicKeyEncode }) => {
   if (typeof historyId !== 'number' && !Number.isFinite(historyId))
     return throw new Error('Invalid historyId');
   if (typeof currencyType !== 'number' && !Number.isFinite(currencyType))
@@ -27,7 +27,7 @@ export const removeHistory = ({ historyId, currencyType, isDecentralized, signPu
   let body = {
     CurrencyType: currencyType,
     ID: historyId,
-    Decentralized: Number(isDecentralized),
+    Decentralized: decentralized,
   };
 
   if (signPublicKeyEncode) {
@@ -52,7 +52,7 @@ export const retryExpiredDeposit = ({
   if (typeof id !== 'number' && !Number.isFinite(id)) {
     return throw new Error('Invalid history Id');
   }
-  if (typeof decentralized !== 'boolean') {
+  if (typeof decentralized !== 'number') {
     return throw new Error('Invalid decentralized');
   }
   if (typeof walletAddress !== 'string') {
@@ -78,7 +78,7 @@ export const retryExpiredDeposit = ({
   }
   let body = {
     ID: id,
-    Decentralized: Number(decentralized),
+    Decentralized: decentralized,
     WalletAddress: walletAddress,
     AddressType: type,
     CurrencyType: currencyType,

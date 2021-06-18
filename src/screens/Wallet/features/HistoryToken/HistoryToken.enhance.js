@@ -35,7 +35,7 @@ const enhance = (WrappedComp) => (props) => {
       const data = await removeHistory({
         historyId: history?.id,
         currencyType: history?.currencyType,
-        isDecentralized: history?.decentralized,
+        decentralized: history?.decentralized,
         signPublicKeyEncode,
       });
       if (data) {

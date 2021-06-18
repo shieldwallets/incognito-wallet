@@ -72,7 +72,7 @@ const CoinInfoUnVerified = () => {
   return (
     <View style={styled.extra}>
       <NormalText text="If you are shielding a coin or adding it to your list, look out for the verified symbol to make sure you have the correct coin you are looking for." />
-      <NormalText text="On certain blockchains, anyone can create duplicates with the same name and symbol. If an ERC20 or BEP2 coin does not have a verified tick, it is likely to be a copy." />
+      <NormalText text="On certain blockchains, anyone can create duplicates with the same name and symbol. If an ERC20, BEP20 or BEP2 coin does not have a verified tick, it is likely to be a copy." />
       <NormalText
         text="If an Incognito coin does not have a verified tick, its creators have not yet gone through the process of "
         sub="verifying their coin."

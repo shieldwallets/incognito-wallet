@@ -40,7 +40,7 @@ class History {
   static parsePrivateTokenFromApi(data = {}) {
     const status = data?.Status;
     const statusText = getStatusText(status, data.Decentralized);
-    const decentralized = data.Decentralized === 1;
+    const decentralized = data.Decentralized;
     const depositTmpAddress =
       data.AddressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD && data.Address;
     const isShieldTx = !!depositTmpAddress;

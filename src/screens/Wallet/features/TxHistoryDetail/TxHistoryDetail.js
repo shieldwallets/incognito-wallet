@@ -261,7 +261,7 @@ const TxHistoryDetail = (props) => {
     {
       label: 'Fee',
       valueText: `${formatFee} ${feeUnit}`,
-      disabled: !fee || history?.isShieldAddressDecentralized === 1,
+      disabled: !fee || history?.isShieldAddressDecentralized,
     },
     {
       label: 'Status',
