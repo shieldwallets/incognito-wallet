@@ -6,6 +6,7 @@ import {
 import { CONSTANT_COMMONS } from '@src/constants';
 import { COLORS } from '@src/styles';
 
+// no need.
 const getStatusDataShield = (history) => {
   const { statusCode, statusMessage } = history;
   let statusColor;
@@ -29,6 +30,7 @@ const getStatusDataShield = (history) => {
   return { statusColor, statusMessage };
 };
 
+// no need.
 const getStatusDataUnShield = (history) => {
   const { statusCode, statusMessage } = history;
   const {
@@ -52,6 +54,7 @@ const getStatusDataUnShield = (history) => {
   return { statusColor, statusMessage };
 };
 
+// no need.
 export const getStatusData = (history) => {
   const { status } = history;
   if (history?.isShieldTx) {

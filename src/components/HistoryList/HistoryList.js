@@ -20,7 +20,8 @@ import { useSelector } from 'react-redux';
 import { decimalDigitsSelector } from '@src/screens/Setting';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import styleSheet from './style';
-import { getStatusData, getTypeData } from './HistoryList.utils';
+// import { getStatusData, getTypeData } from './HistoryList.utils';
+import { getTypeData } from './HistoryList.utils';
 
 const HistoryItemWrapper = ({ history, onCancelEtaHistory, ...otherProps }) =>
   React.useMemo(() => {
@@ -67,7 +68,11 @@ const HistoryItem = React.memo(({ history }) => {
   if (!history) {
     return null;
   }
-  const { statusMessage, statusColor } = getStatusData(history);
+  // const { statusMessage, statusColor } = getStatusData(history); // no need anymore, will got it from api.
+
+  const statusMessage = history.StatusMessage; // from api
+  const statusColor = COLORS.colorGreyBold; // will got it from api.
+
   const { typeText } = getTypeData(
     history.type,
     history,

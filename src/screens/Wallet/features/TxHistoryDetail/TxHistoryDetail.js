@@ -199,7 +199,7 @@ const TxHistoryDetail = (props) => {
       )) ||
     formatUtil.number(history?.requestedAmount);
   const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
-  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
+  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2;
 
   const receiveFund = React.useMemo(() => {
     return (
@@ -221,6 +221,7 @@ const TxHistoryDetail = (props) => {
     );
   }, [history]);
 
+  // shield decentralized new flow:
   const historyShieldDecentralizeFactories = history?.addressType === 1 && (history?.decentralized === 2 || history?.decentralized === 3) ? [
     {
       label: 'Received funds',

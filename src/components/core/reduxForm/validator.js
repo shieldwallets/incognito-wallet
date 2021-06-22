@@ -3,7 +3,7 @@ import walletValidator from 'wallet-address-validator';
 import accountService from '@src/services/wallet/accountService';
 import formatUtils from '@src/utils/format';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { validation } from '@zilliqa-js/util';
+// import { validation } from '@zilliqa-js/util';
 import convert from '@utils/convert';
 import { CONSTANT_COMMONS } from '@src/constants';
 
@@ -431,7 +431,13 @@ const isBNBAddress = (address) => {
   return regexp.test(address);
 };
 
-const isZILAddress = (address) => validation.isBech32(address);
+// remove this!
+// const isZILAddress = (address) => validation.isBech32(address);
+
+const isZILAddress = (address) => {
+  const regexp = new RegExp('^zil1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$');
+  return regexp.test(address);
+};
 
 const invalidAddress = (message = '') => () =>
   message ? message : 'Invalid address';
