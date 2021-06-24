@@ -7,8 +7,8 @@ import { CONSTANT_COMMONS } from '@src/constants';
 import { COLORS } from '@src/styles';
 
 export const getStatusData = (history) => {
-  let { status, statusMessage } = history;
-  if (history?.isShieldTx || history?.isUnshieldTx) {
+  let { status, statusMessage, addressType} = history;
+  if ([CONSTANT_COMMONS.HISTORY.TYPE.UNSHIELD, CONSTANT_COMMONS.HISTORY.TYPE.SHIELD].includes(addressType)) {
     let statusColor = COLORS.colorGreyBold;
     return { statusMessage, statusColor };
   }
