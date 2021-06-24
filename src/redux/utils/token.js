@@ -5,6 +5,7 @@ import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
 import { loadHistoryByAccount } from '@src/services/wallet/WalletService';
 import { getFeeFromTxHistory } from '@src/screens/Wallet/features/TxHistoryDetail/TxHistoryDetail.utils';
 import { endsWith, isEmpty, uniqBy } from 'lodash';
+import { DECENTRALIZED_RECEIVE_TYPES } from '@models/history';
 
 export const normalizeHistoriesFromApi = ({
   historiesFromApi = [],
@@ -39,7 +40,7 @@ const isDecentralizedTx = (history) => {
   let isDecentralized = false;
   if (
     !!history?.metaDataType &&
-    (history?.metaDataType === 27 || history?.metaDataType === 240)
+    DECENTRALIZED_RECEIVE_TYPES.includes(history?.metaDataType)
   ) {
     isDecentralized = true;
   }
@@ -63,6 +64,7 @@ const normalizedHistories = ({
         const typeOf = metaData?.Type;
         switch (typeOf) {
         case 25:
+        case 251:
         case 81: {
           const requestTxId = metaData?.RequestedTxID;
           const index = _historiesFromApi.findIndex(

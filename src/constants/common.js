@@ -116,6 +116,12 @@ const NETWORK_NAME = {
   BSC: 'Binance Smart Chain',
 };
 
+const FACTORIES_EVM_NETWORK = [
+  NETWORK_NAME.ETHEREUM,
+  NETWORK_NAME.TOMO,
+  NETWORK_NAME.BSC,
+];
+
 export default {
   // old varibles, maybe remove later
   STAKING_TYPES: {
@@ -161,6 +167,16 @@ export default {
     USD: 6,
     BSC_BNB: 7,
     BSC_BEP20: 8,
+
+    TOMO: 9,
+    ZIL: 10,
+    XMR: 11,
+    NEO: 12,
+    DASH: 13,
+    LTC: 14,
+    DOGE: 15,
+    ZEC: 16,
+    DOT: 17,
   },
   PRIVATE_TOKEN_TYPE: {
     COIN: 0,
@@ -252,4 +268,5 @@ export default {
   PRV_SPECIAL_SYMBOL,
   USD_SPECIAL_SYMBOL,
   NETWORK_NAME,
+  FACTORIES_EVM_NETWORK,
 };

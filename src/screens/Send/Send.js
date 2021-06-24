@@ -13,13 +13,13 @@ const Send = () => {
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const navigation = useNavigation();
   const onGoBack = () => navigation.navigate(routeNames.WalletDetail);
-  
+
   return (
     <View style={styled.container}>
       <Header
         titleStyled={styled.headerTitle}
         title={`Send ${selectedPrivacy?.externalSymbol ||
-          selectedPrivacy?.symbol}`}
+          selectedPrivacy?.symbol} ${selectedPrivacy?.networkName && selectedPrivacy?.networkName !== 'Unknown' ? '(' + selectedPrivacy?.networkName + ')' : ''}`}
         onGoBack={onGoBack}
       />
       <SendForm />

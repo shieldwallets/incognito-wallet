@@ -153,7 +153,7 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
         originalAmount,
         paymentAddress,
         walletAddress,
-        tokenContractID: isETH ? '' : contractId,
+        tokenContractID: isETH || currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB ? '' : contractId,
         tokenId,
         burningTxId: '',
         currencyType: currencyType,
@@ -179,7 +179,6 @@ export const enhanceUnshield = (WrappedComp) => (props) => {
       };
 
       const tx = await handleBurningToken(payload, txHandler);
-
       if (toggleDecentralized) {
         await setState({
           ...state,

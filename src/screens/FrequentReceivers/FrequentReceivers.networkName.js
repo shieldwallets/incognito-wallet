@@ -42,10 +42,7 @@ const SelectNetworkName = () => {
   const { rootNetworkName, address, keySave } = useSelector(
     selectedReceiverSelector,
   );
-  const factoriesETHNetwork = [
-    CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM,
-    CONSTANT_COMMONS.NETWORK_NAME.TOMO,
-  ];
+  const factoriesNetwork = CONSTANT_COMMONS.FACTORIES_EVM_NETWORK;
   const handleChooseNetworkName = async (networkName) => {
     await dispatch(
       actionUpdate({
@@ -66,8 +63,10 @@ const SelectNetworkName = () => {
       <Header title="Select network name" />
       <ScrollView>
         <View style={styled.wrapper}>
-          {factoriesETHNetwork.map((networkName) => {
-            const selected = networkName === rootNetworkName;
+          {factoriesNetwork.map((networkName) => {
+            const selected = (networkName === rootNetworkName ||
+              (factoriesNetwork.includes(networkName) &&
+                factoriesNetwork.includes(rootNetworkName)));
             return (
               <TouchableOpacity
                 key={networkName}

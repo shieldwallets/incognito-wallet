@@ -3,9 +3,11 @@ import format from '@utils/format';
 import { PRV_ID } from '@screens/Dex/constants';
 import memoize from 'memoize-one';
 import { COINS } from '@src/constants';
+// eslint-disable-next-line import/no-cycle
 import { getTradingFee } from '@screens/DexV2/components/Trade/TradeV2/Trade.utils';
 import { getPrivacyDataByTokenID } from '@src/redux/selectors/selectedPrivacy';
 import BigNumber from 'bignumber.js';
+import { ERC20_CURRENCY_TYPE } from '@screens/DexV2/components/Trade/TradeV2/Trade.appConstant';
 
 export const tradeSelector = createSelector(
   (state) => state.trade,
@@ -40,7 +42,12 @@ export const tradeSelector = createSelector(
       minimumAmount:    trade?.minimumAmount,
       loadingBox:       trade?.loadingBox,
       quote:            trade?.quote,
-      isErc20:          !!(trade?.inputToken?.address && trade?.outputToken?.address),
+      isErc20:          !!(
+        trade?.inputToken?.address &&
+        trade?.outputToken?.address &&
+        ERC20_CURRENCY_TYPE.includes(trade?.inputToken?.currencyType) &&
+        ERC20_CURRENCY_TYPE.includes(trade?.outputToken?.currencyType)
+      ),
       priority:         trade?.priority,
       priorityList:     trade?.priorityList,
 

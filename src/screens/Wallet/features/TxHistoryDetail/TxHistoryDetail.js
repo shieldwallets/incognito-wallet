@@ -221,7 +221,7 @@ const TxHistoryDetail = (props) => {
     );
   }, [history]);
 
-  const historyShieldDecentralizeFactories = (history?.decentralized === 2 || history?.decentralized === 3) ? [
+  const historyShieldDecentralizeFactories = history?.addressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD && (history?.decentralized === 2 || history?.decentralized === 3) ? [
     {
       label: 'Received funds',
       valueText: receiveFund,

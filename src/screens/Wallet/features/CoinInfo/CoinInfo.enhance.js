@@ -41,7 +41,7 @@ const enhance = (WrappedComp) => (props) => {
     if (selectedPrivacy?.isBep20Token) {
       return 'BSC network (BEP20)';
     }
-    if (externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB) {
+    if (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB) {
       return 'Binance network';
     }
     return `${networkName} network`;

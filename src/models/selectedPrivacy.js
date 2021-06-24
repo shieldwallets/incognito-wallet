@@ -4,9 +4,9 @@ import PToken from './pToken';
 
 function getNetworkName() {
   let name = 'Unknown';
-  const isETH = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
-  const isBNB = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB;
+  const isETH = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH;
   const isBSC = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+  const isBNB = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB;
   if (this.isPrivateCoin) {
     name = `${this.name}`;
   } else if (this.isErc20Token) {
@@ -21,10 +21,10 @@ function getNetworkName() {
   let rootNetworkName = name;
   if (isETH || this?.isErc20Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM;
-  } else if (isBNB || this?.isBep2Token) {
-    rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BINANCE;
-  } else if (isBSC ||this?.isBep20Token ) {
+  } else if (isBSC || this?.isBep20Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BSC;
+  } else if (isBNB ||this?.isBep2Token ) {
+    rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BINANCE;
   }
   return {
     networkName: name,
@@ -115,7 +115,7 @@ class SelectedPrivacy {
     this.isDeposable = this.isPToken;
     this.isDecentralized =
       (this.isToken &&
-        this.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH) ||
+        this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH) ||
       this.isErc20Token || this.isBep20Token || (this.isToken &&
       this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
     this.isCentralized = this.isToken && !this.isDecentralized;

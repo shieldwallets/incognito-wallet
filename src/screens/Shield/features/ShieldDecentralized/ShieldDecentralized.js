@@ -49,7 +49,7 @@ const ShieldDecentralized = (props) => {
   const { externalSymbol, contractId } = selectedPrivacy;
   const isBSC = (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB
     || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20);
-  const isNativeToken = (externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
+  const isNativeToken = ( selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
   const tokenIDInput = React.useMemo(() => {
     return contractId ? contractId : CONSTANT_COMMONS.ETH_TOKEN_ADDRESS;
   }, [contractId]);

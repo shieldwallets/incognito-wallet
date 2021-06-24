@@ -323,32 +323,6 @@ const maxFileSize = (sizeInKBytes, { message } = {}) => (value) => {
     : undefined;
 };
 
-const isUnShieldAddress = ({
-  address,
-  externalSymbol,
-  isErc20Token,
-  isBep2Token,
-}) => {
-  if (isBep2Token || externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB) {
-    const regexp = new RegExp('^(t)?(bnb)([a-z0-9]{39})$'); // t(for testnet) bnb + 39 a-z0-9
-    return regexp.test(address);
-  }
-  if (isErc20Token || CONSTANT_COMMONS.CRYPTO_SYMBOL.TOMO === externalSymbol) {
-    return walletValidator.validate(
-      address,
-      CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH,
-      'both',
-    );
-  }
-  if (externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ZIL) {
-    return validation.isBech32(address);
-  }
-  if (address) {
-    return walletValidator.validate(address, externalSymbol, 'both');
-  }
-  return false;
-};
-
 const combinedAmount = [
   required(),
   number(),
@@ -431,7 +405,13 @@ const isBNBAddress = (address) => {
   return regexp.test(address);
 };
 
-const isZILAddress = (address) => validation.isBech32(address);
+// remove this!
+// const isZILAddress = (address) => validation.isBech32(address);
+
+const isZILAddress = (address) => {
+  const regexp = new RegExp('^zil1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$');
+  return regexp.test(address);
+};
 
 const invalidAddress = (message = '') => () =>
   message ? message : 'Invalid address';
@@ -496,7 +476,6 @@ export default {
   combinedAccountName,
   fileTypes,
   maxFileSize,
-  isUnShieldAddress,
   isBNBAddress,
   isZILAddress,
   invalidAddress,

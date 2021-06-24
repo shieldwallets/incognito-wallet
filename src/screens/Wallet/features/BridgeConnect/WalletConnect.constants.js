@@ -233,7 +233,7 @@ export const CONSTANTS = {
     : '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
   INC_BSC_CONTRACT_ADDRESS: isMainnet
     ? '0x43D037A562099A4C2c95b1E2120cc43054450629'
-    : '0x830211b5b5A4100Ea728ac171729a9efCac7d687',
+    : '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
   ETH_HOST: isMainnet
     ? 'wss://mainnet.infura.io/ws/v3/a59348d27e9c4784a877c0fc2f9b798a'
     : 'wss://kovan.infura.io/ws/v3/a59348d27e9c4784a877c0fc2f9b798a',

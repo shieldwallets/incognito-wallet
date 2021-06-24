@@ -43,13 +43,14 @@ const FormDt = createForm(formName);
 
 const Hook = () => {
   const { rootNetworkName } = useSelector(selectedReceiverSelector);
-  const isETHNetwork =
+  const isEVMNetwork =
     rootNetworkName === CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM ||
-    rootNetworkName === CONSTANT_COMMONS.NETWORK_NAME.TOMO;
+    rootNetworkName === CONSTANT_COMMONS.NETWORK_NAME.TOMO ||
+    rootNetworkName === CONSTANT_COMMONS.NETWORK_NAME.BSC;
   const navigation = useNavigation();
   const handleChooseTypeNetwork = () =>
     navigation.navigate(routeNames.SelectNetworkName);
-  if (!isETHNetwork) {
+  if (!isEVMNetwork) {
     return null;
   }
   return (
