@@ -122,6 +122,27 @@ const FACTORIES_EVM_NETWORK = [
   NETWORK_NAME.BSC,
 ];
 
+const PRIVATE_TOKEN_CURRENCY_TYPE = {
+  ETH: 1,
+  BTC: 2,
+  ERC20: 3,
+  BNB: 4,
+  BNB_BEP2: 5,
+  USD: 6,
+  BSC_BNB: 7,
+  BSC_BEP20: 8,
+
+  TOMO: 9,
+  ZIL: 10,
+  XMR: 11,
+  NEO: 12,
+  DASH: 13,
+  LTC: 14,
+  DOGE: 15,
+  ZEC: 16,
+  DOT: 17,
+};
+
 export default {
   // old varibles, maybe remove later
   STAKING_TYPES: {
@@ -158,26 +179,7 @@ export default {
     DEPOSIT: 1,
     WITHDRAW: 2,
   },
-  PRIVATE_TOKEN_CURRENCY_TYPE: {
-    ETH: 1,
-    BTC: 2,
-    ERC20: 3,
-    BNB: 4,
-    BNB_BEP2: 5,
-    USD: 6,
-    BSC_BNB: 7,
-    BSC_BEP20: 8,
-
-    TOMO: 9,
-    ZIL: 10,
-    XMR: 11,
-    NEO: 12,
-    DASH: 13,
-    LTC: 14,
-    DOGE: 15,
-    ZEC: 16,
-    DOT: 17,
-  },
+  PRIVATE_TOKEN_CURRENCY_TYPE,
   PRIVATE_TOKEN_TYPE: {
     COIN: 0,
     TOKEN: 1, // including ERC20, BEP1, BEP2,...
@@ -269,4 +271,10 @@ export default {
   USD_SPECIAL_SYMBOL,
   NETWORK_NAME,
   FACTORIES_EVM_NETWORK,
+  CURRENCY_TYPE_BRIDGE: [
+    PRIVATE_TOKEN_CURRENCY_TYPE.ETH,
+    PRIVATE_TOKEN_CURRENCY_TYPE.ERC20,
+    PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB,
+    PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20,
+  ],
 };

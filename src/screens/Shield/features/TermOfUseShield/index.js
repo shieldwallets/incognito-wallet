@@ -12,7 +12,7 @@ import { ExHandler } from '@services/exception';
 import { compose } from 'recompose';
 
 const TermOfUseShield = (props) => {
-  const { onNextPress, handleConnect, onSelected, selectedTerm } = props;
+  const { onNextPress, handleConnect, onSelected, selectedTerm, handleShield } = props;
   const [isPressed, setIsPressed] = React.useState(false);
 
   const terms = [
@@ -46,6 +46,7 @@ const TermOfUseShield = (props) => {
             })();
           }
         } else {
+          handleShield();
           onNextPress();
         }
       }
