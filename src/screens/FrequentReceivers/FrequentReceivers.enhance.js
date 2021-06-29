@@ -4,7 +4,7 @@ import { groupBy, forEach } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { receiversSelector } from '@src/redux/selectors/receivers';
 import { selectedPrivacySeleclor, accountSeleclor } from '@src/redux/selectors';
-import { CONSTANT_KEYS } from '@src/constants';
+import {CONSTANT_COMMONS, CONSTANT_KEYS} from '@src/constants';
 import { isIOS } from '@src/utils/platform';
 import { View, KeyboardAvoidingView } from 'react-native';
 import { useSearchBox } from '@src/components/Header';
@@ -34,7 +34,11 @@ const enhance = (WrappedComp) => (props) => {
   const extAddrFilBySelPrivacy = [
     ...externalAddress.filter((item) =>
       filterBySelectedPrivacy
-        ? item?.rootNetworkName === selectedPrivacy?.rootNetworkName
+        ? (item?.rootNetworkName === selectedPrivacy?.rootNetworkName ||
+        (
+          CONSTANT_COMMONS.FACTORIES_EVM_NETWORK.includes(item?.rootNetworkName) &&
+          CONSTANT_COMMONS.FACTORIES_EVM_NETWORK.includes(selectedPrivacy?.rootNetworkName))
+        )
         : true,
     ),
   ];

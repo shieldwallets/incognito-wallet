@@ -291,6 +291,7 @@ export const Symbol = (props) => {
     networkName,
     isErc20Token,
     isBep2Token,
+    isBep20Token,
     styledSymbol,
   } = props;
   return (
@@ -298,7 +299,7 @@ export const Symbol = (props) => {
       allowFontScaling={false}
       style={[styled.bottomText, styledSymbol]}
       text={`${symbol} ${
-        isErc20Token || isBep2Token ? `(${networkName})` : ''
+        isErc20Token || isBep2Token || isBep20Token ? `(${networkName})` : ''
       }`}
     />
   );

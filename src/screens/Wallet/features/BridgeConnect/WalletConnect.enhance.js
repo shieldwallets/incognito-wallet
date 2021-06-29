@@ -7,42 +7,52 @@ import {compose} from 'recompose';
 import withAccount from '@screens/DexV2/components/account.enhance';
 import {CONSTANT_COMMONS} from '@src/constants';
 import BigNumber from 'bignumber.js';
+import {ExHandler} from '@services/exception';
 
 const web3 = new Web3(CONSTANTS.ETH_HOST);
+const web3BSC = new Web3(CONSTANTS.BSC_HOST);
 
 const walletConnectEnhance = WrappedComp => props => {
   const connector = useWalletConnect();
 
-  const handleDepositETH = async (depositAmount = 0.000001, address, incAddress) => {
+  const handleDepositETH = async (depositAmount = 0.000001, address, incAddress, isBSC) => {
+    const client = isBSC ? web3BSC : web3;
+    const contractAddress = isBSC ? CONSTANTS.INC_BSC_CONTRACT_ADDRESS : CONSTANTS.INC_CONTRACT_ADDRESS;
     const ethAmt = new BigNumber(depositAmount).multipliedBy(1e18).toString();
-    const incInstance = new web3.eth.Contract(INC_CONTRACT_ABI);
+    const incInstance = new client.eth.Contract(INC_CONTRACT_ABI);
     /** deposit ETH */
     const depData = incInstance.methods.deposit(incAddress).encodeABI();
-
     /** confirm send ETH  */
     const sendObject = {
       from: address,
       value: ethAmt,
-      to: CONSTANTS.INC_CONTRACT_ADDRESS,
+      to: contractAddress,
       data: depData,
     };
+
     return await connector.sendTransaction(sendObject);
   };
 
-  const isApprovedFunc = async (transferAmount = 0.0001, tokenID, address) => {
-    const tokenInstance = new web3.eth.Contract(TOKEN_ABI, tokenID);
+  const isApprovedFunc = async (transferAmount = 0.0001, tokenID, address, isBSC) => {
+    const client = isBSC ? web3BSC : web3;
+    const contractAddress = isBSC ? CONSTANTS.INC_BSC_CONTRACT_ADDRESS : CONSTANTS.INC_CONTRACT_ADDRESS;
+    const tokenInstance = new client.eth.Contract(TOKEN_ABI, tokenID);
     const approvedBalance = await tokenInstance.methods
-      .allowance(address, CONSTANTS.INC_CONTRACT_ADDRESS)
+      .allowance(address, contractAddress)
       .call();
+
     return transferAmount <= approvedBalance ? 1 : 0;
   };
 
-  const handleApproveERC20 = async (tokenID, address, nonce) => {
+  const handleApproveERC20 = async (tokenID, address, nonce, isBSC) => {
     const approveMax = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-    const tokenInstance = new web3.eth.Contract(TOKEN_ABI, tokenID);
+    const client = isBSC ? web3BSC : web3;
+    const tokenInstance = new client.eth.Contract(TOKEN_ABI, tokenID);
+    const contractAddress = isBSC ? CONSTANTS.INC_BSC_CONTRACT_ADDRESS : CONSTANTS.INC_CONTRACT_ADDRESS;
     const approveData = await tokenInstance.methods
-      .approve(CONSTANTS.INC_CONTRACT_ADDRESS, approveMax)
+      .approve(contractAddress, approveMax)
       .encodeABI();
+
     return await connector.sendTransaction({
       from: address,
       to: tokenID,
@@ -51,31 +61,31 @@ const walletConnectEnhance = WrappedComp => props => {
     });
   };
 
-  const handleDepositERC20 = async (transferAmount = 0.0001, tokenID, address, incAddress, nonce) => {
-    const tokenInstance = new web3.eth.Contract(TOKEN_ABI, tokenID);
+  const handleDepositERC20 = async (transferAmount = 0.0001, tokenID, address, incAddress, nonce, isBSC) => {
+    const client = isBSC ? web3BSC : web3;
+    const tokenInstance = new client.eth.Contract(TOKEN_ABI, tokenID);
     const decimals = await tokenInstance.methods
       .decimals()
       .call();
     const transferValue =new BigNumber(transferAmount).multipliedBy(10 ** decimals).toString();
-
+    const contractAddress = isBSC ? CONSTANTS.INC_BSC_CONTRACT_ADDRESS : CONSTANTS.INC_CONTRACT_ADDRESS;
     /** deposit ERC20 */
-    const incInstance = new web3.eth.Contract(INC_CONTRACT_ABI, CONSTANTS.INC_CONTRACT_ADDRESS);
+    const incInstance = new client.eth.Contract(INC_CONTRACT_ABI, contractAddress);
     const depData = incInstance.methods
       .depositERC20(tokenID, transferValue, incAddress)
       .encodeABI();
-
     /** confirm deposit transaction */
     const depositObj = {
       from: address,
-      to: CONSTANTS.INC_CONTRACT_ADDRESS,
+      to: contractAddress,
       data: depData,
     };
     if (nonce !== -1) {
       depositObj.nonce = nonce;
       depositObj.gasLimit = CONSTANTS.ETH_ERC20_DEPOSIT_GAS;
     }
-    const tx = await connector.sendTransaction(depositObj);
-    return tx;
+
+    return await connector.sendTransaction(depositObj);
   };
 
   const handleConnect = async () => {
@@ -90,16 +100,20 @@ const walletConnectEnhance = WrappedComp => props => {
     }
   };
 
-  const handleGetNonce = async (address) => {
+  const handleGetNonce = async (address, isBSC) => {
+    if (isBSC) {
+      return await web3BSC.eth.getTransactionCount(address);
+    }
     return await web3.eth.getTransactionCount(address);
   };
 
-  const handleGetBalance = async (tokenID, address) => {
+  const handleGetBalance = async (tokenID, address, isBSC) => {
     let balance;
     let decimals = 18;
+    const client = isBSC ? web3BSC : web3;
     try {
       if (tokenID !== CONSTANT_COMMONS.ETH_TOKEN_ADDRESS) {
-        const tokenInstance = new web3.eth.Contract(TOKEN_ABI, tokenID);
+        const tokenInstance = new client.eth.Contract(TOKEN_ABI, tokenID);
         balance = await tokenInstance.methods
           .balanceOf(address)
           .call();
@@ -108,11 +122,11 @@ const walletConnectEnhance = WrappedComp => props => {
           .decimals()
           .call();
       } else {
-        balance = await web3.eth.getBalance(address);
+        balance = await client.eth.getBalance(address);
       }
       return balance / (10 ** decimals);
     } catch (e) {
-      console.debug('HANDLE GET BALANCE ERROR: ', e);
+      new ExHandler(e).showErrorToast();
       return 0;
     }
   };

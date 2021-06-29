@@ -36,6 +36,7 @@ export const genCentralizedWithdrawAddress = ({
 export const withdraw = (data) => {
   const {
     isErc20Token,
+    isBep20Token,
     paymentAddress,
     tokenId,
     burningTxId,
@@ -77,7 +78,9 @@ export const withdraw = (data) => {
   if (signPublicKeyEncode) {
     payload.SignPublicKeyEncode = signPublicKeyEncode;
   }
-
+  if (currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB || isBep20Token) {
+    return http.post('bsc/add-tx-withdraw', payload);
+  }
   return http.post('eta/add-tx-withdraw', payload);
 };
 
@@ -122,9 +125,10 @@ export const estimateUserFees = (data) => {
     walletAddress,
     currencyType,
     isErc20Token,
+    isBep20Token,
     signPublicKeyEncode,
   } = data;
-  if (isErc20Token && !tokenContractID) {
+  if ((isBep20Token || isErc20Token) && !tokenContractID) {
     throw new Error('Missing tokenContractID');
   }
   if (!paymentAddress) throw new Error('Missing payment address');
@@ -150,6 +154,8 @@ export const estimateUserFees = (data) => {
   if (signPublicKeyEncode) {
     payload.SignPublicKeyEncode = signPublicKeyEncode;
   }
-
+  if (isBep20Token || currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB) {
+    return http.post('bsc/estimate-fees', payload);
+  }
   return http.post('eta/estimate-fees', payload);
 };

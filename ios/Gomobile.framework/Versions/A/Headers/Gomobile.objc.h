@@ -42,6 +42,8 @@ FOUNDATION_EXPORT NSString* _Nonnull GomobileHybridEncryptionASM(NSString* _Null
 
 FOUNDATION_EXPORT NSString* _Nonnull GomobileInitBurningRequestTx(NSString* _Nullable args, int64_t serverTime, NSError* _Nullable* _Nullable error);
 
+FOUNDATION_EXPORT NSString* _Nonnull GomobileInitIssuingEVMReqTx(NSString* _Nullable args, int64_t serverTime, NSError* _Nullable* _Nullable error);
+
 // skipped function InitPEDContributionMetadataFromParam with unsupported parameter or return types
 
 
@@ -68,9 +70,9 @@ FOUNDATION_EXPORT NSString* _Nonnull GomobileInitPrivacyTx(NSString* _Nullable a
 
 FOUNDATION_EXPORT NSString* _Nonnull GomobileInitWithdrawRewardTx(NSString* _Nullable args, int64_t serverTime, NSError* _Nullable* _Nullable error);
 
-FOUNDATION_EXPORT NSString* _Nonnull GomobileParseNativeRawTx(NSString* _Nullable rawTx, NSError* _Nullable* _Nullable error);
+FOUNDATION_EXPORT NSString* _Nonnull GomobileParseNativeRawTx(NSString* _Nullable b64RawTx, NSError* _Nullable* _Nullable error);
 
-FOUNDATION_EXPORT NSString* _Nonnull GomobileParsePrivacyTokenRawTx(NSString* _Nullable rawTx, NSError* _Nullable* _Nullable error);
+FOUNDATION_EXPORT NSString* _Nonnull GomobileParsePrivacyTokenRawTx(NSString* _Nullable b64RawTx, NSError* _Nullable* _Nullable error);
 
 FOUNDATION_EXPORT NSString* _Nonnull GomobileRandomScalars(NSString* _Nullable n, NSError* _Nullable* _Nullable error);
 

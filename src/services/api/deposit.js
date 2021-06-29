@@ -4,7 +4,7 @@ import { CONSTANT_COMMONS } from '@src/constants';
 const formatResponse = (res) => ({
   address: res?.Address,
   expiredAt: res?.ExpiredAt,
-  newShieldDecentralized: res?.NewShieldDecentralized,
+  decentralized: res?.Decentralized,
   estimateFee: res?.EstimateFee,
   tokenFee: res?.TokenFee,
 });
@@ -94,5 +94,22 @@ export const genERC20DepositAddress = ({ paymentAddress, walletAddress, tokenId,
   }
 
   return http.post('eta/generate', body)
+    .then(formatResponse);
+};
+
+export const genBSCDepositAddress = ({ paymentAddress, walletAddress, tokenId, currencyType, signPublicKeyEncode }) => {
+  if (!paymentAddress) return throw new Error('Missing paymentAddress');
+  if (!walletAddress) return throw new Error('Missing walletAddress');
+  if (!tokenId) return throw new Error('Missing tokenId');
+
+  let body = {
+    AddressType: CONSTANT_COMMONS.ADDRESS_TYPE.DEPOSIT,
+    WalletAddress: walletAddress ?? paymentAddress,
+    PrivacyTokenAddress: tokenId,
+  };
+  if (signPublicKeyEncode) {
+    body.SignPublicKeyEncode = signPublicKeyEncode;
+  }
+  return http.post('bsc/generate', body)
     .then(formatResponse);
 };

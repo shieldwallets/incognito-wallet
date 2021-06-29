@@ -6,8 +6,6 @@ import { ActivityIndicator, BaseTextInput, RoundCornerButton } from '@components
 import { useWalletConnect } from '@walletconnect/react-native-dapp';
 import { CONSTANT_COMMONS } from '@src/constants';
 import withBridgeConnect from '@screens/Wallet/features/BridgeConnect/WalletConnect.enhance';
-import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
 import { ExHandler } from '@services/exception';
 import { useNavigation } from 'react-navigation-hooks';
 import { isEmpty } from 'lodash';
@@ -34,6 +32,7 @@ const ShieldDecentralized = (props) => {
     handleDepositERC20,
     handleGetNonce,
     setShowTerm,
+    selectedPrivacy
   } = props;
 
   // state
@@ -47,8 +46,10 @@ const ShieldDecentralized = (props) => {
   const navigation = useNavigation();
   // selector
   const connector = useWalletConnect();
-  const { externalSymbol, contractId } = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-
+  const { externalSymbol, contractId } = selectedPrivacy;
+  const isBSC = (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB
+    || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20);
+  const isNativeToken = ( selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
   const tokenIDInput = React.useMemo(() => {
     return contractId ? contractId : CONSTANT_COMMONS.ETH_TOKEN_ADDRESS;
   }, [contractId]);
@@ -59,9 +60,7 @@ const ShieldDecentralized = (props) => {
 
   const shieldButtonText = React.useMemo(() => {
     if (!isConnect) return SHIELD_BUTTON_TITLE.CONNECT;
-    return externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH
-      ? SHIELD_BUTTON_TITLE.SHIELD
-      : SHIELD_BUTTON_TITLE.APPROVE_SHIELD;
+    return isNativeToken ? SHIELD_BUTTON_TITLE.SHIELD : SHIELD_BUTTON_TITLE.APPROVE_SHIELD;
   }, [externalSymbol, isConnect]);
 
   const handleShield = () => {
@@ -73,16 +72,16 @@ const ShieldDecentralized = (props) => {
         let tx;
         let nonce = -1;
         try {
-          if (externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH) {
-            tx = await handleDepositETH(shieldAmountNum, connector.accounts[0], account?.PaymentAddress);
+          if (isNativeToken) {
+            tx = await handleDepositETH(shieldAmountNum, connector.accounts[0], account?.PaymentAddress, isBSC);
             setShieldTxHash(tx);
           } else {
-            const isApproved = await isApprovedFunc(shieldAmountNum, tokenIDInput, connector.accounts[0]);
+            const isApproved = await isApprovedFunc(shieldAmountNum, tokenIDInput, connector.accounts[0], isBSC);
             if (!isApproved) {
-              nonce = await handleGetNonce(connector.accounts[0]);
-              await handleApproveERC20(tokenIDInput, connector.accounts[0], nonce++);
+              nonce = await handleGetNonce(connector.accounts[0], isBSC);
+              await handleApproveERC20(tokenIDInput, connector.accounts[0], nonce++, isBSC);
             }
-            tx = await handleDepositERC20(shieldAmountNum, tokenIDInput, connector.accounts[0], account?.PaymentAddress, nonce);
+            tx = await handleDepositERC20(shieldAmountNum, tokenIDInput, connector.accounts[0], account?.PaymentAddress, nonce, isBSC);
             setIsRejected(false);
             setShieldTxHash(tx);
           }
@@ -106,7 +105,7 @@ const ShieldDecentralized = (props) => {
   };
 
   const web3LoadBalance = async () => {
-    const balance = await handleGetBalance(tokenIDInput, connector.accounts[0]);
+    const balance = await handleGetBalance(tokenIDInput, connector.accounts[0], isBSC);
     setLoadBalance(balance);
   };
 
@@ -279,6 +278,7 @@ ShieldDecentralized.propTypes = {
   handleDepositERC20: PropTypes.func.isRequired,
   handleGetNonce: PropTypes.func.isRequired,
   setShowTerm: PropTypes.func.isRequired,
+  selectedPrivacy: PropTypes.object.isRequired,
 };
 
 export default withBridgeConnect(memo(ShieldDecentralized));

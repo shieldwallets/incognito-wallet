@@ -1,14 +1,13 @@
 import http from '@services/http';
 
-export const apiRefreshHistory = async ({ txID, currencyType, signPublicKeyEncode, decentralized, isShieldAddressDecentralized }) => {
+export const apiRefreshHistory = async ({ txID, currencyType, signPublicKeyEncode, decentralized }) => {
   return new Promise((resolve, reject) => {
     return http
       .post('eta/history/detail', {
         ID: txID,
-        Decentralized: Number(decentralized),
+        Decentralized: decentralized,
         CurrencyType: currencyType,
         SignPublicKeyEncode: signPublicKeyEncode,
-        NewShieldDecentralized: isShieldAddressDecentralized || 0
       })
       .then((res) => {
         resolve(res);

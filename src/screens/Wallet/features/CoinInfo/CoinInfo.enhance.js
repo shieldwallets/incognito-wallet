@@ -22,6 +22,7 @@ const enhance = (WrappedComp) => (props) => {
     tokenId,
     isVerified,
     isBep2Token,
+    isErc20Token,
     contractId,
     amount,
     pDecimals,
@@ -37,7 +38,10 @@ const enhance = (WrappedComp) => (props) => {
     if (selectedPrivacy?.isBep2Token) {
       return 'Binance network (BEP2)';
     }
-    if (externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB) {
+    if (selectedPrivacy?.isBep20Token) {
+      return 'BSC network (BEP20)';
+    }
+    if (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB) {
       return 'Binance network';
     }
     return `${networkName} network`;
@@ -67,7 +71,8 @@ const enhance = (WrappedComp) => (props) => {
     {
       label: 'Contract ID',
       value: contractId,
-      link: `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}`,
+      link: isErc20Token ? `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}` :
+        `${CONSTANT_CONFIGS.BSCSCAN_URL}/token/${contractId}`,
     },
     {
       label: 'Coin supply',

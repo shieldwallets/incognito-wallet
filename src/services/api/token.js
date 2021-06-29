@@ -1,6 +1,7 @@
 import Erc20Token from '@src/models/erc20Token';
 import PToken from '@src/models/pToken';
 import BEP2Token from '@models/bep2Token';
+import Bep20Token from '@models/bep20Token';
 import IncognitoCoinInfo from '@src/models/incognitoCoinInfo';
 import http from '@src/services/http';
 import { CONSTANT_CONFIGS } from '@src/constants';
@@ -24,6 +25,14 @@ export const detectERC20Token = erc20Address => {
     Address: erc20Address
   })
     .then(res => new Erc20Token(res));
+};
+
+export const detectBEP20Token = bep20Address => {
+  if (!bep20Address) throw new Error('Missing bep20Address to detect');
+  return http.post('ptoken/detect-bep20', {
+    Address: bep20Address
+  })
+    .then(res => new Bep20Token(res));
 };
 
 export const detectBEP2Token = async (symbol) => {
@@ -50,6 +59,19 @@ export const addERC20Token = ({ symbol, name, contractId, decimals }) => {
     Name: name,
     ContractID: contractId,
     Decimals: parseDecimals
+  })
+    .then(res => new PToken(res));
+};
+
+export const addBEP20Token = ({ symbol, name, contractId, decimals }) => {
+  const parseDecimals = Number(decimals);
+
+  if (!symbol) throw new Error('Missing symbol');
+  if (!name) throw new Error('Missing name');
+  if (!contractId) throw new Error('Missing contractId');
+  if (!Number.isInteger(parseDecimals)) throw new Error('Invalid decimals');
+  return http.post('ptoken/bep20/add', {
+    ContractID: contractId,
   })
     .then(res => new PToken(res));
 };

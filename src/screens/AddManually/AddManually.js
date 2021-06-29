@@ -7,6 +7,7 @@ import {
 } from '@src/components/core';
 import AddERC20Token from '@src/components/AddERC20Token';
 import AddBep2Token from '@src/components/AddBep2Token';
+import AddBep20Token from '@src/components/AddBep20Token';
 import Icons from 'react-native-vector-icons/Fontisto';
 import Header from '@src/components/Header';
 import PureModal from '@src/components/Modal/features/PureModal';
@@ -66,6 +67,7 @@ const AddManually = () => {
           <SelectType />
           {type === TYPES.BEP2.value && <AddBep2Token />}
           {type === TYPES.ERC20.value && <AddERC20Token />}
+          {type === TYPES.BEP20.value && <AddBep20Token />}
         </View>
       </KeyboardAwareScrollView>
       <ModalSelectType />

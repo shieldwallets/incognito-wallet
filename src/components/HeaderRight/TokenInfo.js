@@ -103,7 +103,7 @@ class TokenInfo extends Component {
         return <Text numberOfLines={1} ellipsizeMode="middle" style={[tokenInfoStyle.infoItemValue, style]}>{value}</Text>;
       }
     };
-    
+
     return (
       <React.Fragment key={label}>
         <View style={tokenInfoStyle.infoItem}>
@@ -145,7 +145,7 @@ class TokenInfo extends Component {
       return <SimpleInfo text='There has nothing to display' />;
     }
 
-    const { name, symbol, externalSymbol, tokenId, contractId, amount, pDecimals, incognitoTotalSupply, isVerified, isBep2Token } = selectedPrivacy;
+    const { name, symbol, externalSymbol, tokenId, contractId, amount, pDecimals, incognitoTotalSupply, isVerified, isBep2Token, isBep20Token} = selectedPrivacy;
 
     const infos = [
       { label: 'Name', value: name },
@@ -154,7 +154,7 @@ class TokenInfo extends Component {
       { label: 'Coin supply', value: incognitoTotalSupply ? formatUtil.amount(incognitoTotalSupply, pDecimals) : undefined },
       { label: 'Balance', value: formatUtil.amount(amount, pDecimals) },
       { label: 'Coin ID', value: tokenId, copyable: true },
-      { label: 'Contract ID', value: contractId, copyable: true, link: `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}` },
+      { label: 'Contract ID', value: contractId, copyable: true, link: isBep20Token ? `${CONSTANT_CONFIGS.BSCSCAN_URL}/token/${contractId}`: `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}` },
       { label: 'Owner address', value: incognitoInfo?.showOwnerAddress ? incognitoInfo?.ownerAddress : undefined, copyable: true  },
       { label: 'Owner email', value: incognitoInfo?.ownerEmail, copyable: true  },
       { label: 'Owner website', value: incognitoInfo?.ownerWebsite, link: incognitoInfo?.ownerWebsite, copyable: true  },
@@ -168,8 +168,8 @@ class TokenInfo extends Component {
           </View>
           <View style={tokenInfoStyle.headerTextContainer}>
             <VerifiedText
-              text={`${selectedPrivacy?.symbol} ${!selectedPrivacy?.isPrivateCoin ? selectedPrivacy?.networkName : ''}`} 
-              numberOfLines={1} 
+              text={`${selectedPrivacy?.symbol} ${!selectedPrivacy?.isPrivateCoin ? selectedPrivacy?.networkName : ''}`}
+              numberOfLines={1}
               ellipsizeMode="middle"
               style={tokenInfoStyle.headerText}
               isVerified={isVerified}
@@ -226,7 +226,7 @@ class TokenInfo extends Component {
       } else if (selectedPrivacy?.isIncognitoToken){ // get token info every time the modal will be opened
         this.handleGetIncognitoTokenInfo(selectedPrivacy?.tokenId);
       }
-      
+
       return { isShowInfo: newIsShowInfo, incognitoInfo: newIncognitoInfo };
     });
   }
@@ -235,7 +235,7 @@ class TokenInfo extends Component {
     const { isShowInfo, incognitoInfo, showUpdateInfoView, isGettingInfo } = this.state;
     const { iconColor, selectedPrivacy } = this.props;
     const showInfoIcon = !!selectedPrivacy?.tokenId;
-      
+
     return (
       <View style={tokenInfoStyle.container}>
         {

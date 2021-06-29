@@ -39,27 +39,3 @@ export const filterAddressByKey = (receivers = [], keySearch = '') =>
       includes(item?.name.toLowerCase(), keySearch) ||
       includes(item?.address.toLowerCase(), keySearch),
   );
-
-export const getExternalSymbol = (address) => {
-  let externalSymbol = '';
-  try {
-    if (validator.isZILAddress(address)) {
-      return CONSTANT_COMMONS.CRYPTO_SYMBOL.ZIL;
-    }
-    if (validator.isBNBAddress(address)) {
-      return CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB;
-    }
-    for (const SYMBOL in CONSTANT_COMMONS.CRYPTO_SYMBOL_UNSHIELD) {
-      let symbol = CONSTANT_COMMONS.CRYPTO_SYMBOL_UNSHIELD[SYMBOL];
-      if (symbol === CONSTANT_COMMONS.CRYPTO_SYMBOL_UNSHIELD.TOMO) {
-        symbol = CONSTANT_COMMONS.CRYPTO_SYMBOL_UNSHIELD.ETH;
-      }
-      if (walletValidator.validate(address, symbol, 'both')) {
-        return symbol;
-      }
-    }
-  } catch (error) {
-    console.debug(error);
-  }
-  return externalSymbol;
-};

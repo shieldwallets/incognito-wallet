@@ -12,7 +12,7 @@ import { formName } from './Form.enhance';
 export const enhanceAddressValidation = (WrappedComp) => (props) => {
   const selector = formValueSelector(formName);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const { externalSymbol, isErc20Token, isMainCrypto } = selectedPrivacy;
+  const { externalSymbol, isErc20Token, isMainCrypto, currencyType } = selectedPrivacy;
   const toAddress = useSelector((state) => selector(state, 'toAddress'));
   const isIncognitoAddress =
     accountService.checkPaymentAddress(toAddress) || isMainCrypto;
@@ -22,7 +22,7 @@ export const enhanceAddressValidation = (WrappedComp) => (props) => {
     feeDataSelector,
   );
   const isERC20 =
-    isErc20Token || externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
+    isErc20Token || currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH;
 
   const getExternalAddressValidator = () => {
     if (!isAddressValidated) {

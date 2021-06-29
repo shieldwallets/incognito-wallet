@@ -17,19 +17,21 @@ import ShieldDecentralized from '@screens/Shield/features/ShieldDecentralized';
 const enhance = (WrappedComp) => (props) => {
   const {
     tokenSymbol,
-    isShieldAddressDecentralized,
-    selectedPrivacy,
+    decentralized,
     isFetched,
     isFetching,
     loading,
+    selectedPrivacy,
+    handleShield,
   } = props;
+  const { currencyType, isDecentralized }  = selectedPrivacy;
 
   const [showTerm, setShowTerm] = useState(true);
   const [selectedTerm, setSelectedTerm] = React.useState(undefined);
   const navigation = useNavigation();
 
   const handleToggleTooltip = () => {
-    navigation.navigate(routeNames.CoinInfo, { isShieldAddressDecentralized });
+    navigation.navigate(routeNames.CoinInfo, { decentralized });
   };
   const hasError = !isFetched && !isFetching;
 
@@ -67,25 +69,23 @@ const enhance = (WrappedComp) => (props) => {
     );
   };
 
+  React.useEffect(() => {
+    if ((!CONSTANT_COMMONS.CURRENCY_TYPE_BRIDGE.includes(currencyType) && selectedTerm === undefined) && typeof handleShield === 'function') {
+      handleShield();
+    }
+  }, [selectedTerm]);
+
   /** render loading */
   if (isFetching || loading) {
     return renderLoading();
   }
 
   /** render term off user */
-  if (
-    ((isShieldAddressDecentralized === false
-    && (selectedPrivacy?.currencyType === 1 || selectedPrivacy?.currencyType === 3)
-    && !selectedPrivacy?.isVerified
-    && selectedPrivacy?.priceUsd <= 0
-    && !hasError)
-    || (selectedPrivacy?.contractId || selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH))
-    && showTerm
-  ) {
+  if (isDecentralized && showTerm) {
     return renderTermOfUse();
   }
 
-  if (selectedTerm === 1 && isShieldAddressDecentralized) {
+  if (selectedTerm === 1) {
     return (
       <ShieldDecentralized {...{ ...props, setShowTerm}} />
     );

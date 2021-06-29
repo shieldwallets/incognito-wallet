@@ -15,6 +15,7 @@ import { PRV } from '@services/wallet/tokenService';
 import { apiGetQuote } from '@screens/DexV2';
 import { initFee } from '@screens/DexV2/components/Trade/TradeV2/Trade.reducer';
 import { PRV_ID } from '@screens/Dex/constants';
+import { ERC20_CURRENCY_TYPE } from '@screens/DexV2/components/Trade/TradeV2/Trade.appConstant';
 
 /**
  * Slippage percent decision outputValue,
@@ -347,7 +348,10 @@ export const calculateOutputERC20NetWork = async (payload) => {
 /** Check can trade in Incognito or ERC20 network */
 export const checkMethodGetNetworkTrading = (inputToken, outputToken) => ({
   validToken: inputToken && outputToken && inputToken?.id !== outputToken?.id,
-  isERC20NetWork: inputToken.address && outputToken.address
+  isERC20NetWork: inputToken.address &&
+    outputToken.address &&
+    ERC20_CURRENCY_TYPE.includes(inputToken.currencyType) &&
+    ERC20_CURRENCY_TYPE.includes(outputToken.currencyType)
 });
 
 /**

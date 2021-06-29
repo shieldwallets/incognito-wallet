@@ -51,7 +51,7 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min, expiredAt, isShieldAddressDecentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
+  const { address, min, expiredAt, decentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
   const navigation = useNavigation();
   const renderMinShieldAmount = () => {
@@ -76,18 +76,30 @@ const Extra = () => {
   };
 
   const renderEstimateFee = () => {
-    const isETH = selectedPrivacy?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
-    let humanFee = convert.toNumber((isETH ? estimateFee : tokenFee) || 0, true);
+    const isNativeToken = selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+    let humanFee = convert.toNumber((isNativeToken ? estimateFee : tokenFee) || 0, true);
     const originalFee = convert.toOriginalAmount(humanFee, selectedPrivacy?.pDecimals);
     humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
     if (!humanFee) return null;
     return(
-      <NormalText text="Estimated shielding fee: ">
-        <Text style={[styled.boldText]}>
-          {`${humanFee} ${selectedPrivacy?.externalSymbol ||
-          selectedPrivacy?.symbol}`}
-        </Text>
-      </NormalText>
+      <>
+        <NormalText text="Estimated shielding fee: ">
+          <Text style={[styled.boldText]}>
+            {`${humanFee} ${selectedPrivacy?.externalSymbol ||
+            selectedPrivacy?.symbol}`}
+          </Text>
+        </NormalText>
+        <View style={styled.centerRaw}>
+          <Text style={styled.smallText}>
+            This fee will be deducted from the shielded funds.
+          </Text>
+          <BtnInfo
+            isBlack
+            style={styled.btnInfo}
+            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
+          />
+        </View>
+      </>
     );
   };
 
@@ -136,16 +148,6 @@ const Extra = () => {
       </View>
       <View style={styled.hook}>
         {renderEstimateFee()}
-        <View style={styled.centerRaw}>
-          <Text style={styled.smallText}>
-            This fee will be deducted from the shielded funds.
-          </Text>
-          <BtnInfo
-            isBlack
-            style={styled.btnInfo}
-            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
-          />
-        </View>
       </View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
@@ -165,7 +167,7 @@ const Extra = () => {
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        { isShieldAddressDecentralized ? renderShieldUserAddress() : renderShieldIncAddress()}
+        { (decentralized === 2 || decentralized === 3) ? renderShieldUserAddress() : renderShieldIncAddress()}
       </View>
     </ScrollView>
   );

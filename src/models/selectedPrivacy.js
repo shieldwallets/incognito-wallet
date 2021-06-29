@@ -4,12 +4,15 @@ import PToken from './pToken';
 
 function getNetworkName() {
   let name = 'Unknown';
-  const isETH = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH;
-  const isBNB = this?.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.BNB;
+  const isETH = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH;
+  const isBSC = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+  const isBNB = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB;
   if (this.isPrivateCoin) {
     name = `${this.name}`;
   } else if (this.isErc20Token) {
     name = 'ERC20';
+  } else if (this.isBep20Token) {
+    name = 'BEP20';
   } else if (this.isBep2Token) {
     name = 'BEP2';
   } else if (this.isIncognitoToken || this.isMainCrypto) {
@@ -18,7 +21,9 @@ function getNetworkName() {
   let rootNetworkName = name;
   if (isETH || this?.isErc20Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM;
-  } else if (isBNB || this?.isBep2Token) {
+  } else if (isBSC || this?.isBep20Token) {
+    rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BSC;
+  } else if (isBNB ||this?.isBep2Token ) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BINANCE;
   }
   return {
@@ -74,6 +79,9 @@ class SelectedPrivacy {
       this.isPrivateToken &&
       this.currencyType ===
         CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB_BEP2;
+    this.isBep20Token =
+      this.isPrivateToken &&
+      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20;
     this.symbol = combineData.call(
       this,
       pTokenData?.pSymbol,
@@ -107,8 +115,9 @@ class SelectedPrivacy {
     this.isDeposable = this.isPToken;
     this.isDecentralized =
       (this.isToken &&
-        this.externalSymbol === CONSTANT_COMMONS.CRYPTO_SYMBOL.ETH) ||
-      this.isErc20Token;
+        this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH) ||
+      this.isErc20Token || this.isBep20Token || (this.isToken &&
+      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
     this.isCentralized = this.isToken && !this.isDecentralized;
     this.incognitoTotalSupply =
       (this.isIncognitoToken && Number(token?.totalSupply)) || 0;

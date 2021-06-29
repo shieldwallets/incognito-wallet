@@ -27,7 +27,7 @@ export const actionRefreshFail = () => ({
   type: ACTION_REFRESH_FAIL,
 });
 
-export const actionRefreshHistoryDetail = ({ txID, currencyType, decentralized, isShieldAddressDecentralized }) => async (dispatch, getState) => {
+export const actionRefreshHistoryDetail = ({ txID, currencyType, decentralized}) => async (dispatch, getState) => {
   let data = null;
   const state = getState();
   const { isRefreshing } = state.txHistoryDetail;
@@ -35,7 +35,7 @@ export const actionRefreshHistoryDetail = ({ txID, currencyType, decentralized, 
   try {
     const signPublicKeyEncode = accountSeleclor.signPublicKeyEncodeSelector(state);
     await dispatch(actionRefreshing());
-    data = await apiRefreshHistory({ txID, currencyType, signPublicKeyEncode, decentralized, isShieldAddressDecentralized });
+    data = await apiRefreshHistory({ txID, currencyType, signPublicKeyEncode, decentralized });
   } catch (error) {
     await dispatch(actionRefreshFail());
     Toast.showError(new ExHandler(error).getMessage());
@@ -46,7 +46,6 @@ export const actionRefreshHistoryDetail = ({ txID, currencyType, decentralized, 
     }
   }
 };
-
 
 /*
 * GET HISTORY DETAIL WHEN OPEN SCREEN txHistoryDetail

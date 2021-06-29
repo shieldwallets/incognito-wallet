@@ -6,63 +6,13 @@ import {
 import { CONSTANT_COMMONS } from '@src/constants';
 import { COLORS } from '@src/styles';
 
-const getStatusDataShield = (history) => {
-  const { statusCode, statusMessage } = history;
-  let statusColor;
-  const {
-    STATUS_CODE_SHIELD_CENTRALIZED,
-    STATUS_CODE_SHIELD_DECENTRALIZED,
-  } = CONSTANT_COMMONS.HISTORY;
-  if (history?.isDecentralized) {
-    if (STATUS_CODE_SHIELD_DECENTRALIZED.COMPLETE === statusCode) {
-      statusColor = COLORS.green;
-    } else {
-      statusColor = COLORS.colorGreyBold;
-    }
-  } else {
-    if (STATUS_CODE_SHIELD_CENTRALIZED.COMPLETE.includes(statusCode)) {
-      statusColor = COLORS.green;
-    } else {
-      statusColor = COLORS.colorGreyBold;
-    }
-  }
-  return { statusColor, statusMessage };
-};
-
-const getStatusDataUnShield = (history) => {
-  const { statusCode, statusMessage } = history;
-  const {
-    STATUS_CODE_UNSHIELD_CENTRALIZED,
-    STATUS_CODE_UNSHIELD_DECENTRALIZED,
-  } = CONSTANT_COMMONS.HISTORY;
-  let statusColor;
-  if (history?.isDecentralized) {
-    if (STATUS_CODE_UNSHIELD_DECENTRALIZED.COMPLETE === statusCode) {
-      statusColor = COLORS.green;
-    } else {
-      statusColor = COLORS.colorGreyBold;
-    }
-  } else {
-    if (STATUS_CODE_UNSHIELD_CENTRALIZED.COMPLETE === statusCode) {
-      statusColor = COLORS.green;
-    } else {
-      statusColor = COLORS.colorGreyBold;
-    }
-  }
-  return { statusColor, statusMessage };
-};
-
 export const getStatusData = (history) => {
-  const { status } = history;
-  if (history?.isShieldTx) {
-    const statusData = getStatusDataShield(history);
-    return statusData;
+  let { status, statusMessage, addressType} = history;
+  if ([CONSTANT_COMMONS.HISTORY.TYPE.UNSHIELD, CONSTANT_COMMONS.HISTORY.TYPE.SHIELD].includes(addressType)) {
+    let statusColor = COLORS.colorGreyBold;
+    return { statusMessage, statusColor };
   }
-  if (history?.isUnshieldTx) {
-    const statusData = getStatusDataUnShield(history);
-    return statusData;
-  }
-  let statusMessage;
+
   let statusColor;
   switch (status) {
   case CONSTANT_COMMONS.HISTORY.STATUS_TEXT.PENDING:

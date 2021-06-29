@@ -7,6 +7,7 @@ import { useNavigationParam } from 'react-navigation-hooks';
 export const TYPES = {
   ERC20: { label: 'ERC20', value: 'ERC20' },
   BEP2: { label: 'BEP2', value: 'BEP2' },
+  BEP20: { label: 'BEP20', value: 'BEP20' },
 };
 
 export const AddManuallyContext = React.createContext();

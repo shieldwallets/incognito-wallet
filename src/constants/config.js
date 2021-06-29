@@ -20,6 +20,9 @@ const API_BASE_URL3 = 'https://device-network.incognito.org/';
 const ETHERSCAN_URL = isMainnet
   ? 'https://etherscan.io'
   : 'https://kovan.etherscan.io';
+const BSCSCAN_URL = isMainnet
+  ? 'https://bscscan.com'
+  : 'https://testnet.bscscan.com';
 const DEX_BINANCE_TOKEN_URL = isMainnet
   ? 'https://dex.binance.org/api/v1/tokens'
   : 'https://testnet-dex.binance.org/api/v1/tokens';
@@ -105,6 +108,7 @@ export default {
   DEX_BINANCE_TOKEN_URL,
   BUILD_VERSION,
   ETHERSCAN_URL,
+  BSCSCAN_URL,
   BINANCE_EXPLORER_URL,
   USDT_TOKEN_ID,
   NODE_URL,
