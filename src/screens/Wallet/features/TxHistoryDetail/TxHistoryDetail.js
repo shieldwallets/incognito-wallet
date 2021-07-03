@@ -198,8 +198,17 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
-  const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
-  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
+  const {
+    STATUS_CODE_SHIELD_CENTRALIZED,
+  } = CONSTANT_COMMONS.HISTORY;
+  const isInvalidAmount =  history.isShieldTx === true &&
+    STATUS_CODE_SHIELD_CENTRALIZED.INVALID_AMOUNT.includes(history.statusCode) &&
+    (history.currencyType !== 1 && history.currencyType !== 3);
+
+  const isBTCInvalidAmount =
+    history.isShieldTx === true &&
+    STATUS_CODE_SHIELD_CENTRALIZED.INVALID_AMOUNT.includes(history.statusCode) &&
+    history.currencyType === 2;
 
   const receiveFund = React.useMemo(() => {
     return (

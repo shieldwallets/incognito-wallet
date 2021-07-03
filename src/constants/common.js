@@ -224,6 +224,8 @@ export default {
       PROCESSING: [1, 2],
       COMPLETE: [3, 5],
       TIMED_OUT: [14, 16],
+      EXPIRED: [16],
+      INVALID_AMOUNT: [17]
     },
     //unshield decentralized
     STATUS_CODE_UNSHIELD_DECENTRALIZED: {

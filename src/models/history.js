@@ -22,14 +22,14 @@ class History {
     const canRetryExpiredDeposit = (
       decentralized === 0
       && data.AddressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD
-      && status === STATUS_CODE_SHIELD_CENTRALIZED.TIMED_OUT
+      && STATUS_CODE_SHIELD_CENTRALIZED.EXPIRED.includes(status)
     );
 
     // Remove/cancel shield centrailzed only for pending/expired.
     const cancelable = (
       data.AddressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD
       && decentralized === 0
-      && (status === STATUS_CODE_SHIELD_CENTRALIZED.PENDING || status === STATUS_CODE_SHIELD_CENTRALIZED.EXPIRED)
+      && (status === STATUS_CODE_SHIELD_CENTRALIZED.PENDING || STATUS_CODE_SHIELD_CENTRALIZED.EXPIRED.includes(status))
     );
 
     const history = {
