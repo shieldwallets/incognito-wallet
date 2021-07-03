@@ -18,11 +18,13 @@ class History {
     } = CONSTANT_COMMONS.HISTORY;
 
     // RESUME shield expired only for centralized coins.
+    // 0 centralized | 1 ETH, ERC20 temp address expired | 2 ETH, ERC20 fixed address | 3 BSC decentralized BSC fixed address
     const canRetryExpiredDeposit = (
       decentralized === 0
       && data.AddressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD
-      && status === STATUS_CODE_SHIELD_CENTRALIZED.PENDING
+      && status === STATUS_CODE_SHIELD_CENTRALIZED.TIMED_OUT
     );
+
     // Remove/cancel shield centrailzed only for pending/expired.
     const cancelable = (
       data.AddressType === CONSTANT_COMMONS.HISTORY.TYPE.SHIELD
