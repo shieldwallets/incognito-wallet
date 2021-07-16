@@ -22,7 +22,14 @@ import {
   listAccountSelector,
 } from '@src/redux/selectors/account';
 import { currentMasterKeySelector } from '@src/redux/selectors/masterKey';
+import { settingSelector } from '@screens/Setting';
 import { accountSection } from './AccountSection.styled';
+
+const isNodeAccount = (name, devices) => {
+  return devices.find(
+    (device) => device.IsPNode && device.AccountName === name,
+  );
+};
 
 const Item = (props) => {
   const {
@@ -80,6 +87,7 @@ const Item = (props) => {
 
 const AccountSection = (props) => {
   const { label } = props;
+  const { devices } = useSelector(settingSelector);
   const defaultAccount = useSelector(defaultAccountSelector);
   const listAccount = useSelector(listAccountSelector);
   const masterKey = useSelector(currentMasterKeySelector);
@@ -135,28 +143,31 @@ const AccountSection = (props) => {
       { cancelable: false },
     );
   };
-  const isDeletable = listAccount.length > 1;
+
   const customItems = React.useMemo(() => {
     return [...listAccount]
       .filter((account) => !!account?.accountName)
-      .map((account, index) => (
-        <View
-          style={accountSection.itemWrapper}
-          key={account?.PrivateKey + account?.accountName}
-        >
-          <Item
-            {...{
-              account,
-              onSwitch: onHandleSwitchAccount,
-              onExport: handleExportKey,
-              onDelete: isDeletable && handleDelete,
-              isActive: account?.accountName === defaultAccount?.name,
-              lastChild: listAccount?.length - 1 === index,
-              removeTitle: `Remove${removing ? '...' : ''}`,
-            }}
-          />
-        </View>
-      ));
+      .map((account, index) => {
+        const isDeletable = listAccount.length > 1 && !isNodeAccount(account?.accountName, devices);
+        return (
+          <View
+            style={accountSection.itemWrapper}
+            key={account?.PrivateKey + account?.accountName}
+          >
+            <Item
+              {...{
+                account,
+                onSwitch: onHandleSwitchAccount,
+                onExport: handleExportKey,
+                onDelete: isDeletable && handleDelete,
+                isActive: account?.accountName === defaultAccount?.name,
+                lastChild: listAccount?.length - 1 === index,
+                removeTitle: `Remove${removing ? '...' : ''}`,
+              }}
+            />
+          </View>
+        );
+      });
   }, [listAccount, masterKey, defaultAccount]);
   return (
     <Section

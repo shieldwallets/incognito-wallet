@@ -1,9 +1,13 @@
 import { DEVICES } from '@src/constants/miner';
+// eslint-disable-next-line import/no-cycle
 import accountService from '@src/services/wallet/accountService';
 import { isEmpty } from 'lodash';
 import { COLORS } from '@src/styles';
+// eslint-disable-next-line import/no-cycle
 import { PRV_ID } from '@screens/Dex/constants';
+// eslint-disable-next-line import/no-cycle
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
+// eslint-disable-next-line import/no-cycle
 import { PRV } from '@services/wallet/tokenService';
 
 export const DEVICE_STATUS = {
@@ -364,6 +368,10 @@ export default class Device {
 
   get PaymentAddressFromServer(){
     return this.data.minerInfo?.PaymentAddress ?? '';
+  }
+
+  set PaymentAddressFromServer(paymentAddress) {
+    this.data.minerInfo.PaymentAddress = paymentAddress;
   }
 
   get CommissionFromServer(){

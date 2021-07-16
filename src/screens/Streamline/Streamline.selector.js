@@ -32,7 +32,7 @@ export const streamlineConsolidateSelector = createSelector(
     return {
       hasExceededMaxInputPRV,
       UTXOSFiltered,
-      isLoading: isEmpty(UTXOS),
+      isLoading: isEmpty(UTXOSFiltered),
       isFetching: isFetchingUTXOS,
     };
   },

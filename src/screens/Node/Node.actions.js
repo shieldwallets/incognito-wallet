@@ -125,8 +125,10 @@ export const actionUpdateNodeByProductId = (productId, device) => async (dispatc
 
 export const actionUpdateListNodeDevice = (payload) => async (dispatch) => {
   try {
-    let { listDevice } = payload;
-    listDevice = listDevice.map(item => Device.getInstance(item));
+    let { listDevice, ignoredInstance } = payload;
+    if (!ignoredInstance) {
+      listDevice = listDevice.map(item => Device.getInstance(item));
+    }
     await LocalDatabase.saveListDevices(listDevice);
     dispatch(updateListNodeDevice({
       ...payload,
