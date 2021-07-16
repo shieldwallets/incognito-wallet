@@ -256,10 +256,13 @@ const syncServerAccounts = async (wallet) => {
   );
   if (accounts.length > 0) {
     wallet.MasterAccount.child = [];
-    let task = accounts.map((account) =>
-      wallet.importAccountWithId(account.id, account.name),
-    );
-    await Promise.all(task);
+    for (const account of accounts) {
+      try {
+        await wallet.importAccountWithId(account.id, account.name);
+      } catch (error) {
+        console.log('IMPORT ACCOUNT WITH ID FAILED', error);
+      }
+    }
   }
 };
 

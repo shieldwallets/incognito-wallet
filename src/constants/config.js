@@ -12,7 +12,9 @@ export const MAIN_WEBSITE = 'https://we.incognito.org';
 
 const API_BASE_URL = isMainnet
   ? 'https://api-service.incognito.org'
-  : global.severDefault ? global.severDefault.apiServices : 'https://staging-api-service.incognito.org';
+  : global.severDefault
+    ? global.severDefault.apiServices
+    : 'https://staging-api-service.incognito.org';
 const API_BASE_URL2 = isMainnet
   ? 'https://device-network.incognito.org/'
   : 'https://device-network-staging.incognito.org/';
@@ -40,7 +42,7 @@ const MASTER_NODE_ADDRESS = isMainnet ? MAINNET_FULLNODE : TESTNET_FULLNODE;
 const NODE_URL = 'https://node.incognito.org/node.html';
 const USDT_TOKEN_ID = isMainnet
   ? '716fd1009e2a1669caacc36891e707bfdf02590f96ebd897548e8963c95ebac0'
-  : 'ef80ac984c6367c9c45f8e3b89011d00e76a6f17bd782e939f649fcf95a05b74';
+  : 'fdd928bc86c82bd2a7c54082a68332ebb5f2cde842b1c2e0fa430ededb6e369e';
 const TRACK_LOG_URL = 'https://device-network.incognito.org';
 
 const ETH_TOKEN_ID = isMainnet
