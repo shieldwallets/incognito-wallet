@@ -1,6 +1,7 @@
 import firebase from 'react-native-firebase';
 import _ from 'lodash';
 import DeviceInfo from 'react-native-device-info';
+import { v4 } from 'uuid';
 
 const TAG = 'firebase';
 
@@ -22,5 +23,7 @@ export const logEvent = async (event, data = {}) => {
 };
 
 export const getToken = () => {
-  return firebase.messaging().getToken();
+  // TODO: mockup firebase token
+  return v4();
+  // return firebase.messaging().getToken();
 };
