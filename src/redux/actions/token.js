@@ -1,9 +1,9 @@
 /* eslint-disable import/no-cycle */
 import type from '@src/redux/types/token';
 import {
-  accountSeleclor,
-  selectedPrivacySeleclor,
-  tokenSeleclor,
+  accountSelector,
+  selectedPrivacySelector,
+  tokenSelector,
 } from '@src/redux/selectors';
 import { getTokenList } from '@src/services/api/token';
 import tokenService from '@src/services/wallet/tokenService';
@@ -20,15 +20,24 @@ import {
 } from '@src/redux/utils/token';
 import internalTokenModel from '@models/token';
 import { getReceiveHistoryByRPC } from '@src/services/wallet/RpcClientService';
-import { actionLogEvent } from '@src/screens/Performance';
+// import { actionLogEvent } from '@src/screens/Performance';
 import { ConfirmedTx } from '@src/services/wallet/WalletService';
 import { CONSTANT_COMMONS } from '@src/constants';
 import { uniqBy } from 'lodash';
-import { receiveHistorySelector } from '@src/redux/selectors/token';
+import {
+  internalTokensSelector,
+  pTokensSelector,
+  receiveHistorySelector,
+} from '@src/redux/selectors/token';
 import { MAX_LIMIT_RECEIVE_HISTORY_ITEM } from '@src/redux/reducers/token';
 import { PRV_ID } from '@screens/DexV2/constants';
 import { devSelector } from '@src/screens/Dev';
+import { Validator, PrivacyVersion } from 'incognito-chain-web-js/build/wallet';
+import { EXPIRED_TIME } from '@services/cache';
+import Util from '@utils/Util';
 import { setWallet } from './wallet';
+import { getDefaultAccountWalletSelector } from '../selectors/shared';
+import { walletSelector } from '../selectors/wallet';
 
 export const setToken = (
   token = throw new Error('Token object is required'),
@@ -105,37 +114,40 @@ export const getBalanceFinish = (tokenSymbol) => ({
   data: tokenSymbol,
 });
 
-export const getBalance = (token) => async (dispatch, getState) => {
+export const getBalance = (tokenId) => async (dispatch, getState) => {
+  new Validator('tokenId', tokenId).required().string();
+  const state = getState();
+  const wallet = state?.wallet;
+  // const isDev = devSelector(state);
+  const account = accountSelector.defaultAccount(getState());
+  const token = selectedPrivacySelector.findTokenFollowedByIdSelector(state)(
+    tokenId,
+  );
   if (!token) {
-    throw new Error('Token object is required');
+    return;
   }
   try {
-    await dispatch(getBalanceStart(token?.id));
-    const state = getState();
-    const wallet = state?.wallet;
-    const isDev = devSelector(state);
-    const account = accountSeleclor.defaultAccount(getState());
-    if (!wallet) {
-      throw new Error('Wallet is not exist');
-    }
-    if (!account) {
-      throw new Error('Account is not exist');
-    }
-    const balance = await accountService.getBalance(account, wallet, token.id);
-    if (isDev) {
-      const { coinsStorage } = await accountService.getStorageAccountByTokenId(
-        account,
-        wallet,
-        token?.id,
-      );
-      if (coinsStorage) {
-        await dispatch(
-          actionLogEvent({
-            desc: coinsStorage,
-          }),
-        );
-      }
-    }
+    await dispatch(getBalanceStart(tokenId));
+    const balance = await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: tokenId,
+      version: PrivacyVersion.ver2,
+    });
+    // if (isDev) {
+    //   const accountWallet = getDefaultAccountWalletSelector(state);
+    //   const coinsStorage = await accountWallet.getCoinsStorage({
+    //     tokenID: tokenId,
+    //     version: PrivacyVersion.ver2,
+    //   });
+    //   if (coinsStorage) {
+    //     await dispatch(
+    //       actionLogEvent({
+    //         desc: coinsStorage,
+    //       }),
+    //     );
+    //   }
+    // }
     dispatch(
       setToken({
         ...token,
@@ -153,15 +165,17 @@ export const getBalance = (token) => async (dispatch, getState) => {
     );
     throw e;
   } finally {
-    dispatch(getBalanceFinish(token?.id));
+    dispatch(getBalanceFinish(tokenId));
   }
 };
 
-export const getPTokenList = () => async (dispatch) => {
+export const getPTokenList = ({ expiredTime = EXPIRED_TIME } = {}) => async (
+  dispatch,
+) => {
   try {
-    const tokens = await getTokenList();
+    const tokens = await getTokenList({ expiredTime });
 
-    dispatch(setListPToken(tokens));
+    await dispatch(setListPToken(tokens));
 
     return tokens;
   } catch (e) {
@@ -169,11 +183,13 @@ export const getPTokenList = () => async (dispatch) => {
   }
 };
 
-export const getInternalTokenList = () => async (dispatch) => {
+export const getInternalTokenList = ({
+  expiredTime = EXPIRED_TIME,
+} = {}) => async (dispatch) => {
   try {
-    const tokens = await tokenService.getPrivacyTokens();
+    const tokens = await tokenService.getPrivacyTokens({ expiredTime });
 
-    dispatch(setListInternalToken(tokens));
+    await dispatch(setListInternalToken(tokens));
 
     return tokens;
   } catch (e) {
@@ -196,30 +212,60 @@ export const actionAddFollowTokenSuccess = (payload) => ({
   payload,
 });
 
-export const actionAddFollowToken = (tokenId) => async (dispatch, getState) => {
+export const actionAddFollowToken = (tokenID) => async (dispatch, getState) => {
   const state = getState();
   let wallet = state.wallet;
-  if (!tokenId || tokenId === PRV_ID) {
+  if (!tokenID || tokenID === PRV_ID) {
     return;
   }
   try {
-    const account = accountSeleclor.defaultAccount(state);
-    const { pTokens, internalTokens } = state.token;
+    const account = accountSelector.defaultAccount(state);
+    const pTokens = pTokensSelector(state);
+    const internalTokens = internalTokensSelector(state);
+    const foundPToken = pTokens?.find((pToken) => pToken.tokenID === tokenID);
+    const foundInternalToken =
+      !foundPToken &&
+      internalTokens?.find((token) => token.tokenID === tokenID);
+    const token = foundPToken || foundInternalToken;
+    if (!token) throw new Error('Can not follow empty coin');
+    await accountService.addFollowingTokens([token], account, wallet);
+    dispatch(setWallet(wallet));
+    const followed = await accountService.getFollowingTokens(account, wallet);
+    dispatch(setListToken(followed));
+  } catch (error) {
+    dispatch(actionAddFollowTokenFail(tokenID));
+    throw error;
+  }
+};
+
+export const actionAddFollowTokenAfterMint = (tokenId) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    const state = getState();
+    let wallet = state.wallet;
+    if (!tokenId || tokenId === PRV_ID) {
+      return;
+    }
+    await Util.sleep();
+    const tasks = [
+      await dispatch(getPTokenList({ expiredTime: 0 })),
+      await dispatch(getInternalTokenList({ expiredTime: 0 })),
+    ];
+    const account = accountSelector.defaultAccount(state);
+    const [pTokens, internalTokens] = await Promise.all(tasks);
     const foundPToken = pTokens?.find((pToken) => pToken.tokenId === tokenId);
     const foundInternalToken =
       !foundPToken && internalTokens?.find((token) => token.id === tokenId);
     const token =
       (foundInternalToken && internalTokenModel.toJson(foundInternalToken)) ||
       foundPToken?.convertToToken();
-    if (!token) throw Error('Can not follow empty coin');
-    wallet = await accountService.addFollowingTokens([token], account, wallet);
-    dispatch(setWallet(wallet));
-
-    const followed = await accountService.getFollowingTokens(account, wallet);
-    dispatch(setListToken(followed));
+    if (token) {
+      dispatch(actionAddFollowToken(token.ID));
+    }
   } catch (error) {
-    dispatch(actionAddFollowTokenFail(tokenId));
-    throw Error(error);
+    throw error;
   }
 };
 
@@ -228,23 +274,19 @@ export const actionRemoveFollowToken = (tokenId) => async (
   getState,
 ) => {
   const state = getState();
-  let wallet = state.wallet;
   if (!tokenId) {
     return;
   }
   try {
-    const account = accountSeleclor.defaultAccount(state);
-    wallet = await accountService.removeFollowingToken(
-      tokenId,
-      account,
-      wallet,
-    );
-    dispatch(setWallet(wallet));
+    const account = accountSelector.defaultAccountSelector(state);
+    const wallet = walletSelector(state);
+    await accountService.removeFollowingToken(tokenId, account, wallet);
     const followed = await accountService.getFollowingTokens(account, wallet);
     dispatch(setListToken(followed));
+    dispatch(setWallet(wallet));
   } catch (error) {
     dispatch(actionAddFollowTokenFail(tokenId));
-    throw Error(error);
+    throw error;
   }
 };
 
@@ -272,11 +314,11 @@ export const actionFetchHistoryToken = (refreshing = false) => async (
 ) => {
   try {
     const state = getState();
-    const selectedPrivacy = selectedPrivacySeleclor.selectedPrivacy(state);
-    const token = selectedPrivacySeleclor.selectedPrivacyByFollowedSelector(
+    const selectedPrivacy = selectedPrivacySelector.selectedPrivacy(state);
+    const token = selectedPrivacySelector.selectedPrivacyByFollowedSelector(
       state,
     );
-    const { isFetching } = tokenSeleclor.historyTokenSelector(state);
+    const { isFetching } = tokenSelector.historyTokenSelector(state);
     if (isFetching || !token?.id || !selectedPrivacy?.tokenId) {
       return;
     }
@@ -319,8 +361,8 @@ export const actionFetchHistoryMainCrypto = (refreshing = false) => async (
 ) => {
   try {
     const state = getState();
-    const selectedPrivacy = selectedPrivacySeleclor.selectedPrivacy(state);
-    const { isFetching } = tokenSeleclor.historyTokenSelector(state);
+    const selectedPrivacy = selectedPrivacySelector.selectedPrivacy(state);
+    const { isFetching } = tokenSelector.historyTokenSelector(state);
     if (
       isFetching ||
       !selectedPrivacy?.tokenId ||
@@ -380,7 +422,7 @@ export const actionFetchReceiveHistory = (refreshing = false) => async (
 ) => {
   const state = getState();
   const wallet = state?.wallet;
-  const selectedPrivacy = selectedPrivacySeleclor.selectedPrivacy(state);
+  const selectedPrivacy = selectedPrivacySelector.selectedPrivacy(state);
   let data = [];
   const receiveHistory = receiveHistorySelector(state);
   const { isFetching, oversize, page, limit, data: oldData } = receiveHistory;
@@ -394,7 +436,7 @@ export const actionFetchReceiveHistory = (refreshing = false) => async (
     const nextPage = curPage + 1;
     const curLimit =
       refreshing && page > 0 ? MAX_LIMIT_RECEIVE_HISTORY_ITEM : limit;
-    const account = accountSeleclor?.defaultAccountSelector(state);
+    const account = accountSelector?.defaultAccountSelector(state);
     // const key = `${selectedPrivacy?.tokenId}-${account?.readonlyKey}-${account?.paymentAddress}-${curLimit}-${curSkip}-RECEIVE-HISTORY`;
     const histories = await getReceiveHistoryByRPC({
       PaymentAddress: account?.paymentAddress,
@@ -440,7 +482,7 @@ export const actionFetchReceiveHistory = (refreshing = false) => async (
         (history) => history?.type === CONSTANT_COMMONS.HISTORY.TYPE.RECEIVE,
       )
       .filter((history) => !!history?.amount);
-    const oversize = histories?.length < curLimit;
+    const oversize = histories?.length !== 0 && histories?.length < curLimit;
     const notEnoughData = data?.length < oldData?.length + 5;
     let payload = {
       nextPage,

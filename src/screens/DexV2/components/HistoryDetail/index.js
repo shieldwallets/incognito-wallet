@@ -4,20 +4,19 @@ import { compose } from 'recompose';
 import { View, Text, ScrollView, FlexView } from '@components/core';
 import { withLayout_2 } from '@components/Layout';
 import Header from '@components/Header/index';
-import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
-import { CONSTANT_COMMONS, MESSAGES } from '@src/constants';
-import { HISTORY_STATUS } from '@src/constants/trading';
 import { useSelector } from 'react-redux';
 import { maxPriceSelector } from '@screens/DexV2/components/Trade/TradeV2/Trade.selector';
+import { TRANSFER_STATUS } from '@src/redux/actions/dex';
+import { Hook } from '@screens/Wallet/features/TxHistoryDetail/TxHistoryDetail';
+import isEmpty from 'lodash/isEmpty';
+import linkingService from '@services/linking';
+import {CONSTANT_CONFIGS} from '@src/constants';
 import styles from './style';
 import withData from './data.enhance';
 
 const HistoryDetail = ({ history }) => {
-  const isSuccess = history?.status === HISTORY_STATUS.SUCCESSFUL;
-  const buyAmount = isSuccess
-  && history?.amountReceive
-    ? history?.amountReceive
-    : history?.buyAmount;
+  const isSuccess = history?.status === TRANSFER_STATUS.SUCCESSFUL;
+  const buyAmount = history?.buyAmount;
 
   const maxPrice = useSelector(maxPriceSelector)(
     history?.sellTokenId,
@@ -26,54 +25,90 @@ const HistoryDetail = ({ history }) => {
     buyAmount,
   );
 
-  let factories = [
-    {
-      left: 'ID',
-      right: history?.id,
-    },
-    {
-      left: 'Buy',
-      right: `${buyAmount} ${history?.buyTokenSymbol}`,
-    },
-    {
-      left: 'Sell',
-      right: `${history?.sellAmount} ${history?.sellTokenSymbol}`,
-    },
-    {
-      left: 'Fee',
-      right: `${history?.networkFee} ${history?.networkFeeTokenSymbol}`,
-    },
-    {
-      left: 'Time',
-      right: history?.createdAt,
-    },
-    {
-      left: 'Status',
-      right: history?.status,
-      message: history?.status === HISTORY_STATUS.DEPOSIT_FAILD ? MESSAGES.DEPOSIT_FAILED : null,
-    },
-    {
-      left: 'Account',
-      right: history?.account,
-    },
-    {
-      left: 'Trading fee',
-      right: history?.tradingFee,
-      disabled: !history?.tradingFee,
-    },
-    {
-      left: 'Exchange',
-      right: history?.exchange,
-    },
-    maxPrice && {
-      left: isSuccess ? 'Price' : 'Max price',
-      right: maxPrice,
-    },
-  ];
-  factories = factories.map((item) => ({
-    ...item,
-    disabled: item?.disabled || false,
-  }));
+  const handleOpenLink = (txID) => {
+    if (!txID) return;
+    linkingService.openUrl(`${CONSTANT_CONFIGS.EXPLORER_CONSTANT_CHAIN_URL}/tx/${txID}`,);
+  };
+
+  const renderContent = () => {
+    let _responseTx = [];
+    if (!isEmpty(history?.responseTx)) {
+      const responseTx = history?.responseTx;
+      if (responseTx.length === 1) {
+        _responseTx = [{
+          label: 'ResponseTx',
+          valueText: responseTx[0],
+          copyable: true,
+          openUrl: true,
+          handleOpenLink: () => {
+            handleOpenLink(responseTx[0]);
+          }
+        }];
+      } else {
+        _responseTx = responseTx.map((item, index) => ({
+          label: `ResponseTx${index + 1}`,
+          valueText: item,
+          copyable: true,
+          openUrl: true,
+          handleOpenLink: () => {
+            handleOpenLink(item);
+          }
+        }));
+      }
+    }
+
+    const factories = [
+      {
+        label: 'RequestTx',
+        valueText: history?.requestTx,
+        copyable: true,
+        openUrl: history?.requestTx,
+        handleOpenLink: () => {
+          handleOpenLink(history?.requestTx);
+        }
+      },
+      ..._responseTx,
+      {
+        label: 'Buy',
+        valueText: `${buyAmount} ${history?.buyTokenSymbol}`,
+      },
+      {
+        label: 'Sell',
+        valueText: `${history?.sellAmount} ${history?.sellTokenSymbol}`,
+      },
+      {
+        label: 'Fee',
+        valueText: `${history?.networkFee} ${history?.networkFeeTokenSymbol}`,
+      },
+      {
+        label: 'Time',
+        valueText: history?.createdAt,
+      },
+      {
+        label: 'Status',
+        valueText: history?.status,
+      },
+      {
+        label: 'Account',
+        valueText: history?.account,
+      },
+      {
+        label: 'Trading fee',
+        valueText: history?.tradingFee,
+        disabled: !history?.tradingFee,
+      },
+      {
+        label: 'Exchange',
+        valueText: history?.exchange,
+      },
+      {
+        label: isSuccess ? 'Price' : 'Max price',
+        valueText: maxPrice,
+        disabled: !maxPrice,
+      },
+    ];
+    return factories.map(data => <Hook key={data?.label} {...data} />);
+  };
   return (
     <FlexView>
       <Header title="pDEX" />
@@ -82,9 +117,7 @@ const HistoryDetail = ({ history }) => {
         <Text style={styles.content}>{history?.description}</Text>
       </View>
       <ScrollView paddingBottom>
-        {factories.map(
-          (item) => !item?.disabled && <ExtraInfo key={item?.left} {...item} />,
-        )}
+        {renderContent()}
       </ScrollView>
     </FlexView>
   );

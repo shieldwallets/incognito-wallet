@@ -20,14 +20,15 @@ import { withNavigation } from 'react-navigation';
 import { CONSTANT_COMMONS } from '@src/constants';
 import { getEstimateFeeForPToken } from '@src/services/wallet/RpcClientService';
 import { addTokenInfo } from '@src/services/api/token';
-import Token from '@src/services/wallet/tokenService';
 import formatUtil from '@src/utils/format';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { setWallet } from '@src/redux/actions/wallet';
-import { getInternalTokenList } from '@src/redux/actions/token';
+import { actionAddFollowTokenAfterMint } from '@src/redux/actions/token';
 import { ExHandler } from '@src/services/exception';
 import ROUTES_NAME from '@routers/routeNames';
+import { accountServices } from '@services/wallet';
+import { MAX_FEE_PER_TX } from '@components/EstimateFee/EstimateFee.utils';
 import styleSheet from './style';
 
 const formName = 'addInternalToken';
@@ -43,7 +44,6 @@ const imageValidate = [
   validator.maxFileSize(50),
 ];
 
-const TOKEN_FEE = 100;
 
 class AddInternalToken extends Component {
   constructor(props) {
@@ -115,7 +115,7 @@ class AddInternalToken extends Component {
   };
 
   handleCreateSendToken = async (values) => {
-    const { account, wallet, setWallet, getInternalTokenList } = this.props;
+    const { account, wallet, setWallet, actionAddFollowTokenAfterMint } = this.props;
 
     const {
       name,
@@ -130,37 +130,25 @@ class AddInternalToken extends Component {
     } = values;
     const parseAmount = Number(amount);
 
-    const tokenObject = {
-      Privacy: true,
-      TokenID: '',
-      TokenName: name,
-      TokenSymbol: symbol,
-      TokenTxType: CONSTANT_COMMONS.TOKEN_TX_TYPE.INIT,
-      TokenAmount: parseAmount,
-      TokenReceivers: [
-        {
-          PaymentAddress: account?.PaymentAddress,
-          Amount: parseAmount,
-        },
-      ],
-    };
-
     try {
       this.setState({ isCreatingOrSending: true });
-      const res = await Token.createSendPToken(
-        tokenObject,
-        TOKEN_FEE || 0,
-        account,
+      const res = await accountServices.createSendInitPToken({
         wallet,
-      );
+        account,
+        fee: MAX_FEE_PER_TX,
+        info: description,
+        tokenName: name,
+        tokenSymbol: symbol,
+        tokenAmount: amount
+      });
       if (res.txId) {
-        const { tokenID, tokenName, tokenSymbol } = res;
+        const { tokenID } = res;
         Toast.showSuccess('Create coin successfully');
 
         await this.handleSaveCoinInfo({
           tokenId: tokenID,
-          name: tokenName,
-          symbol: tokenSymbol,
+          name,
+          symbol,
           logoFile: logo,
           ownerAddress: account?.PaymentAddress,
           showOwnerAddress,
@@ -174,14 +162,12 @@ class AddInternalToken extends Component {
           // err is no matter, the user can update their token info later in Coin Detail screen
           // so just let them pass this process
         });
-
-        // refetch internal token list
-        getInternalTokenList().catch(null);
-
         // update new wallet to store
-        setWallet(wallet);
+        // setWallet(wallet);
+        actionAddFollowTokenAfterMint(tokenID);
 
         this.goBack();
+        // refetch internal token list
       } else {
         throw new Error('Something went wrong. Please refresh the screen.');
       }
@@ -227,7 +213,7 @@ class AddInternalToken extends Component {
   render() {
     const { isCreatingOrSending } = this.state;
     const { account } = this.props;
-    const isNotEnoughFee = account?.value < TOKEN_FEE;
+    const isNotEnoughFee = account?.value < MAX_FEE_PER_TX;
     const isCanSubmit = !isNotEnoughFee;
     const disabled = !isCanSubmit;
     return (
@@ -356,7 +342,7 @@ class AddInternalToken extends Component {
                 <Text style={isNotEnoughFee && styleSheet.error}>
                   Issuance fee:{' '}
                   {formatUtil.amountFull(
-                    TOKEN_FEE,
+                    MAX_FEE_PER_TX,
                     CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY,
                   )}{' '}
                   {CONSTANT_COMMONS.CRYPTO_SYMBOL.PRV}
@@ -402,13 +388,13 @@ AddInternalToken.propTypes = {
   name: PropTypes.string,
   symbol: PropTypes.string,
   amount: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  getInternalTokenList: PropTypes.func.isRequired,
+  actionAddFollowTokenAfterMint: PropTypes.func.isRequired,
 };
 
 const mapDispatch = {
   rfChange: change,
   setWallet,
-  getInternalTokenList,
+  actionAddFollowTokenAfterMint
 };
 
 const mapState = (state) => ({

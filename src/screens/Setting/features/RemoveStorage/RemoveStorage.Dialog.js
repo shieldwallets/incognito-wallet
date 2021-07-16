@@ -49,7 +49,14 @@ const CONTENT = {
 };
 
 const RemoveDialog = (props) => {
-  const { visible, onPressCancel, onPressAccept, title, subTitle } = props;
+  const {
+    visible,
+    onPressCancel,
+    onPressAccept,
+    title,
+    subTitle,
+    acceptStr,
+  } = props;
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.modalBackground}>
@@ -66,7 +73,7 @@ const RemoveDialog = (props) => {
             />
             <ButtonBasic
               onPress={onPressAccept}
-              title={CONTENT.accept}
+              title={acceptStr || CONTENT.accept}
               btnStyle={styles.buttonStyle}
             />
           </View>
@@ -82,12 +89,14 @@ RemoveDialog.propTypes = {
   onPressAccept: PropTypes.func.isRequired,
   title: PropTypes.string,
   subTitle: PropTypes.string,
+  acceptStr: PropTypes.string,
 };
 
 RemoveDialog.defaultProps = {
   visible: true,
   title: '',
   subTitle: '',
+  acceptStr: undefined,
 };
 
 export default memo(RemoveDialog);

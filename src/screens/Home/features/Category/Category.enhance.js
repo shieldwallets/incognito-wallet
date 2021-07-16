@@ -11,6 +11,7 @@ import deviceInfo from 'react-native-device-info';
 import { Dimensions, PixelRatio, Platform } from 'react-native';
 import { handleCameraPermission } from '@src/utils/PermissionUtil';
 import {ExHandler} from '@services/exception';
+import routeNames from '@routers/routeNames';
 
 const sendFeedback = async () => {
   const buildVersion = AppUpdater.appVersion;
@@ -75,6 +76,9 @@ const enhance = WrappedComp => props => {
         .catch((error) => {
           new ExHandler(error).showErrorToast();
         });
+      break;
+    case 'convert_coins_ver1':
+      goToScreen(routeNames.ConvertTokenList);
       break;
     default:
       goToScreen(item?.route || '');

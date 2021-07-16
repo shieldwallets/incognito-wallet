@@ -16,14 +16,20 @@ import { actionFetch as actionFetchHomeConfigs } from '@screens/Home/Home.action
 import { useNavigation, useFocusEffect } from 'react-navigation-hooks';
 import { useMigrate } from '@src/components/UseEffect/useMigrate';
 import storageService from '@src/services/storage';
-import { LoadingContainer } from '@src/components/core';
+import { LoadingContainer, Text } from '@src/components/core';
 import { actionFetch as actionFetchProfile } from '@screens/Profile';
 import { KEYS } from '@src/constants/keys';
 import { getFunctionConfigs } from '@services/api/misc';
-import { loadAllMasterKeyAccounts, loadAllMasterKeys } from '@src/redux/actions/masterKey';
+import {
+  loadAllMasterKeyAccounts,
+  loadAllMasterKeys,
+} from '@src/redux/actions/masterKey';
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
 import Welcome from '@screens/GetStarted/Welcome';
 import withPin from '@components/pin.enhance';
+import KeepAwake from 'react-native-keep-awake';
+import { COLORS, FONT } from '@src/styles';
+import { accountServices } from '@src/services/wallet';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -32,6 +38,7 @@ import {
   actionToggleShowWizard,
   actionToggleFollowDefaultPTokens,
 } from './GetStarted.actions';
+import withDetectStatusNetwork from './GetStarted.enhanceNetwork';
 
 const enhance = (WrappedComp) => (props) => {
   const [loadMasterKeys, setLoadMasterKeys] = useState(false);
@@ -100,7 +107,8 @@ const enhance = (WrappedComp) => (props) => {
 
   const getExistedWallet = async () => {
     try {
-      const wallet = await dispatch(reloadWallet());
+      const defaultAccountName = await accountServices.getDefaultAccountName();
+      const wallet = await dispatch(reloadWallet(defaultAccountName));
       if (wallet) {
         return wallet;
       }
@@ -110,6 +118,16 @@ const enhance = (WrappedComp) => (props) => {
         rawError: e,
       });
     }
+  };
+
+  const getErrorMsg = (error) => {
+    const errorMessage = new ExHandler(
+      error,
+      'Something\'s not quite right. Please make sure you\'re connected to the internet.\n' +
+        '\n' +
+        'If your connection is strong but the app still won\'t load, please contact us at go@incognito.org.\n',
+    )?.writeLog()?.message;
+    return errorMessage;
   };
 
   const goHome = async () => {
@@ -131,24 +149,19 @@ const enhance = (WrappedComp) => (props) => {
       await dispatch(loadAllMasterKeyAccounts());
       await setState({ ...initialState, isInitialing: true });
       await login();
-      dispatch(actionFetchHomeConfigs());
-      dispatch(getInternalTokenList());
       const [servers] = await new Promise.all([
         serverService.get(),
         dispatch(actionFetchProfile()),
-        getFunctionConfigs().catch(e => e),
+        getFunctionConfigs().catch((e) => e),
+        dispatch(getInternalTokenList()),
+        dispatch(actionFetchHomeConfigs()),
       ]);
       if (!servers || servers?.length === 0) {
         await serverService.setDefaultList();
       }
       await checkWallet();
     } catch (e) {
-      errorMessage = new ExHandler(
-        e,
-        'Something\'s not quite right. Please make sure you\'re connected to the internet.\n' +
-        '\n' +
-        'If your connection is strong but the app still won\'t load, please contact us at go@incognito.org.\n',
-      )?.writeLog()?.message;
+      errorMessage = getErrorMsg(e);
     } finally {
       await setState({
         ...state,
@@ -159,12 +172,33 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
-  React.useEffect(() => {
-    requestAnimationFrame(async () => {
+  const configsApp = async () => {
+    try {
       await dispatch(loadPin());
       await dispatch(getPTokenList());
       await dispatch(loadAllMasterKeys());
-      setLoadMasterKeys(true);
+    } catch (error) {
+      await setState({
+        ...state,
+        errorMsg: getErrorMsg(error),
+      });
+      throw error;
+    }
+    setLoadMasterKeys(true);
+  };
+
+  const onRetry = async () => {
+    try {
+      await configsApp();
+      await initApp();
+    } catch {
+      //
+    }
+  };
+
+  React.useEffect(() => {
+    requestAnimationFrame(async () => {
+      await configsApp();
     });
   }, []);
 
@@ -172,7 +206,6 @@ const enhance = (WrappedComp) => (props) => {
     if (!masterKeys || !loadMasterKeys || isFetching) {
       return;
     }
-
     if (masterKeys.length) {
       initApp();
     }
@@ -201,28 +234,57 @@ const enhance = (WrappedComp) => (props) => {
     }
   }, [pin]);
 
-  if (isMigrating || !loadMasterKeys) {
-    return <LoadingContainer size="large" />;
-  }
-
-  if (isFetching) {
-    return <Wizard />;
-  }
-
-  if (masterKeys.length === 0) {
-    return <Welcome />;
-  }
+  const renderMain = () => {
+    if (isFetching) {
+      return <Wizard />;
+    }
+    if (!errorMsg) {
+      if (isMigrating || !loadMasterKeys) {
+        return (
+          <LoadingContainer
+            size="large"
+            custom={
+              isFetched && (
+                <Text
+                  style={{
+                    color: COLORS.colorGreyBold,
+                    fontFamily: FONT.NAME.medium,
+                    fontSize: FONT.SIZE.medium,
+                    lineHeight: FONT.SIZE.medium + 5,
+                    textAlign: 'center',
+                    marginTop: 30,
+                  }}
+                >
+                  {
+                    'This may take a couple of minutes.\nPlease do not navigate away from the app.'
+                  }
+                </Text>
+              )
+            }
+          />
+        );
+      }
+      if (masterKeys.length === 0) {
+        return <Welcome />;
+      }
+    }
+    return (
+      <WrappedComp
+        {...{ ...props, errorMsg, isInitialing, isCreating, onRetry }}
+      />
+    );
+  };
 
   return (
     <ErrorBoundary>
-      <WrappedComp
-        {...{ ...props, errorMsg, isInitialing, isCreating, onRetry: initApp }}
-      />
+      {renderMain()}
+      <KeepAwake />
     </ErrorBoundary>
   );
 };
 
 export default compose(
+  withDetectStatusNetwork,
   withPin,
   enhance,
 );

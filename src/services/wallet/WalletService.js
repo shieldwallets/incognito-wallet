@@ -5,15 +5,16 @@ import {
   ConfirmedTx as ConfirmedTxWallet,
   FailedTx as FailedTxWallet,
   genImageFromStr as genImageFromStrWallet,
-  RpcClient,
   SuccessTx as SuccessTxWallet,
   Wallet,
-  setCoinsServicesURL,
+  PrivacyVersion,
+  setShardNumber,
 } from 'incognito-chain-web-js/build/wallet';
 import { randomBytes } from 'react-native-randombytes';
 import { DEX } from '@utils/dex';
 import accountService from '@services/wallet/accountService';
 import { updateWalletAccounts } from '@services/api/masterKey';
+import { getToken } from '@src/services/auth';
 import { getPassphrase } from './passwordService';
 import Server from './Server';
 
@@ -52,48 +53,52 @@ export async function loadListAccountWithBLSPubKey(wallet) {
 }
 
 export async function loadWallet(passphrase, name = 'Wallet') {
-  const server = await Server.getDefault();
-  // console.log('set randombyte done');
-  Wallet.RpcClient = new RpcClient(
-    server.address,
-    server.username,
-    server.password,
-  );
-
-  Wallet.ShardNumber = 8;
-  const wallet = new Wallet();
-  wallet.Name = name;
-  wallet.Storage = storage;
-
-  await wallet.loadWallet(passphrase, name);
-  wallet.Storage = storage;
-
-  const accounts = wallet.MasterAccount.child;
-  for (const account of accounts) {
-    try {
-      await account.loadAccountCached(
-        storage,
-        `${name}-${account.name}-cached`,
-      );
-    } catch (e) {
-      console.debug('LOAD ACCOUNTS CACHE ERROR', e);
-      await account.clearCached(`${name}-${account.name}-cached`);
-      await account.saveAccountCached(
-        storage,
-        `${name}-${account.name}-cached`,
-      );
-    }
+  try {
+    let wallet = new Wallet();
+    wallet.Name = name;
+    // TODO: mockup;
+    const keyMeasureStorage = wallet.getKeyMeasureStorage();
+    await wallet.clearWalletStorage({ key: keyMeasureStorage });
+    await configsWallet(wallet);
+    await wallet.loadWallet(passphrase, name);
+    return wallet?.Name ? wallet : false;
+  } catch (error) {
+    console.log('ERROR WHEN LOAD WALLET', error);
   }
-  return wallet?.Name ? wallet : false;
+}
+
+export async function configsWallet(wallet) {
+  try {
+    if (!wallet) {
+      return;
+    }
+    const server = await Server.getDefault();
+    wallet.RpcClient = server.address;
+    wallet.RpcCoinService = server?.coinServices;
+    wallet.Storage = storage;
+    wallet.PrivacyVersion = PrivacyVersion.ver2;
+    wallet.UseLegacyEncoding = true;
+    wallet.PubsubService = server?.pubsubServices;
+    wallet.RpcRequestService = server?.requestServices;
+    wallet.AuthToken = await getToken();
+    wallet.RpcApiService = server?.apiServices;
+    if (typeof setShardNumber === 'function') {
+      await setShardNumber(server?.shardNumber);
+    }
+  } catch (error) {
+    console.log('CONFIGS_WALLET_ERROR', error);
+    throw error;
+  }
+  return wallet;
 }
 
 export async function initWallet(walletName = 'Wallet') {
   try {
-    const passphrase = await getPassphrase();
-    const wallet = new Wallet();
-    wallet.Storage = storage;
-    await wallet.init(passphrase, storage, walletName, 'Anon');
-    await wallet.save(passphrase);
+    const { aesKey } = await getPassphrase();
+    let wallet = new Wallet();
+    await configsWallet(wallet);
+    await wallet.init(aesKey, storage, walletName, 'Anon');
+    await wallet.save(aesKey);
     return wallet;
   } catch (e) {
     throw e;
@@ -101,8 +106,9 @@ export async function initWallet(walletName = 'Wallet') {
 }
 
 export async function saveWallet(wallet) {
+  const { aesKey } = await getPassphrase();
   wallet.Storage = storage;
-  wallet.save(await getPassphrase());
+  wallet.save(aesKey);
 }
 
 export function deleteWallet(wallet) {
@@ -119,27 +125,21 @@ export async function loadHistoryByAccount(wallet, accountName) {
 }
 
 export async function updateStatusHistory(wallet) {
+  //TODO: remove
   await wallet.updateStatusHistory();
-  await saveWallet(wallet);
-  // wallet.save(await getPassphrase());
-}
-
-export function clearCache(wallet) {
-  wallet.clearCached(storage);
 }
 
 export async function updateHistoryStatus(wallet, txId) {
+  //TODO: remove
   await wallet.updateTxStatus(txId);
-  await saveWallet(wallet);
 }
 
 export async function importWallet(mnemonic, name) {
   try {
-    const passphrase = await getPassphrase();
-    const wallet = new Wallet();
-    wallet.Storage = storage;
-    await wallet.import(mnemonic, passphrase, name, storage);
-    await wallet.save(passphrase);
+    const { aesKey } = await getPassphrase();
+    let wallet = new Wallet();
+    await configsWallet(wallet);
+    await wallet.import(mnemonic, aesKey, name, storage);
     return wallet;
   } catch (e) {
     throw e;
@@ -195,27 +195,12 @@ export async function createDefaultAccounts(wallet) {
   return isCreatedNewAccount;
 }
 
-export async function configRPC() {
-  const server = await Server.getDefault();
-  Wallet.RpcClient = new RpcClient(
-    server.address,
-    server.username,
-    server.password,
-  );
-  setCoinsServicesURL({ url: server?.coinServices });
-}
-
 export async function storeWalletAccountIdsOnAPI(wallet) {
-  const accounts = [];
-
-  for (const account of wallet.MasterAccount.child) {
-    const info = await account.getDeserializeInformation();
-    accounts.push({
-      name: info.AccountName,
-      id: info.ID,
-    });
-  }
-
+  const listAccount = await wallet.listAccount();
+  const accounts = listAccount.map((account) => ({
+    name: account.AccountName,
+    id: account.ID,
+  }));
   const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
   return updateWalletAccounts(masterAccountInfo.PublicKeyCheckEncode, accounts);
 }

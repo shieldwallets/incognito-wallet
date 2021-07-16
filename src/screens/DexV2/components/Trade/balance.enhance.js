@@ -3,6 +3,8 @@ import accountService from '@services/wallet/accountService';
 import { PRV } from '@services/wallet/tokenService';
 import convert from '@utils/convert';
 import formatUtil from '@utils/format';
+import { PrivacyVersion } from 'incognito-chain-web-js/build/wallet';
+import {PRV_ID} from '@screens/Dex/constants';
 
 const withBalanceLoader = WrappedComp => (props) => {
   const [inputBalance, setInputBalance] = React.useState(null);
@@ -24,14 +26,22 @@ const withBalanceLoader = WrappedComp => (props) => {
   const loadBalance = async (tokenChange = false) => {
     try {
       const token = inputToken;
-      const balance = await accountService.getBalance(account, wallet, token.id);
+      const balance = await accountService.getBalance({
+        account,
+        wallet,
+        tokenID: token.id || token.tokenId,
+      });
 
       if (inputToken.id !== token.id) {
         return;
       }
 
       if (token !== PRV) {
-        const prvBalance = await accountService.getBalance(account, wallet);
+        const prvBalance = await accountService.getBalance({
+          account,
+          wallet,
+          tokenID: PRV_ID,
+        });
         setPRVBalance(prvBalance);
       } else {
         setPRVBalance(balance);

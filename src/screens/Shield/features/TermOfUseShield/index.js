@@ -85,7 +85,7 @@ const TermOfUseShield = (props) => {
           onPress={handlePressNext}
         />
         {selectedTerm === (terms.length - 1) && android && (
-          <Text style={styled.warningText}>Make sure {selectedPrivacy?.rootNetworkName} wallet was installed on your device.</Text>
+          <Text style={styled.warningText}>Make sure {selectedPrivacy?.rootNetworkName} wallet was installed on your device and if power saving mode is on please turn it off to avoid bad experience.</Text>
         )}
       </ScrollView>
     </View>

@@ -7,7 +7,9 @@ import { COINS } from '@src/constants';
 import { getTradingFee } from '@screens/DexV2/components/Trade/TradeV2/Trade.utils';
 import { getPrivacyDataByTokenID } from '@src/redux/selectors/selectedPrivacy';
 import BigNumber from 'bignumber.js';
+import { PDexTradeHistoryModel } from '@models/pDefi';
 import { ERC20_CURRENCY_TYPE } from '@screens/DexV2/components/Trade/TradeV2/Trade.appConstant';
+import convert from '@utils/convert';
 
 export const tradeSelector = createSelector(
   (state) => state.trade,
@@ -15,66 +17,68 @@ export const tradeSelector = createSelector(
     return {
       ...trade,
 
-      loadingPair:      trade?.loadingPair,
-      pairs:            trade?.pairs,
-      tokens:           trade?.tokens,
-      pairTokens:       trade?.pairTokens,
-      shares:           trade?.shares,
-      erc20Tokens:      trade?.erc20Tokens,
+      loadingPair: trade?.loadingPair,
+      pairs: trade?.pairs,
+      tokens: trade?.tokens,
+      pairTokens: trade?.pairTokens,
+      shares: trade?.shares,
+      erc20Tokens: trade?.erc20Tokens,
 
-      pair:             trade?.pair,
+      pair: trade?.pair,
 
-      fee:              trade?.fee,
-      feeToken:         trade?.feeToken,
-      originalFee:      trade?.originalFee,
+      fee: trade?.fee,
+      feeToken: trade?.feeToken,
+      originalFee: trade?.originalFee,
       originalFeeToken: trade?.originalFeeToken,
-      canChooseFee:     trade?.canChooseFee,
+      canChooseFee: trade?.canChooseFee,
 
-      inputToken:       trade?.inputToken,
+      inputToken: trade?.inputToken,
 
-      inputText:        trade?.inputText,
-      inputValue:       trade?.inputValue,
+      inputText: trade?.inputText,
+      inputValue: trade?.inputValue,
 
-      outputToken:      trade?.outputToken,
-      outputList:       trade?.outputList,
+      outputToken: trade?.outputToken,
+      outputList: trade?.outputList,
 
-      outputText:       trade?.outputText,
-      minimumAmount:    trade?.minimumAmount,
-      loadingBox:       trade?.loadingBox,
-      quote:            trade?.quote,
-      isErc20:          !!(
+      outputText: trade?.outputText,
+      minimumAmount: trade?.minimumAmount,
+      loadingBox: trade?.loadingBox,
+      quote: trade?.quote,
+      isErc20: !!(
         trade?.inputToken?.address &&
         trade?.outputToken?.address &&
         ERC20_CURRENCY_TYPE.includes(trade?.inputToken?.currencyType) &&
         ERC20_CURRENCY_TYPE.includes(trade?.outputToken?.currencyType)
       ),
-      priority:         trade?.priority,
-      priorityList:     trade?.priorityList,
+      priority: trade?.priority,
+      priorityList: trade?.priorityList,
 
-      inputBalance:     trade?.inputBalance,
+      inputBalance: trade?.inputBalance,
       inputBalanceText: trade?.inputBalanceText,
-      prvBalance:       trade?.prvBalance,
-      lastInputToken:   trade?.lastInputToken,
-      lastAccount:      trade?.lastAccount
+      prvBalance: trade?.prvBalance,
+      lastInputToken: trade?.lastInputToken,
+      lastAccount: trade?.lastAccount,
+      pdexHistories: trade?.pdexHistories,
+      reachedHistories: trade?.reachedHistories,
     };
-  }
+  },
 );
 
 export const tradingFeeSelector = createSelector(
   tradeSelector,
   ({ priority, priorityList }) =>
-    memoize(() =>{
+    memoize(() => {
       if (priority && priorityList) {
         return {
           tradingFee: getTradingFee(priority, priorityList),
-          tradingFeeToken: COINS.PRV
+          tradingFeeToken: COINS.PRV,
         };
       }
       return {
         tradingFee: 0,
-        tradingFeeToken: COINS.PRV
+        tradingFeeToken: COINS.PRV,
       };
-    })
+    }),
 );
 
 export const totalFeeSelector = createSelector(
@@ -86,16 +90,19 @@ export const totalFeeSelector = createSelector(
         pDexFee += getTradingFee(priority, priorityList);
       }
       return format.amount(pDexFee, feeToken.pDecimals);
-    })
+    }),
 );
 
 export const maxPriceSelector = createSelector(
   getPrivacyDataByTokenID,
   (getFn) =>
     memoize((inputId, outputId, inputValue, outputValue) => {
-      const inputToken  = getFn(inputId);
+      if (!inputValue || !outputValue) return null;
+      const inputToken = getFn(inputId);
       const outputToken = getFn(outputId);
 
+      inputValue = convert.toNumber(inputValue, true);
+      outputValue = convert.toNumber(outputValue, true);
       const minRate = new BigNumber(inputValue)
         .dividedBy(new BigNumber(outputValue))
         .toNumber();
@@ -114,5 +121,25 @@ export const maxPriceSelector = createSelector(
         maxPrice = `${format.toFixed(minRate, 9)} ${suffix}`;
       }
       return maxPrice;
-    })
+    }),
+);
+
+export const pdexHistoriesSelector = createSelector(
+  tradeSelector,
+  getPrivacyDataByTokenID,
+  ({ pdexHistories }, getFn) =>
+    memoize(() =>
+      pdexHistories.map((history) => {
+        const { buyTokenId, sellTokenId } = history;
+        const sellToken = getFn(sellTokenId);
+        const buyToken = getFn(buyTokenId);
+        return new PDexTradeHistoryModel({
+          history: {
+            ...history,
+            sellToken,
+            buyToken,
+          },
+        });
+      }),
+    ),
 );

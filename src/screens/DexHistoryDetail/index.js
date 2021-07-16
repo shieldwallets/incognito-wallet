@@ -5,9 +5,9 @@ import {Overlay} from 'react-native-elements';
 import {Button, ScrollView, View} from '@components/core';
 import FullScreenLoading from '@components/FullScreenLoading/index';
 import HeaderBar from '@components/HeaderBar/HeaderBar';
-import {COLORS} from '@src/styles';
-import {MAX_WAITING_TIME, MESSAGES, MIN_CANCEL_VALUE, SHORT_WAIT_TIME} from '@screens/Dex/constants';
-import {CONSTANT_COMMONS} from '@src/constants';
+import { COLORS } from '@src/styles';
+import { MAX_WAITING_TIME, MESSAGES, MIN_CANCEL_VALUE, PRV_ID, SHORT_WAIT_TIME } from '@screens/Dex/constants';
+import { CONSTANT_COMMONS } from '@src/constants';
 import tokenService, {PRV} from '@services/wallet/tokenService';
 import accountService from '@services/wallet/accountService';
 import Toast from '@components/core/Toast/Toast';
@@ -87,7 +87,11 @@ const waitUntil = (func, ms) => {
 const checkCorrectBalance = (wallet, account, token, value) => {
   let tried = 0;
   return async (resolve, reject) => {
-    const balance = await accountService.getBalance(account, wallet, token.id);
+    const balance = await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: token.id
+    });
     if (balance >= value) {
       clearInterval(currentInterval);
       return resolve(balance);
@@ -170,8 +174,16 @@ const DexHistoryDetail = ({
       throw new Error(MESSAGES.ACCOUNT_NOT_FOUND);
     }
 
-    const prvBalance = await accountService.getBalance(account, wallet);
-    const tokenBalance = await accountService.getBalance(account, wallet, token.TokenID);
+    const prvBalance = await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: PRV_ID,
+    });
+    const tokenBalance = await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: token.TokenID
+    });
     const tokenFee = token.TokenID === PRV.id ? fee : 0;
 
     if (tokenBalance < tokenFee + token.TokenAmount) {

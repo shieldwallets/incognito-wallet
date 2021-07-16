@@ -1,12 +1,16 @@
 import { CONSTANT_COMMONS, CONSTANT_CONFIGS } from '@src/constants';
 import { BIG_COINS } from '@src/screens/DexV2/constants';
+import { PRV_ID } from '@screens/Dex/constants';
 import PToken from './pToken';
 
 function getNetworkName() {
   let name = 'Unknown';
-  const isETH = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH;
-  const isBSC = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
-  const isBNB = this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB;
+  const isETH =
+    this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH;
+  const isBSC =
+    this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+  const isBNB =
+    this?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB;
   if (this.isPrivateCoin) {
     name = `${this.name}`;
   } else if (this.isErc20Token) {
@@ -23,7 +27,7 @@ function getNetworkName() {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.ETHEREUM;
   } else if (isBSC || this?.isBep20Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BSC;
-  } else if (isBNB ||this?.isBep2Token ) {
+  } else if (isBNB || this?.isBep2Token) {
     rootNetworkName = CONSTANT_COMMONS.NETWORK_NAME.BINANCE;
   }
   return {
@@ -60,12 +64,15 @@ function getIconUrl(chainTokenImageUri) {
 }
 
 class SelectedPrivacy {
-  constructor(account = {}, token = {}, pTokenData: PToken = {}) {
+  constructor(account = {}, token = {}, pTokenData: PToken = {}, _tokenID) {
     const tokenId = pTokenData?.tokenId || token?.id;
+
+    const isUnknown = (_tokenID !== PRV_ID) && !tokenId;
+    const unknownText = 'Unknown';
     this.currencyType = pTokenData.currencyType;
     this.isToken = tokenId !== CONSTANT_COMMONS.PRV_TOKEN_ID && !!tokenId; // all kind of tokens (private tokens, incognito tokens)
     this.isMainCrypto =
-      tokenId === CONSTANT_COMMONS.PRV_TOKEN_ID || !this.isToken; // PRV
+      tokenId === PRV_ID || !this.isToken; // PRV
     this.isPrivateToken =
       pTokenData?.type === CONSTANT_COMMONS.PRIVATE_TOKEN_TYPE.TOKEN; // ERC20 tokens, BEP2 tokens
     this.isPrivateCoin =
@@ -81,7 +88,8 @@ class SelectedPrivacy {
         CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB_BEP2;
     this.isBep20Token =
       this.isPrivateToken &&
-      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20;
+      this.currencyType ===
+        CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20;
     this.symbol = combineData.call(
       this,
       pTokenData?.pSymbol,
@@ -92,13 +100,13 @@ class SelectedPrivacy {
       this,
       pTokenData?.name,
       token?.name,
-      'Privacy',
+      isUnknown ? unknownText : 'Privacy',
     );
     this.displayName = combineData.call(
       this,
       `Privacy ${pTokenData?.symbol}`,
       token?.name,
-      'Privacy',
+      isUnknown ? unknownText : 'Privacy',
     );
     this.amount = (this.isToken ? token.amount : account.value) || 0;
     this.tokenId = this.isMainCrypto ? CONSTANT_COMMONS.PRV_TOKEN_ID : tokenId;
@@ -115,9 +123,13 @@ class SelectedPrivacy {
     this.isDeposable = this.isPToken;
     this.isDecentralized =
       (this.isToken &&
-        this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH) ||
-      this.isErc20Token || this.isBep20Token || (this.isToken &&
-      this.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
+        this.currencyType ===
+          CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH) ||
+      this.isErc20Token ||
+      this.isBep20Token ||
+      (this.isToken &&
+        this.currencyType ===
+          CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
     this.isCentralized = this.isToken && !this.isDecentralized;
     this.incognitoTotalSupply =
       (this.isIncognitoToken && Number(token?.totalSupply)) || 0;
@@ -125,7 +137,7 @@ class SelectedPrivacy {
       this,
       pTokenData?.verified,
       token?.verified,
-      true,
+      !isUnknown,
     ); // PRV always is verified
     this.iconUrl = getIconUrl.call(this, token?.image);
     this.priceUsd = pTokenData?.priceUsd || 0;
@@ -137,6 +149,7 @@ class SelectedPrivacy {
     this.rootNetworkName = rootNetworkName;
     this.isUSDT = this.tokenId === BIG_COINS.USDT;
     this.isPRV = this.tokenId === BIG_COINS.PRV;
+    this.symbol = isUnknown ? unknownText : this.externalSymbol || this.symbol;
   }
 }
 

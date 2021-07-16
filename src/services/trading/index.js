@@ -16,34 +16,35 @@ const { PROTOCOLS, setDAppAddresses, setFees } = TRADING;
  * @returns {Promise<Array<TradingToken>>}
  */
 export async function getAllTradingTokens() {
-  const allArrays = await Promise.all([
-    getKyberTokens(),
-  ]);
-
-  let tokens = _.flatten(allArrays);
-
-  tokens = _(tokens)
-    .map(item => _.mergeWith(
-      item,
-      tokens.find(anotherToken => anotherToken !== item && anotherToken.id === item.id)
-    ), item => item.protocol)
-    .uniqBy(item => item.id)
-    .map(item => ({
-      ...item,
-      protocol: _.castArray(item.protocol),
-    }))
-    .orderBy(item => _.toLower(item.symbol))
-    .value();
-
-  return [{
-    id: CONSTANT_CONFIGS.ETH_TOKEN_ID,
-    address: '0x0000000000000000000000000000000000000000',
-    name: 'Ethereum',
-    symbol: 'ETH',
-    decimals: 18,
-    pDecimals: 9,
-    protocol: [TRADING.PROTOCOLS.OX, TRADING.PROTOCOLS.KYBER],
-  }].concat(tokens);
+  return []; // remove trade uniswap
+  // const allArrays = await Promise.all([
+  //   getKyberTokens(),
+  // ]);
+  //
+  // let tokens = _.flatten(allArrays);
+  //
+  // tokens = _(tokens)
+  //   .map(item => _.mergeWith(
+  //     item,
+  //     tokens.find(anotherToken => anotherToken !== item && anotherToken.id === item.id)
+  //   ), item => item.protocol)
+  //   .uniqBy(item => item.id)
+  //   .map(item => ({
+  //     ...item,
+  //     protocol: _.castArray(item.protocol),
+  //   }))
+  //   .orderBy(item => _.toLower(item.symbol))
+  //   .value();
+  //
+  // return [{
+  //   id: CONSTANT_CONFIGS.ETH_TOKEN_ID,
+  //   address: '0x0000000000000000000000000000000000000000',
+  //   name: 'Ethereum',
+  //   symbol: 'ETH',
+  //   decimals: 18,
+  //   pDecimals: 9,
+  //   protocol: [TRADING.PROTOCOLS.OX, TRADING.PROTOCOLS.KYBER],
+  // }].concat(tokens);
 }
 
 /**

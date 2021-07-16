@@ -6,7 +6,8 @@ import { compose } from 'recompose';
 import BackButton from '@components/BackButtonV2';
 import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import { withLayout_2 } from '@components/Layout/index';
-import { VirtualizedList } from 'react-native';
+import {Text, VirtualizedList} from 'react-native';
+import formatUtil from '@utils/format';
 import TokenItem from './TokenItem';
 import styles from './style';
 import withTokenSelect from './enhance';
@@ -17,6 +18,8 @@ const TokenSelect = ({
 }) => {
   const placeholder = useNavigationParam('placeholder') || 'Placeholder';
   const onSelectToken = useNavigationParam('onSelectToken') || _.noop();
+  const rightField = useNavigationParam('rightField');
+
   const navigation = useNavigation();
   const selectToken = (token) => {
     onSelectToken(token);
@@ -25,14 +28,23 @@ const TokenSelect = ({
 
   const renderTokenItem = (data) => {
     const token = data.item;
+    let rightValue = '';
+    if (rightField) {
+      rightValue = token[rightField];
+    }
     return (
-      <TouchableOpacity key={token.id} onPress={() => selectToken(token)}>
+      <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} key={token.id} onPress={() => selectToken(token)}>
         <TokenItem
           symbol={token.symbol || token.displaySymbol}
           id={token.id}
           verified={token.verified || token.isVerified}
           name={token.name}
         />
+        {rightField !== '' && (
+          <View style={{ marginLeft: 10 }}>
+            <Text style={styles.tokenName} numberOfLines={2}>{rightValue}</Text>
+          </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -72,4 +84,4 @@ TokenSelect.defaultProps = {
 export default compose(
   withTokenSelect,
   withLayout_2,
-)(TokenSelect);
+)(React.memo(TokenSelect));

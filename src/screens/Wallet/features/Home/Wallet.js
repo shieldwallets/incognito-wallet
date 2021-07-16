@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, RefreshControl } from 'react-native';
 import Header from '@src/components/Header';
 import { ButtonBasic, BtnQRCode, BtnClose } from '@src/components/Button';
-import { tokenSeleclor } from '@src/redux/selectors';
+import { tokenSelector } from '@src/redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import Token from '@src/components/Token';
-import { useNavigation } from 'react-navigation-hooks';
+import { useFocusEffect, useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { CONSTANT_COMMONS } from '@src/constants';
 import {
@@ -19,13 +19,11 @@ import Tooltip from '@src/components/Tooltip/Tooltip';
 import { COLORS } from '@src/styles';
 import isNaN from 'lodash/isNaN';
 import {
-  BottomBar,
   ScrollView,
   TouchableOpacity,
   Image,
 } from '@src/components/core';
 import useFeatureConfig from '@src/shared/hooks/featureConfig';
-import { useStreamLine } from '@src/screens/Streamline';
 import { PRV } from '@services/wallet/tokenService';
 import SelectAccountButton from '@components/SelectAccountButton';
 import PropTypes from 'prop-types';
@@ -34,6 +32,10 @@ import { actionUpdateShowWalletBlance } from '@src/screens/Setting/Setting.actio
 import srcHideBlanceIcon from '@src/assets/images/icons/ic_hide_blance.png';
 import srcShowBlanceIcon from '@src/assets/images/icons/ic_show_blance.png';
 import appConstant from '@src/constants/app';
+import { actionFree as actionFreeHistory } from '@src/redux/actions/history';
+import withDetectConvert from '@screens/Home/features/Convert/Convert.enhanceDetect';
+import { compose } from 'recompose';
+import StreamLineBottomBar from '@screens/Streamline/features/StreamLineBottomBar';
 import {
   styled,
   styledHook,
@@ -56,9 +58,10 @@ const GroupButton = React.memo(() => {
       await dispatch(actionToggleGuide());
     }
   };
-
-  const [onFeaturePress, isDisabled] = useFeatureConfig(appConstant.DISABLED.SHIELD, handleShield);
-
+  const [onFeaturePress, isDisabled] = useFeatureConfig(
+    appConstant.DISABLED.SHIELD,
+    handleShield,
+  );
   return (
     <View
       style={[
@@ -123,7 +126,6 @@ const Balance = React.memo((props) => {
   let totalShielded = useSelector(totalShieldedTokensSelector);
   const isGettingTotalBalance =
     useSelector(isGettingTotalBalanceSelector).length > 0;
-
   if (isNaN(totalShielded)) {
     totalShielded = 0;
   }
@@ -144,7 +146,10 @@ const Balance = React.memo((props) => {
       />
       <View style={styled.contentShieldBlance}>
         <Text style={styledBalance.title}>Shielded Balance</Text>
-        <Image source={hideBlance ? srcHideBlanceIcon : srcShowBlanceIcon} style={styled.iconHide} />
+        <Image
+          source={hideBlance ? srcHideBlanceIcon : srcShowBlanceIcon}
+          style={styled.iconHide}
+        />
         <TouchableOpacity
           style={styled.btnHideBlance}
           onPress={onPressHideBlance}
@@ -166,7 +171,7 @@ Balance.propTypes = {
 
 const FollowToken = React.memo((props) => {
   const { hideBlance } = props;
-  const followed = useSelector(tokenSeleclor.tokensFollowedSelector);
+  const followed = useSelector(tokenSelector.tokensFollowedSelector);
   const { walletProps } = React.useContext(WalletContext);
   const {
     handleSelectToken,
@@ -174,7 +179,6 @@ const FollowToken = React.memo((props) => {
     isReloading,
     fetchData,
   } = walletProps;
-
   return (
     <View style={styledFollow.container}>
       <ScrollView
@@ -238,19 +242,6 @@ const AddToken = React.memo(() => {
   );
 });
 
-const StreamLine = React.memo(() => {
-  const { hasExceededMaxInputPRV, onNavigateStreamLine } = useStreamLine();
-  if (!hasExceededMaxInputPRV) {
-    return null;
-  }
-  return (
-    <BottomBar
-      onPress={onNavigateStreamLine}
-      text="Streamline this keychain now for efficient transactions"
-    />
-  );
-});
-
 const Extra = React.memo(() => {
   const dispatch = useDispatch();
   const showWalletBlance = useSelector(showWalletBlanceSelector);
@@ -260,10 +251,12 @@ const Extra = React.memo(() => {
 
   return (
     <View style={extraStyled.container}>
-      <Balance hideBlance={showWalletBlance} onPressHideBlance={updateShowWalletBlance} />
+      <Balance
+        hideBlance={showWalletBlance}
+        onPressHideBlance={updateShowWalletBlance}
+      />
       <GroupButton />
       <FollowToken hideBlance={showWalletBlance} />
-      <StreamLine />
     </View>
   );
 });
@@ -282,9 +275,15 @@ const RightHeader = React.memo(() => {
   );
 });
 
-const Wallet = () => {
+const Wallet = React.memo(() => {
   const navigation = useNavigation();
   const onGoBack = () => navigation.navigate(routeNames.Home);
+  const dispatch = useDispatch();
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(actionFreeHistory());
+    }, []),
+  );
   return (
     <View style={[styled.container]}>
       <Header
@@ -294,10 +293,14 @@ const Wallet = () => {
         onGoBack={onGoBack}
       />
       <Extra />
+      <StreamLineBottomBar />
     </View>
   );
-};
+});
 
 Wallet.propTypes = {};
 
-export default withWallet(Wallet);
+export default compose(
+  withDetectConvert,
+  withWallet,
+)(Wallet);

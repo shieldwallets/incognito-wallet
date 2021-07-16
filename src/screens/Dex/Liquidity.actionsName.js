@@ -1,0 +1,10 @@
+export const ACTION_NAMES = {
+  CHANGE_TAB: '[liquidity] CHANGE_TAB',
+  CHANGE_LOADING: '[liquidity] CHANGE_LOADING',
+  UPDATE_PDE_STATE: '[liquidity] UPDATE_PDE_STATE',
+  UPDATE_OUTPUT: '[liquidity] UPDATE_OUTPUT',
+  UPDATE_INPUT_FIELD: '[liquidity] UPDATE_INPUT_FIELD',
+  CHANGE_FILTERING: '[liquidity] CHANGE_FILTERING',
+  CHANGE_HISTORY_TAB: '[liquidity] CHANGE_HISTORY_TAB',
+  CLEAR_HISTORY: '[liquidity] CLEAR_HISTORY hahahah',
+};

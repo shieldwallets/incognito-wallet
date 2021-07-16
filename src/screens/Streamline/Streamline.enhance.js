@@ -2,83 +2,15 @@ import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
-import { loadAccountHistory, normalizeData } from '@src/redux/utils/token';
-import { useDispatch, useSelector } from 'react-redux';
-import { CONSTANT_COMMONS } from '@src/constants';
-import { ExHandler } from '@src/services/exception';
-import { useFocusEffect } from 'react-navigation-hooks';
-import { accountSeleclor } from '@src/redux/selectors';
-import { getStatusData } from '@src/components/HistoryList/HistoryList.utils';
-import { clearCache } from '@src/services/cache';
-import { getBalance as getAccountBalance } from '@src/redux/actions/account';
-import { walletSelector } from '@src/redux/selectors/wallet';
-import {
-  actionInitProccess,
-  actionTogglePending,
-  actionRemoveLocalUTXOs,
-} from './Streamline.actions';
-import { useStreamLine } from './Streamline.useStreamline';
+import { useDispatch } from 'react-redux';
+import { useNavigationParam } from 'react-navigation-hooks';
+import { actionClearStreamLine, actionTogglePending } from './Streamline.actions';
 
 const enhance = (WrappedComp) => (props) => {
-  const account = useSelector(accountSeleclor.defaultAccountSelector);
-  const wallet = useSelector(walletSelector);
   const dispatch = useDispatch();
-  const [state, setState] = React.useState({
-    refresh: false,
-    loading: undefined,
-  });
-  const { refresh, loading } = state;
-  const { data, times } = useStreamLine();
-  const handleFetchData = async () => {
-    const utxos = data[(account?.paymentAddress)] || [];
-    if (refresh) {
-      return;
-    }
-    let _isPending = false;
-    try {
-      await setState({
-        ...state,
-        refresh: true,
-        loading: typeof loading === 'undefined',
-      });
-      const accountHistory = await dispatch(loadAccountHistory());
-      const historiesMainCrypto = normalizeData(
-        accountHistory,
-        CONSTANT_COMMONS.PRV.pDecimals,
-        CONSTANT_COMMONS.PRV.pDecimals,
-      );
-      const histories = historiesMainCrypto
-        ?.filter((history) =>
-          utxos.find((txId) => txId === history?.incognitoTxID),
-        )
-        .map((history) => ({ ...history, ...getStatusData(history) }))
-        .filter(history => history);
-      _isPending = histories.some(
-        (history) =>
-          history.statusMessage === 'Pending' &&
-          history.time - new Date().getTime() < 5 * 60 * 1000 // Tx should complete in 5 minutes
-      );
-      if (!_isPending && utxos.length > 0) {
-        const payload = { address: account?.paymentAddress };
-        await dispatch(actionRemoveLocalUTXOs(payload));
-        const key = `balance-${wallet.Name}-${account?.accountName}-${CONSTANT_COMMONS.PRV.id}`;
-        clearCache(key);
-        await dispatch(getAccountBalance(account));
-      }
-    } catch (error) {
-      new ExHandler(error).showErrorToast();
-    } finally {
-      dispatch(actionTogglePending(_isPending));
-      setState({ ...state, refresh: false, loading: false });
-    }
-  };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(actionInitProccess({ times }));
-      handleFetchData();
-    }, [account?.accountName]),
-  );
+  const handleFetchData = useNavigationParam('handleFetchData');
+  const onClearData = () => dispatch(actionClearStreamLine());
 
   React.useEffect(() => {
     return () => {
@@ -91,9 +23,8 @@ const enhance = (WrappedComp) => (props) => {
       <WrappedComp
         {...{
           ...props,
-          handleFetchData,
-          refresh,
-          loading,
+          onClearData,
+          handleFetchData
         }}
       />
     </ErrorBoundary>

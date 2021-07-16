@@ -1,9 +1,23 @@
 import formatUtil, { LONG_DATE_TIME_FORMAT } from '@utils/format';
-import moment from 'moment';
-import BigNumber from 'bignumber.js';
 import { HISTORY_STATUS } from '@src/constants/trading';
+import { isEmpty } from 'lodash';
+import { PRV } from '@src/constants/common';
+import moment from 'moment';
 
-const TYPES = ['Incognito', 'Incognito', 'Kyber', '0x', 'Uniswap'];
+// const TYPES = ['Incognito', 'Incognito', 'Kyber', '0x', 'Uniswap'];
+
+const TRANSFER_STATUS = {
+  PROCESSING: 'processing',
+  PENDING: 'pending',
+  SUCCESSFUL: 'successful',
+  UNSUCCESSFUL: 'unsuccessful',
+  INTERRUPTED: 'tap to try again',
+  FAILED: 'failed',
+  REFUNDED: 'refunded',
+  PART_REFUNFED: 'part-refunded',
+  REJECTED: 'unsuccessful',
+  CANCELED: 'canceled',
+};
 
 export class RewardModel {
   constructor(data = {}) {
@@ -29,85 +43,62 @@ export class DepositResponse {
 }
 
 export class PDexTradeHistoryModel {
-  constructor(json, allTokens, accounts) {
-    if (!json) {
-      return;
-    }
-    this.id = json.DepositID;
-    this.sellTokenId = json.TokenID;
-    this.sellAmount = json.Amount;
-    this.buyTokenId = json.BuyTokenID;
-    this.buyAmount = BigNumber(json.MinimumAmount);
-    this.amountReceive = BigNumber(json?.AmountReceive);
-    this.tradingFee = json.TradingFee;
-    this.networkFee = json.NetworkFee;
-    this.networkFeeTokenId = json.NetworkFeeTokenID;
-    this.account = accounts.find(
-      (item) => item.PaymentAddress === json.ReceiverAddress,
-    )?.accountName;
-    this.createdAt = moment(json.CreatedAt).format(LONG_DATE_TIME_FORMAT);
-    this.createdAt1 = json.CreatedAt;
-    this.type = 'Trade';
-    this.status = [HISTORY_STATUS.PENDING, HISTORY_STATUS.UNSUCCESSFUL, HISTORY_STATUS.SUCCESSFUL, HISTORY_STATUS.DEPOSIT_FAILD][json.Status];
-    this.exchange = TYPES[json.Type] || 'Incognito';
-    let buyToken = allTokens.find(
-      (token) =>
-        token.id === this.buyTokenId ||
-        (token.address && token.address === this.buyTokenId),
-    );
-    const sellToken = allTokens.find(
-      (token) =>
-        token.id === this.sellTokenId ||
-        (token.address && token.address === this.sellTokenId),
-    );
-    const networkFeeToken = allTokens.find(
-      (token) => token.id === this.networkFeeTokenId,
-    );
-    this.buyTokenSymbol = buyToken?.symbol || '';
-    if (
-      this.exchange !== 'Incognito' &&
-      buyToken?.address === json.BuyTokenID
-    ) {
-      this.networkFee = this.networkFee - this.tradingFee;
-    }
-    if (buyToken && !this.buyAmount?.isNaN()) {
+  constructor({
+    history,
+  }) {
+    if (!history) return;
+
+    this.id = history.requestTx;
+    this.requestTx = history.requestTx;
+    this.responseTx = history.responseTx;
+
+    this.buyTokenId = history.buyTokenId;
+    this.buyToken = history.buyToken;
+    this.buyAmount = history.buyAmount;
+    if (this.buyToken) {
+      this.buyTokenSymbol = this.buyToken?.symbol || '';
       this.buyAmount = formatUtil.amountFull(
         this.buyAmount,
-        buyToken.pDecimals,
+        this.buyToken.pDecimals,
       );
-    } else {
-      this.buyAmount = '';
     }
-    if (buyToken && !this.amountReceive?.isNaN()) {
-      this.amountReceive = formatUtil.amountFull(
-        this.amountReceive,
-        buyToken.pDecimals,
-      );
-    } else {
-      this.amountReceive = '';
-    }
-    if (sellToken) {
-      this.sellTokenSymbol = sellToken.symbol;
+
+    this.sellTokenId = history.sellTokenId;
+    this.sellToken = history.sellToken;
+    this.sellAmount = history.sellAmount;
+    if (this.sellToken) {
+      this.sellTokenSymbol = this.sellToken?.symbol || '';
       this.sellAmount = formatUtil.amountFull(
         this.sellAmount,
-        sellToken.pDecimals,
+        this.sellToken.pDecimals,
       );
     }
-    if (networkFeeToken) {
-      this.networkFeeTokenSymbol = networkFeeToken.symbol;
-      this.networkFee = Math.round((this.networkFee / 3) * 4);
+
+    // fee
+    this.networkFee = history.networkFee;
+    if (this.networkFee) {
       this.networkFee = formatUtil.amountFull(
         this.networkFee,
-        networkFeeToken.pDecimals,
-      );
-      this.tradingFee = formatUtil.amountFull(
-        this.tradingFee,
-        networkFeeToken.pDecimals,
+        PRV.pDecimals,
       );
     }
-    const amountBuy = this.status === HISTORY_STATUS.SUCCESSFUL && this.amountReceive
-      ? this.amountReceive
-      : this.buyAmount;
-    this.description = `${this.sellAmount} ${this.sellTokenSymbol} to ${amountBuy} ${this.buyTokenSymbol}`;
+    this.networkFeeTokenSymbol = PRV.symbol;
+
+    this.account = history.accountName;
+    this.type = 'Trade';
+    this.exchange = 'Incognito';
+    // this.exchange = TYPES[history.Type] || 'Incognito';
+    this.description = `${this.sellAmount} ${this.sellTokenSymbol} to ${this.buyAmount} ${this.buyTokenSymbol}`;
+    this.createdAt = formatUtil.formatUnixDateTime(history?.requestTime, LONG_DATE_TIME_FORMAT);
+
+    // status
+    const status = history.status;
+    if (HISTORY_STATUS.REFUND.includes(status) || HISTORY_STATUS.REJECTED.includes(status) || HISTORY_STATUS.FAIL.includes(status)) {
+      this.status = TRANSFER_STATUS.FAILED;
+    } else if (HISTORY_STATUS.ACCEPTED.includes(status)) {
+      this.status = TRANSFER_STATUS.SUCCESSFUL;
+    } else {
+      this.status = TRANSFER_STATUS.PENDING;
+    }
   }
 }

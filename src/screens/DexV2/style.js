@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@src/styles';
 
 export default StyleSheet.create({
   wrapper: {
@@ -10,5 +11,8 @@ export default StyleSheet.create({
   wrapperContainer: {
     flex: 1,
     marginHorizontal: 25
+  },
+  buttonBlack: {
+    backgroundColor: COLORS.black
   }
 });

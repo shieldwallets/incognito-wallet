@@ -1,6 +1,6 @@
 import { DEVICES } from '@src/constants/miner';
 import accountService from '@src/services/wallet/accountService';
-import _, { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { COLORS } from '@src/styles';
 import { PRV_ID } from '@screens/Dex/constants';
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
@@ -266,11 +266,11 @@ export default class Device {
   }
 
   get APIUrl(){
-    if (!_.isEmpty(this.Host) && _.isEmpty(this.Port)) {
+    if (!isEmpty(this.Host) && isEmpty(this.Port)) {
       return this.Host;
     }
 
-    return !_.isEmpty(this.Host) && !_.isEmpty(this.Port) ? `${this.Host}:${this.Port}` : '';
+    return !isEmpty(this.Host) && !isEmpty(this.Port) ? `${this.Host}:${this.Port}` : '';
   }
 
   set Status(status) {
@@ -302,7 +302,11 @@ export default class Device {
   }
 
   balance = async(account,wallet)=>{
-    return (!_.isEmpty(account) && !_.isEmpty(wallet) && await accountService.getBalance(account, wallet)) || 0;
+    return (!isEmpty(account) && !isEmpty(wallet) && await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: PRV_ID
+    })) || 0;
   };
 
   // Not arbitrary use this function

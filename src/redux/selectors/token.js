@@ -10,12 +10,14 @@ export const tokensFollowedSelector = createSelector(
 );
 export const pTokensSelector = createSelector(
   (state) => state?.token?.pTokens,
-  (pTokens) => pTokens || [],
+  (pTokens) =>
+    pTokens.map((token) => ({ ...token, tokenID: token?.tokenId })) || [],
 );
 
 export const internalTokensSelector = createSelector(
   (state) => state?.token?.internalTokens,
-  (internalTokens) => internalTokens || [],
+  (internalTokens) =>
+    internalTokens.map((token) => ({ ...token, tokenID: token?.id })) || [],
 );
 
 export const historyTokenSelector = createSelector(
@@ -77,6 +79,12 @@ export const receiveHistorySelector = createSelector(
   },
 );
 
+export const defaultPTokensIDsSelector = createSelector(
+  pTokensSelector,
+  (pTokens) =>
+    pTokens.filter((token) => token.default).map((token) => token?.tokenId),
+);
+
 export default {
   followed,
   isGettingBalance,
@@ -89,4 +97,5 @@ export default {
   isTokenFollowedSelector,
   toggleUnVerifiedTokensSelector,
   receiveHistorySelector,
+  defaultPTokensIDsSelector,
 };

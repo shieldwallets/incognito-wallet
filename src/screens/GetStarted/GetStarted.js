@@ -36,17 +36,19 @@ class GetStarted extends Component {
     const { isInitialing, errorMsg, isCreating, onRetry } = this.props;
     return (
       <View style={style.container}>
-        {isInitialing && (
+        {isInitialing && !errorMsg && (
           <View style={style.loadingContainer}>
             <ActivityIndicator size="large" color="#828282" />
           </View>
         )}
         <View style={style.getStartedBlock}>
-          <Text style={[style.title, style.centerText]}>
-            {isCreating
-              ? 'Generating your keychain...\nGive it a few seconds.'
-              : 'Entering incognito mode\nfor your crypto...'}
-          </Text>
+          {!errorMsg && (
+            <Text style={[style.title, style.centerText]}>
+              {isCreating
+                ? 'Generating your keychain...\nGive it a few seconds.'
+                : 'Entering incognito mode\nfor your crypto...'}
+            </Text>
+          )}
           {errorMsg && (
             <Text style={[style.errorMsg, style.centerText]}>{errorMsg}</Text>
           )}

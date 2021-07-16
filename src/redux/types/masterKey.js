@@ -12,6 +12,7 @@ const TYPES = {
   IMPORT: n('IMPORT'),
   INIT: n('INIT'),
   LOAD_ALL_ACCOUNTS: n('LOAD_ALL_ACCOUNTS'),
+  SWITCHING: n('SWITCHING'),
 };
 
 export default TYPES;

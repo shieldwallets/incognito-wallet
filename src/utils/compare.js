@@ -1,5 +1,5 @@
-import _ from 'lodash';
+import toLower from 'lodash/toLower';
 
 export const compareTextLowerCase = (text1, text2) => {
-  return _.toLower(text1) === _.toLower(text2);
+  return toLower(text1) === toLower(text2);
 };

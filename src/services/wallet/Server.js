@@ -4,7 +4,9 @@ import _ from 'lodash';
 export const MAINNET_FULLNODE = 'https://lb-fullnode.incognito.org/fullnode';
 export const MAINNET_1_FULLNODE = 'http://51.83.237.20:9338';
 export const TESTNET_FULLNODE = 'https://testnet.incognito.org/fullnode';
-export const TESTNET1_FULLNODE = 'http://51.83.36.184:20002/fullnode';
+export const TESTNET1_FULLNODE = 'https://testnet1.incognito.org/fullnode';
+export const DEV_TEST_FULLNODE = 'http://139.162.55.124:8334';
+export const DEFAULT_SHARD_NUMBER = 8;
 
 let cachedList = null;
 
@@ -24,6 +26,12 @@ const MAIN_NET_SERVER = {
   password: '',
   name: 'Mainnet',
   coinServices: 'https://api-coinservice.incognito.org',
+  pubsubServices: 'http://51.161.119.66:8001',
+  requestServices: 'http://51.161.119.66:5000',
+  apiServices: '',
+  shardNumber: DEFAULT_SHARD_NUMBER,
+  IncContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
+  IncBSCContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629'
 };
 const TEST_NET_SERVER = {
   id: 'testnet',
@@ -33,6 +41,12 @@ const TEST_NET_SERVER = {
   password: '',
   name: 'Testnet',
   coinServices: 'https://api-coinservice-staging.incognito.org',
+  pubsubServices: 'https://api-coinservice-staging.incognito.org/txservice',
+  requestServices: 'http://51.161.119.66:4000',
+  apiServices: 'https://staging-api-service.incognito.org',
+  shardNumber: DEFAULT_SHARD_NUMBER,
+  IncContractAddress: '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
+  IncBSCContractAddress: '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7'
 };
 const LOCAL_SERVER = {
   id: 'local',
@@ -49,6 +63,28 @@ const TEST_NET_1_SERVER = {
   username: '',
   password: '',
   name: 'Testnet 1',
+  coinServices: 'https://api-coinservice-staging2.incognito.org',
+  pubsubServices: 'https://api-coinservice-staging2.incognito.org/txservice',
+  requestServices: 'http://51.161.119.66:6000',
+  apiServices: 'https://privacyv2-api-service.incognito.org',
+  shardNumber: DEFAULT_SHARD_NUMBER,
+  IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
+  IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241'
+};
+const DEV_TEST_SERVER = {
+  id: 'devtest',
+  default: false,
+  address: DEV_TEST_FULLNODE,
+  username: '',
+  password: '',
+  name: 'Dev test server',
+  coinServices: 'http://51.161.119.66:9009',
+  pubsubServices: 'http://51.161.119.66:8001',
+  requestServices: 'http://51.161.119.66:5000',
+  apiServices: 'https://privacyv2-api-service.incognito.org',
+  shardNumber: 2,
+  IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
+  IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241'
 };
 
 const DEFAULT_LIST_SERVER = [
@@ -57,6 +93,7 @@ const DEFAULT_LIST_SERVER = [
   TEST_NODE_SERVER,
   MAIN_NET_SERVER,
   TEST_NET_1_SERVER,
+  DEV_TEST_SERVER,
 ];
 
 export const KEY = {
@@ -64,17 +101,32 @@ export const KEY = {
   DEFAULT_LIST_SERVER,
 };
 
+const combineCachedListWithDefaultList = (_cachedList) => {
+  if (!_cachedList) return DEFAULT_LIST_SERVER;
+  return DEFAULT_LIST_SERVER.map(server => {
+    const cachedServer = _cachedList.find(item => item.id === server.id);
+    return {
+      ...server,
+      default: cachedServer?.default,
+    };
+  });
+};
+
 export default class Server {
   static get() {
     if (cachedList) {
-      return Promise.resolve(cachedList);
+      const servers = combineCachedListWithDefaultList(cachedList);
+      return Promise.resolve(servers);
     }
     return storage.getItem(KEY.SERVER).then((strData) => {
-      cachedList = JSON.parse(strData) || [];
+      cachedList = combineCachedListWithDefaultList(JSON.parse(strData) || []);
       if (!cachedList || cachedList.length === 0) {
         return DEFAULT_LIST_SERVER;
       }
 
+      if (!cachedList.find((item) => item.id === DEV_TEST_SERVER.id)) {
+        cachedList.push(DEV_TEST_SERVER);
+      }
       if (!cachedList.find((item) => item.id === TEST_NODE_SERVER.id)) {
         cachedList.push(TEST_NODE_SERVER);
       }
@@ -105,7 +157,14 @@ export default class Server {
             const server = DEFAULT_LIST_SERVER.find((item) => item?.id === id);
             return {
               ...s,
-              coinServices: server?.coinServices,
+              address: server?.address || '',
+              coinServices: server?.coinServices || '',
+              pubsubServices: server?.pubsubServices || '',
+              requestServices: server?.requestServices || '',
+              apiServices: server?.apiServices || '',
+              shardNumber: server?.shardNumber || '',
+              IncContractAddress: server?.IncContractAddress,
+              IncBSCContractAddress: server?.IncContractAddress
             };
           }
         }
@@ -133,8 +192,7 @@ export default class Server {
         }
         return { ...server, default: false };
       });
-      Server.set(newServers);
-
+      await Server.set(newServers);
       return newServers;
     } catch (e) {
       throw e;

@@ -1,11 +1,11 @@
 import axios from 'axios';
-import {getToken as getFirebaseToken} from '@services/firebase';
+import { getToken as getFirebaseToken } from '@services/firebase';
 import DeviceInfo from 'react-native-device-info';
 import LocalDatabase from '@utils/LocalDatabase';
 import userModel from '@models/user';
-import {CustomError, ErrorCode, ExHandler} from './exception';
+import { CustomError, ErrorCode, ExHandler } from './exception';
 
-const HEADERS = {'Content-Type': 'application/json'};
+const HEADERS = { 'Content-Type': 'application/json' };
 const TIMEOUT = 20000;
 let currentAccessToken = '';
 
@@ -22,7 +22,7 @@ let pendingSubscribers = [];
 let isAlreadyFetchingAccessToken = false;
 
 function onAccessTokenFetched(accessToken) {
-  pendingSubscribers = pendingSubscribers.filter(callback =>
+  pendingSubscribers = pendingSubscribers.filter((callback) =>
     callback(accessToken),
   );
 }
@@ -41,8 +41,13 @@ async function login() {
       firebaseToken = DeviceInfo.getUniqueId() + new Date().getTime();
       console.debug('Can not get firebase token');
     }
-    const uniqueId = (await LocalDatabase.getDeviceId()) || DeviceInfo.getUniqueId();
-    const tokenData = await instance.post('/auth/new-token', { DeviceID: uniqueId, DeviceToken: firebaseToken })
+    const uniqueId =
+      (await LocalDatabase.getDeviceId()) || DeviceInfo.getUniqueId();
+    const tokenData = await instance
+      .post('/auth/new-token', {
+        DeviceID: uniqueId,
+        DeviceToken: firebaseToken,
+      })
       .then(userModel.parseTokenData);
     const { token } = tokenData;
     setTokenHeader(token);
@@ -54,7 +59,7 @@ async function login() {
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  config => {
+  (config) => {
     return {
       ...config,
       headers: {
@@ -63,18 +68,18 @@ instance.interceptors.request.use(
       },
     };
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   },
 );
 
 instance.interceptors.response.use(
-  res => {
+  (res) => {
     const config = res?.config;
     const result = res?.data?.Result;
     return Promise.resolve(result);
   },
-  errorData => {
+  (errorData) => {
     const errResponse = errorData?.response;
     const originalRequest = errorData?.config;
 
@@ -89,14 +94,14 @@ instance.interceptors.response.use(
     if (errResponse?.status === 401) {
       if (!isAlreadyFetchingAccessToken) {
         isAlreadyFetchingAccessToken = true;
-        login().then(token => {
+        login().then((token) => {
           isAlreadyFetchingAccessToken = false;
           onAccessTokenFetched(token);
         });
       }
 
-      const retryOriginalRequest = new Promise(resolve => {
-        addSubscriber(accessToken => {
+      const retryOriginalRequest = new Promise((resolve) => {
+        addSubscriber((accessToken) => {
           originalRequest.headers.Authorization = 'Bearer ' + accessToken;
           setTokenHeader(accessToken);
           resolve(instance(originalRequest));
@@ -120,7 +125,7 @@ instance.interceptors.response.use(
   },
 );
 
-export const setTokenHeader = token => {
+export const setTokenHeader = (token) => {
   try {
     currentAccessToken = token;
     axios.defaults.headers.Authorization = `Bearer ${token}`;

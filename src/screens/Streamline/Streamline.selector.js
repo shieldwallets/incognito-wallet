@@ -1,9 +1,10 @@
-import { accountSeleclor } from '@src/redux/selectors';
-import { walletSelector } from '@src/redux/selectors/wallet';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import { createSelector } from 'reselect';
-import accountServices from '@src/services/wallet/accountService';
-import { CONSTANT_COMMONS } from '@src/constants';
 import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
+import { defaultAccountSelector } from '@src/redux/selectors/account';
+import { MAX_NO_INPUT_DEFRAGMENT } from '@screens/Streamline/Streamline.constant';
+import BigNumber from 'bignumber.js';
+import isEmpty from 'lodash/isEmpty';
 
 export const streamlineSelector = createSelector(
   (state) => state.streamline,
@@ -15,34 +16,54 @@ export const streamlineStorageSelector = createSelector(
   (streamline) => streamline?.storage,
 );
 
-export const streamlineDataSelector = createSelector(
-  walletSelector,
-  accountSeleclor.defaultAccountSelector,
+export const streamlineUTXOSSelector = createSelector(
   streamlineSelector,
-  (wallet, account, streamline) => {
+  (streamline) => streamline?.UTXOS,
+);
+
+export const streamlineConsolidateSelector = createSelector(
+  defaultAccountSelector,
+  streamlineUTXOSSelector,
+  streamlineSelector,
+  (account, UTXOS, { isFetchingUTXOS }) => {
+    const address = account.PaymentAddress;
+    const UTXOSFiltered = UTXOS.filter(item => item?.address === address) || [];
+    const hasExceededMaxInputPRV = UTXOSFiltered.some(({ unspentCoins }) => unspentCoins.length > MAX_NO_INPUT_DEFRAGMENT);
+    return {
+      hasExceededMaxInputPRV,
+      UTXOSFiltered,
+      isLoading: isEmpty(UTXOS),
+      isFetching: isFetchingUTXOS,
+    };
+  },
+);
+
+export const streamlineDataSelector = createSelector(
+  selectedPrivacySelector.selectedPrivacy,
+  streamlineSelector,
+  streamlineConsolidateSelector,
+  ({ tokenId, id }, streamline, { UTXOSFiltered }) => {
+    const tokenID = tokenId || id;
     const { consolidated } = streamline;
-    const MAX_UTXOS_PER_DEFRAGMENT_PROCESS =
-      accountServices.MAX_DEFRAGMENT_TXS *
-      accountServices.NO_OF_INPUT_PER_DEFRAGMENT_TX;
-    const UTXONativeCoin = accountServices.getUTXOs(
-      wallet,
-      account,
-      CONSTANT_COMMONS.PRV.id,
-    );
-    const totalFee =
-      MAX_FEE_PER_TX *
-      Math.min(
-        accountServices.MAX_DEFRAGMENT_TXS,
-        Math.ceil(
-          UTXONativeCoin / accountServices.NO_OF_INPUT_PER_DEFRAGMENT_TX,
-        ),
-      );
-    const times = Math.ceil(UTXONativeCoin / MAX_UTXOS_PER_DEFRAGMENT_PROCESS);
+
+    const currToken = UTXOSFiltered.find(item => item.tokenID === tokenID);
+
+    let noUTXOS = 0;
+    let balance = 0;
+    if (currToken) {
+      noUTXOS = (currToken.unspentCoins || []).length;
+      balance = (currToken.unspentCoins || []).reduce((prev, coin) => {
+        return prev.plus(coin?.Value || 0);
+      }, new BigNumber(0)).toString();
+    }
+    const times = Math.ceil(noUTXOS / MAX_NO_INPUT_DEFRAGMENT);
+    const totalFee = MAX_FEE_PER_TX * times;
     return {
       totalFee,
-      UTXONativeCoin,
       times,
       consolidated,
+      noUTXOS,
+      balance
     };
   },
 );

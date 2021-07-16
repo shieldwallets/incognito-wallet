@@ -18,7 +18,6 @@ import { ExHandler } from '@services/exception';
 import { apiGetNodesInfo } from '@screens/Node/Node.services';
 import Device from '@models/device';
 import LocalDatabase from '@utils/LocalDatabase';
-import VirtualNodeService from '@services/VirtualNodeService';
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
 import {
   parseRewards,
@@ -27,7 +26,7 @@ import {
   combineNode,
   findNodeIndexByProductId,
   getNodeToken,
-  getNodeBLSKey
+  getNodeBLSKey, findAccountFromListAccounts
 } from '@screens/Node/Node.utils';
 import NodeService from '@services/NodeService';
 import moment from 'moment';
@@ -269,7 +268,10 @@ export const actionUpdatePNodeItem = (productId) => async (dispatch, getState) =
         device.Account = account;
         device.ValidatorKey = device.Account.ValidatorKey;
         device.PublicKey = device.Account.PublicKeyCheckEncode;
-        device.Account = listAccount.find(item => item.PaymentAddress === device.PaymentAddress);
+        device.Account = findAccountFromListAccounts({
+          accounts: listAccount,
+          address: device?.PaymentAddress,
+        });
       }
 
       await dispatch(actionUpdateNodeByProductId(productId, device));

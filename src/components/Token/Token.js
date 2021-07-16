@@ -65,7 +65,7 @@ Name.propTypes = {
 };
 
 Name.defaultProps = {
-  name: 'Sample Name',
+  name: 'Incognito Token',
   isVerified: false,
   tokenId: null,
   shouldShowFollowed: false,
@@ -423,7 +423,7 @@ const Token = (props) => {
 };
 
 Token.defaultProps = {
-  displayName: 'Sample name',
+  displayName: 'Incognito Token',
   amount: 0,
   onPress: null,
   symbol: null,

@@ -1,74 +1,81 @@
-import accountServices from '@src/services/wallet/accountService';
-import { walletSelector } from '@src/redux/selectors/wallet';
+import React from 'react';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from 'react-navigation-hooks';
+import { useFocusEffect, useNavigation } from 'react-navigation-hooks';
 import { CONSTANT_COMMONS, CONSTANT_KEYS } from '@src/constants';
 import routeNames from '@src/router/routeNames';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector, selectedPrivacySelector } from '@src/redux/selectors';
 import format from '@src/utils/format';
-import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
-import React from 'react';
-import { devSelector } from '@screens/Dev';
-import { actionFetch } from './Streamline.actions';
+import memmoize from 'memoize-one';
+import {PRV_ID} from '@screens/Dex/constants';
+import { actionFetch, actionConditionConsolidate } from './Streamline.actions';
 import {
   streamlineStorageSelector,
   streamlineDataSelector,
   streamlineSelector,
+  streamlineConsolidateSelector,
 } from './Streamline.selector';
 
-export const useStreamLine = () => {
+export const useStreamLine = ({ fetchUTXO = false } = {}) => {
   const keySave = CONSTANT_KEYS.UTXOS_DATA;
   const navigation = useNavigation();
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const dispatch = useDispatch();
-  const wallet = useSelector(walletSelector);
-  const account = useSelector(defaultAccountSelector);
   const accountBalance = useSelector(
-    accountSeleclor.defaultAccountBalanceSelector,
+    accountSelector.defaultAccountBalanceSelector,
   );
-  const dev = useSelector(devSelector);
-  const isAutoUTXOs = dev[CONSTANT_KEYS.DEV_TEST_TOGGLE_UTXOS];
   const streamline = useSelector(streamlineSelector);
-  const { isFetching, isFetched, isPending } = streamline;
+  const { isFetching, isFetched, isPending, isFetchingUTXOS } = streamline;
   const streamlineStorage = useSelector(streamlineStorageSelector);
   const { data } = streamlineStorage[keySave];
-  const { totalFee, UTXONativeCoin, times, consolidated } = useSelector(
+  const { totalFee, times, consolidated, noUTXOS, balance } = useSelector(
     streamlineDataSelector,
   );
-  const onNavigateStreamLine = () => navigation.navigate(routeNames.Streamline);
+  const account = useSelector(defaultAccountSelector);
+
+  const { hasExceededMaxInputPRV } = useSelector(streamlineConsolidateSelector);
+  const onNavigateStreamLine = () => {
+    navigation.navigate(routeNames.SelectTokenStreamline);
+  };
   const handleNavigateWhyStreamline = () =>
     navigation.navigate(routeNames.WhyStreamline);
-  const [state, setState] = React.useState({
-    shouldDisabledForm: false,
-  });
-  const { shouldDisabledForm } = state;
-  const hasExceededMaxInputPRV = isAutoUTXOs
-    ? true
-    : accountServices.hasExceededMaxInput(
-      wallet,
-      account,
-      CONSTANT_COMMONS.PRV.id,
-    );
-  const hookFactories = [
-    {
-      title: 'Balance',
-      desc: `${format.amount(
-        accountBalance,
-        CONSTANT_COMMONS.PRV.pDecimals,
-        true,
-      )} ${CONSTANT_COMMONS.PRV.symbol}`,
-    },
-    {
-      title: 'Network fee',
-      desc: `${format.amount(totalFee, CONSTANT_COMMONS.PRV.pDecimals, true)} ${
-        CONSTANT_COMMONS.PRV.symbol
-      }`,
-    },
-    {
-      title: 'UTXO count',
-      desc: UTXONativeCoin,
-    },
-  ];
+
+  const hookFactories = React.useMemo(() => {
+    let array = [
+      {
+        title: 'Balance',
+        desc: `${format.amount(
+          accountBalance,
+          CONSTANT_COMMONS.PRV.pDecimals,
+          true,
+        )} ${CONSTANT_COMMONS.PRV.symbol}`,
+      }
+    ];
+    if (selectedPrivacy?.tokenId !== PRV_ID) {
+      array.push({
+        title: 'Balance',
+        desc: `${format.amount(
+          balance,
+          selectedPrivacy.pDecimals,
+          true,
+        )} ${selectedPrivacy.symbol}`,
+      });
+    }
+    array = array.concat([
+      {
+        title: 'Network fee',
+        desc: `${format.amount(totalFee, CONSTANT_COMMONS.PRV.pDecimals, true)} ${
+          CONSTANT_COMMONS.PRV.symbol
+        }`,
+      },
+      {
+        title: 'UTXO count',
+        desc: noUTXOS,
+      },
+    ]);
+    return array;
+  }, [accountBalance, totalFee, noUTXOS, selectedPrivacy]);
+
   const handleDefragmentNativeCoin = async () => {
     if (shouldDisabledForm || !hasExceededMaxInputPRV) {
       return;
@@ -76,18 +83,22 @@ export const useStreamLine = () => {
     await dispatch(actionFetch());
   };
 
-  const maxUTXOPerDefragment = Math.min(accountServices.NO_OF_INPUT_PER_DEFRAGMENT, UTXONativeCoin);
+  const checkConditionConsolidate = () => dispatch(actionConditionConsolidate());
 
-  React.useEffect(() => {
-    setState({ ...state, shouldDisabledForm: accountBalance < MAX_FEE_PER_TX });
-  }, [accountBalance]);
+  const shouldDisabledForm = React.useMemo(memmoize(() => {
+    return accountBalance && accountBalance < totalFee;
+  }), [accountBalance, totalFee]);
+
+  useFocusEffect(React.useCallback(() => {
+    if (!fetchUTXO) return;
+    checkConditionConsolidate();
+  }, [account, dispatch]));
 
   return {
     hasExceededMaxInputPRV,
     onNavigateStreamLine,
     handleNavigateWhyStreamline,
     handleDefragmentNativeCoin,
-    UTXONativeCoin,
     accountBalance,
     hookFactories,
     shouldDisabledForm,
@@ -98,6 +109,7 @@ export const useStreamLine = () => {
     isPending,
     totalTimes: times,
     currentTime: consolidated,
-    maxUTXOPerDefragment,
+    noUTXOS,
+    isFetchingUTXOS,
   };
 };

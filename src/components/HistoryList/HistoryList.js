@@ -96,6 +96,7 @@ const HistoryItem = React.memo(({ history }) => {
       },
     );
   };
+  
   return (
     <TouchableOpacity onPress={onPress} style={styleSheet.itemContainer}>
       <View style={[styleSheet.row, styleSheet.rowTop]}>
@@ -154,7 +155,7 @@ const HistoryList = ({
       typeof onLoadmoreHistory === 'function' && onLoadmoreHistory()
     }
     ListFooterComponent={
-      !oversize && !refreshing ? (
+      !oversize && !refreshing && !showEmpty ? (
         <View style={styleSheet.loadingContainer}>
           <LoadingContainer />
         </View>

@@ -1,20 +1,20 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import { shieldDataSelector } from '@screens/Shield/Shield.selector';
 import QrCodeGenerate from '@src/components/QrCodeGenerate';
 import PropTypes from 'prop-types';
 import { CopiableTextDefault as CopiableText } from '@src/components/CopiableText';
 import LoadingContainer from '@src/components/LoadingContainer';
-import { ButtonBasic , BtnInfo } from '@src/components/Button';
+import { ButtonBasic, BtnInfo } from '@src/components/Button';
 import { ClockWiseIcon } from '@src/components/Icons';
 import Tooltip from '@src/components/Tooltip/Tooltip';
-import {COLORS} from '@src/styles';
-import {ScrollView} from '@src/components/core';
-import {isEmpty} from 'lodash';
+import { COLORS } from '@src/styles';
+import { ScrollView } from '@src/components/core';
+import { isEmpty } from 'lodash';
 import { useNavigation } from 'react-navigation-hooks';
-import {CONSTANT_COMMONS} from '@src/constants';
+import { CONSTANT_COMMONS } from '@src/constants';
 import convert from '@utils/convert';
 import routeNames from '@routers/routeNames';
 import withGenQRCode from './GenQRCode.enhance';
@@ -51,8 +51,15 @@ const ShieldError = React.memo(({ handleShield }) => {
 });
 
 const Extra = () => {
-  const { address, min, expiredAt, decentralized, estimateFee, tokenFee } = useSelector(shieldDataSelector);
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const {
+    address,
+    min,
+    expiredAt,
+    decentralized,
+    estimateFee,
+    tokenFee,
+  } = useSelector(shieldDataSelector);
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const navigation = useNavigation();
   const renderMinShieldAmount = () => {
     let minComp;
@@ -62,7 +69,7 @@ const Extra = () => {
           <NormalText text="Minimum: ">
             <Text style={[styled.boldText]}>
               {`${min} ${selectedPrivacy?.externalSymbol ||
-              selectedPrivacy?.symbol}`}
+                selectedPrivacy?.symbol}`}
             </Text>
           </NormalText>
           <NormalText
@@ -76,17 +83,27 @@ const Extra = () => {
   };
 
   const renderEstimateFee = () => {
-    const isNativeToken = selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
-    let humanFee = convert.toNumber((isNativeToken ? estimateFee : tokenFee) || 0, true);
-    const originalFee = convert.toOriginalAmount(humanFee, selectedPrivacy?.pDecimals);
+    const isNativeToken =
+      selectedPrivacy?.currencyType ===
+        CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH ||
+      selectedPrivacy?.currencyType ===
+        CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
+    let humanFee = convert.toNumber(
+      (isNativeToken ? estimateFee : tokenFee) || 0,
+      true,
+    );
+    const originalFee = convert.toOriginalAmount(
+      humanFee,
+      selectedPrivacy?.pDecimals,
+    );
     humanFee = convert.toHumanAmount(originalFee, selectedPrivacy?.pDecimals);
     if (!humanFee) return null;
-    return(
+    return (
       <>
         <NormalText text="Estimated shielding fee: ">
           <Text style={[styled.boldText]}>
             {`${humanFee} ${selectedPrivacy?.externalSymbol ||
-            selectedPrivacy?.symbol}`}
+              selectedPrivacy?.symbol}`}
           </Text>
         </NormalText>
         <View style={styled.centerRaw}>
@@ -96,7 +113,9 @@ const Extra = () => {
           <BtnInfo
             isBlack
             style={styled.btnInfo}
-            onPress={() => navigation.navigate(routeNames.ShieldDecentralizeDescription)}
+            onPress={() =>
+              navigation.navigate(routeNames.ShieldDecentralizeDescription)
+            }
           />
         </View>
       </>
@@ -113,15 +132,11 @@ const Extra = () => {
         <QrCodeGenerate value={address} size={175} />
       </View>
       <View style={styled.hook}>
-        {
-          !isEmpty(expiredAt) && (
-            <NormalText text="Expires at: ">
-              <Text style={[styled.boldText, styled.countdown]}>
-                {expiredAt}
-              </Text>
-            </NormalText>
-          )
-        }
+        {!isEmpty(expiredAt) && (
+          <NormalText text="Expires at: ">
+            <Text style={[styled.boldText, styled.countdown]}>{expiredAt}</Text>
+          </NormalText>
+        )}
         {renderMinShieldAmount()}
       </View>
       <CopiableText data={address} />
@@ -146,15 +161,18 @@ const Extra = () => {
       <View style={styled.qrCode}>
         <QrCodeGenerate value={address} size={175} />
       </View>
-      <View style={styled.hook}>
-        {renderEstimateFee()}
-      </View>
+      <View style={styled.hook}>{renderEstimateFee()}</View>
       <CopiableText data={address} />
       <View style={{ marginTop: 15 }}>
-        <NormalText style={styled.text} text={`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this shielding address.`} />
+        <NormalText
+          style={styled.text}
+          text={`Send only ${selectedPrivacy?.externalSymbol ||
+            selectedPrivacy?.symbol} to this shielding address.`}
+        />
         <NormalText
           style={{ marginTop: 10 }}
-          text={`Sending coins or tokens other than ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
+          text={`Sending coins or tokens other than ${selectedPrivacy?.externalSymbol ||
+            selectedPrivacy?.symbol} to this address may result in the loss of your deposit.`}
         />
         <NormalText
           text="Use at your own risk."
@@ -167,7 +185,9 @@ const Extra = () => {
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        { (decentralized === 2 || decentralized === 3) ? renderShieldUserAddress() : renderShieldIncAddress()}
+        {decentralized === 2 || decentralized === 3
+          ? renderShieldUserAddress()
+          : renderShieldIncAddress()}
       </View>
     </ScrollView>
   );
