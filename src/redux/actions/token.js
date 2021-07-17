@@ -173,10 +173,8 @@ export const getPTokenList = ({ expiredTime = EXPIRED_TIME } = {}) => async (
   dispatch,
 ) => {
   try {
-    const tokens = await getTokenList({ expiredTime });
-
+    const tokens = (await getTokenList({ expiredTime })) || [];
     await dispatch(setListPToken(tokens));
-
     return tokens;
   } catch (e) {
     throw e;
@@ -187,10 +185,8 @@ export const getInternalTokenList = ({
   expiredTime = EXPIRED_TIME,
 } = {}) => async (dispatch) => {
   try {
-    const tokens = await tokenService.getPrivacyTokens({ expiredTime });
-
+    const tokens = (await tokenService.getPrivacyTokens({ expiredTime })) || [];
     await dispatch(setListInternalToken(tokens));
-
     return tokens;
   } catch (e) {
     throw e;

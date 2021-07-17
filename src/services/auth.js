@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { setTokenHeader } from '@src/services/http';
 import { getToken as getFirebaseToken } from '@src/services/firebase';
 import DeviceInfo from 'react-native-device-info';

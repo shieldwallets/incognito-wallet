@@ -51,7 +51,7 @@ export const reloadWallet = (accountName = '') => async (
   getState,
 ) => {
   try {
-    new Validator('accountName', accountName).required().string();
+    new Validator('accountName', accountName).string();
     const state = getState();
     const masterKey = currentMasterKeySelector(state);
     let wallet = masterKey.wallet;

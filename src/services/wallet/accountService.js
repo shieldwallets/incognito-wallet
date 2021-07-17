@@ -866,9 +866,9 @@ export default class Account {
       this.getAccount(account, wallet, PrivacyVersion.ver1),
     );
     const listCoins = (await accountWallet.getUnspentCoinsV1()) || [];
-    return (listCoins).map(coin => ({
+    return listCoins.map((coin) => ({
       ...coin,
-      balance: new BigNumber(coin.balance || 0).toNumber()
+      balance: new BigNumber(coin.balance || 0).toNumber(),
     }));
   }
 

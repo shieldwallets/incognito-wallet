@@ -85,7 +85,11 @@ const followDefaultTokenForWallet = (wallet, accounts) => async (
       ? (listAccount = [...wallet.MasterAccount.child])
       : (listAccount = [...accounts]);
     let task = listAccount.map((account) =>
-      accountService.addFollowingTokens(defaultTokens, account, wallet),
+      accountService.addFollowingTokens(
+        defaultTokens.map((tokenID) => ({ tokenID })),
+        account,
+        wallet,
+      ),
     );
     await Promise.all(task);
   } catch (error) {
@@ -160,21 +164,21 @@ export const loadAllMasterKeys = () => async (dispatch, getState) => {
           !(key.deletedAccountIds || []).includes(item.id),
       );
       if (newAccounts.length > 0) {
-        let newCreatedAccounts = [];
-        let task = newAccounts.map(async (account) => {
+        let accounts = [];
+        for (const account of newAccounts) {
           try {
-            const result = await wallet.importAccountWithId(
+            const newAccount = await wallet.importAccountWithId(
               account.id,
               account.name,
             );
-            return result;
+            if (account?.name) {
+              accounts.push(newAccount);
+            }
           } catch (error) {
-            console.log('error when sync account', account.name);
+            console.log('IMPORT ACCOUNT WITH ID FAILED', error);
           }
-        });
-        const impTask = await Promise.all(task);
-        newCreatedAccounts = flatten(impTask);
-        await dispatch(followDefaultTokenForWallet(wallet, newCreatedAccounts));
+        }
+        await dispatch(followDefaultTokenForWallet(wallet, accounts));
         await wallet.save();
       }
       await dispatch(actionLogMeasureStorageWallet(wallet));
@@ -182,6 +186,7 @@ export const loadAllMasterKeys = () => async (dispatch, getState) => {
     await Promise.all(task);
     await dispatch(loadAllMasterKeysSuccess(masterKeyList));
   } catch (error) {
+    console.log('loadAllMasterKeys error', error);
     throw error;
   }
 };
@@ -250,19 +255,23 @@ const importMasterKeySuccess = (newMasterKey) => ({
 });
 
 const syncServerAccounts = async (wallet) => {
-  const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
-  const accounts = await getWalletAccounts(
-    masterAccountInfo.PublicKeyCheckEncode,
-  );
-  if (accounts.length > 0) {
-    wallet.MasterAccount.child = [];
-    for (const account of accounts) {
-      try {
-        await wallet.importAccountWithId(account.id, account.name);
-      } catch (error) {
-        console.log('IMPORT ACCOUNT WITH ID FAILED', error);
+  try {
+    const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
+    const accounts = await getWalletAccounts(
+      masterAccountInfo.PublicKeyCheckEncode,
+    );
+    if (accounts.length > 0) {
+      wallet.MasterAccount.child = [];
+      for (const account of accounts) {
+        try {
+          await wallet.importAccountWithId(account.id, account.name);
+        } catch (error) {
+          console.log('IMPORT ACCOUNT WITH ID FAILED', error);
+        }
       }
     }
+  } catch (error) {
+    console.log('syncServerAccounts error', error);
   }
 };
 
@@ -352,6 +361,7 @@ export const importMasterKey = (data) => async (dispatch, getState) => {
     await dispatch(reloadWallet(listAccount[0]?.name));
     await dispatch(actionLogMeasureStorageWallet(wallet));
   } catch (error) {
+    console.log('importMasterKey error', error);
     throw error;
   }
 };

@@ -139,8 +139,12 @@ const enhance = (WrappedComp) => (props) => {
   };
 
   const checkWallet = async () => {
-    const wallet = await getExistedWallet();
-    await goHome({ wallet });
+    try {
+      const wallet = await getExistedWallet();
+      await goHome({ wallet });
+    } catch (error) {
+      console.log('CHECK WALLET ERROR', error);
+    }
   };
 
   const initApp = async () => {
@@ -148,12 +152,9 @@ const enhance = (WrappedComp) => (props) => {
     try {
       await dispatch(loadAllMasterKeyAccounts());
       await setState({ ...initialState, isInitialing: true });
-      await login();
       const [servers] = await new Promise.all([
         serverService.get(),
-        dispatch(actionFetchProfile()),
         getFunctionConfigs().catch((e) => e),
-        dispatch(getInternalTokenList()),
         dispatch(actionFetchHomeConfigs()),
       ]);
       if (!servers || servers?.length === 0) {
@@ -161,6 +162,7 @@ const enhance = (WrappedComp) => (props) => {
       }
       await checkWallet();
     } catch (e) {
+      console.log('INIT APP ERROR', e);
       errorMessage = getErrorMsg(e);
     } finally {
       await setState({
@@ -175,9 +177,15 @@ const enhance = (WrappedComp) => (props) => {
   const configsApp = async () => {
     try {
       await dispatch(loadPin());
-      await dispatch(getPTokenList());
+      await login();
+      await dispatch(actionFetchProfile());
+      await Promise.all([
+        dispatch(getPTokenList()),
+        dispatch(getInternalTokenList()),
+      ]);
       await dispatch(loadAllMasterKeys());
     } catch (error) {
+      console.log('CONFIGS APP ERROR', error);
       await setState({
         ...state,
         errorMsg: getErrorMsg(error),
