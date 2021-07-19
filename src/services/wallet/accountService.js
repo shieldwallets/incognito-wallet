@@ -2,7 +2,6 @@
 import BigNumber from 'bignumber.js';
 import AccountModel from '@models/account';
 import { COINS, CONSTANT_KEYS } from '@src/constants';
-import tokenModel from '@src/models/token';
 import storage from '@src/services/storage';
 import {
   AccountWallet,
@@ -12,6 +11,8 @@ import {
   Validator,
   PrivacyVersion,
   PRVIDSTR,
+  isPaymentAddress,
+  isOldPaymentAddress,
 } from 'incognito-chain-web-js/build/wallet';
 import _, { cloneDeep } from 'lodash';
 import { STACK_TRACE } from '@services/exception/customError/code/webjsCode';
@@ -322,21 +323,12 @@ export default class Account {
     return account.getDebugMessage();
   }
 
-  static checkPaymentAddress(paymentAddrStr) {
-    try {
-      const key = KeyWallet.base58CheckDeserialize(paymentAddrStr);
-      const paymentAddressObj = key?.KeySet?.PaymentAddress || {};
-      if (
-        paymentAddressObj.Pk?.length === 32 &&
-        paymentAddressObj.Tk?.length === 32
-      ) {
-        return true;
-      }
-    } catch (e) {
-      return false;
-    }
+  static checkOldPaymentAddress(paymentAddrStr) {
+    return isOldPaymentAddress(paymentAddrStr);
+  }
 
-    return false;
+  static checkPaymentAddress(paymentAddrStr) {
+    return isPaymentAddress(paymentAddrStr);
   }
 
   static validatePrivateKey(privateKey) {

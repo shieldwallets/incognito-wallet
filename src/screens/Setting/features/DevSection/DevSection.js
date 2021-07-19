@@ -18,7 +18,12 @@ import {
 } from '@src/screens/Dev';
 import { CONSTANT_KEYS } from '@src/constants';
 import { accountSelector } from '@src/redux/selectors';
-import { clearFakeFullDisk, makeFakeFullDisk } from '@screens/Setting/features/DevSection/DevSection.utils';
+import {
+  clearFakeFullDisk,
+  makeFakeFullDisk,
+} from '@screens/Setting/features/DevSection/DevSection.utils';
+import { currentMasterKeySelector } from '@src/redux/selectors/masterKey';
+import { getWalletAccounts } from '@services/api/masterKey';
 
 const DevSection = () => {
   const [homeConfig] = React.useState(global.homeConfig);
@@ -26,7 +31,7 @@ const DevSection = () => {
   const dev = useSelector(devSelector);
   const dispatch = useDispatch();
   const account = useSelector(accountSelector.defaultAccountSelector);
-
+  const currentMasterKey = useSelector(currentMasterKeySelector);
   const toggleHomeConfig = async () => {
     await AsyncStorage.setItem(
       'home-config',
@@ -52,6 +57,19 @@ const DevSection = () => {
   const onToggleLogApp = () => dispatch(actionToggleLogApp());
 
   const isStagingConfig = homeConfig === 'staging';
+
+  const onGetMasterKeyRecovery = async () => {
+    try {
+      const wallet = await currentMasterKey.loadWallet();
+      const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
+      const accounts = await getWalletAccounts(
+        masterAccountInfo.PublicKeyCheckEncode,
+      );
+      return Clipboard.setString(JSON.stringify(accounts));
+    } catch (error) {
+      console.log('ERROR', error);
+    }
+  };
 
   const onCopySerialNumberCache = () => {
     Clipboard.setString(JSON.stringify(account?.derivatorToSerialNumberCache));
@@ -167,12 +185,17 @@ const DevSection = () => {
     {
       id: 'make-full-disk',
       desc: 'Toggle make full disk',
-      onPress: makeFakeFullDisk
+      onPress: makeFakeFullDisk,
     },
     {
       id: 'clear-full-disk',
       desc: 'Toggle clear fake full disk',
-      onPress: clearFakeFullDisk
+      onPress: clearFakeFullDisk,
+    },
+    {
+      id: 'master-keys-recovery',
+      desc: 'Get list master key recovery',
+      onPress: onGetMasterKeyRecovery,
     },
   ];
 

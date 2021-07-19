@@ -30,6 +30,7 @@ import withPin from '@components/pin.enhance';
 import KeepAwake from 'react-native-keep-awake';
 import { COLORS, FONT } from '@src/styles';
 import { accountServices } from '@src/services/wallet';
+import { actionLogEvent } from '@src/screens/Performance';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -138,29 +139,17 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
-  const checkWallet = async () => {
-    try {
-      const wallet = await getExistedWallet();
-      await goHome({ wallet });
-    } catch (error) {
-      console.log('CHECK WALLET ERROR', error);
-    }
-  };
-
   const initApp = async () => {
     let errorMessage = null;
     try {
-      await dispatch(loadAllMasterKeyAccounts());
       await setState({ ...initialState, isInitialing: true });
-      const [servers] = await new Promise.all([
-        serverService.get(),
-        getFunctionConfigs().catch((e) => e),
-        dispatch(actionFetchHomeConfigs()),
-      ]);
-      if (!servers || servers?.length === 0) {
-        await serverService.setDefaultList();
-      }
-      await checkWallet();
+      const wallet = await getExistedWallet();
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_WALLET',
+        }),
+      );
+      await goHome({ wallet });
     } catch (e) {
       console.log('INIT APP ERROR', e);
       errorMessage = getErrorMsg(e);
@@ -176,14 +165,57 @@ const enhance = (WrappedComp) => (props) => {
 
   const configsApp = async () => {
     try {
+      await dispatch(
+        actionLogEvent({
+          restart: true,
+          desc: 'CONFIGS_APP',
+        }),
+      );
       await dispatch(loadPin());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_PIN',
+        }),
+      );
       await login();
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOGIN',
+        }),
+      );
       await dispatch(actionFetchProfile());
-      await Promise.all([
+      await dispatch(
+        actionLogEvent({
+          desc: 'PROFILE',
+        }),
+      );
+      const [servers] = await new Promise.all([
+        serverService.get(),
+        getFunctionConfigs().catch((e) => e),
+        dispatch(actionFetchHomeConfigs()),
         dispatch(getPTokenList()),
         dispatch(getInternalTokenList()),
       ]);
+      if (!servers || servers?.length === 0) {
+        await serverService.setDefaultList();
+      }
+      await dispatch(
+        actionLogEvent({
+          desc: 'CONFIGS',
+        }),
+      );
       await dispatch(loadAllMasterKeys());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_ALL_MASTER_KEYS',
+        }),
+      );
+      await dispatch(loadAllMasterKeyAccounts());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_ALL_MASTER_KEYS_ACCOUNTS',
+        }),
+      );
     } catch (error) {
       console.log('CONFIGS APP ERROR', error);
       await setState({

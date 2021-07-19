@@ -2,6 +2,7 @@ import _ from 'lodash';
 import types from '@src/redux/types/masterKey';
 import LocalDatabase from '@src/utils/LocalDatabase';
 import storage from '@services/storage';
+import { accountServices } from '@src/services/wallet';
 
 const initialState = {
   list: [],
@@ -46,7 +47,19 @@ function switchMasterKey(name, list) {
 function removeMasterKey(name, list) {
   const newList = _.remove(list, (item) => item.name !== name);
   list.forEach(async (item) => {
-    const wallet = await item.loadWallet();
+    try {
+      const wallet = await item.loadWallet();
+      const measureStorageWallet = await wallet.getKeyMeasureStorage();
+      await wallet.clearWalletStorage({ key: measureStorageWallet });
+      const listAccount = await wallet.listAccount();
+      let task = listAccount.map((account) =>
+        accountServices.removeCacheBalance(account, wallet),
+      );
+      await Promise.all(task);
+    } catch (error) {
+      console.log('ERROR remove master key', error);
+    }
+
     await storage.removeItem(item.getStorageName());
   });
   LocalDatabase.setMasterKeyList(newList);
