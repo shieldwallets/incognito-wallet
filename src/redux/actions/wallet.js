@@ -46,6 +46,30 @@ export const reloadAccountList = () => async (dispatch, getState) => {
   return accounts;
 };
 
+export const actionSubmitOTAKeyForListAccount = (wallet) => async (
+  dispatch,
+  getState,
+) => {
+  try {
+    if (!wallet) {
+      return;
+    }
+    const listAccount = await wallet.listAccount();
+    if (!listAccount) {
+      return;
+    }
+    const task = listAccount.map((account) => {
+      const accountWallet = accountService.getAccount(account, wallet);
+      if (!!accountWallet && accountWallet?.name) {
+        return accountWallet.submitOTAKey();
+      }
+    });
+    await Promise.all(task);
+  } catch (error) {
+    console.log('SUBMIT OTA KEY ERROR', error);
+  }
+};
+
 export const reloadWallet = (accountName = '') => async (
   dispatch,
   getState,
@@ -57,7 +81,10 @@ export const reloadWallet = (accountName = '') => async (
     let wallet = masterKey.wallet;
     await configsWallet(wallet);
     if (wallet?.Name) {
-      const listAccount = await wallet.listAccount();
+      let listAccount = await wallet.listAccount();
+      if (listAccount.length > 0) {
+        await dispatch(actionSubmitOTAKeyForListAccount(wallet));
+      }
       let defaultAccount =
         listAccount.find((item) => isEqual(item?.accountName, accountName)) ||
         listAccount[0];

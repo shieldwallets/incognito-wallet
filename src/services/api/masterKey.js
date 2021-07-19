@@ -1,6 +1,5 @@
 import { actionLogEvent } from '@src/screens/Performance';
 import http from '@src/services/http';
-import isArray from 'lodash/isArray';
 
 export const getWalletAccounts = async (masterAccountPublicKey, dispatch) => {
   let result = [];
@@ -10,23 +9,27 @@ export const getWalletAccounts = async (masterAccountPublicKey, dispatch) => {
     if (dispatch) {
       await dispatch(
         actionLogEvent({
-          desc: `RESULT getWalletAccounts ${JSON.stringify(res)}`,
+          desc: `RESULT: ${masterAccountPublicKey} + getWalletAccounts ${JSON.stringify(
+            res,
+          )}`,
         }),
       );
     }
-    result = res?.Accounts?.map((account) => ({
-      name: account.Name,
-      id: account.AccountID,
-    }));
+    result =
+      res?.Accounts?.map((account) => ({
+        name: account?.Name,
+        id: account?.AccountID,
+      })) || [];
   } catch (error) {
     if (dispatch) {
       await dispatch(
         actionLogEvent({
-          desc: `ERROR getWalletAccounts ${JSON.stringify(error)}`,
+          desc: `ERROR getWalletAccounts ${masterAccountPublicKey} ${JSON.stringify(
+            error,
+          )}`,
         }),
       );
     }
-    throw error;
   }
   return result;
 };

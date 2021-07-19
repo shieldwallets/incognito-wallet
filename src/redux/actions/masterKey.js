@@ -12,7 +12,10 @@ import {
   configsWallet,
 } from '@services/wallet/WalletService';
 // eslint-disable-next-line import/no-cycle
-import { reloadWallet } from '@src/redux/actions/wallet';
+import {
+  actionSubmitOTAKeyForListAccount,
+  reloadWallet,
+} from '@src/redux/actions/wallet';
 import { getWalletAccounts } from '@services/api/masterKey';
 import { defaultPTokensIDsSelector } from '@src/redux/selectors/token';
 import {
@@ -255,7 +258,7 @@ const importMasterKeySuccess = (newMasterKey) => ({
   payload: newMasterKey,
 });
 
-const syncServerAccounts = async (wallet, dispatch) => {
+export const syncServerAccounts = async (wallet, dispatch) => {
   try {
     const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
     const accounts = await getWalletAccounts(
@@ -349,17 +352,7 @@ export const importMasterKey = (data) => async (dispatch, getState) => {
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
     const listAccount = await wallet.listAccount();
-    try {
-      const task = listAccount.map((account) => {
-        const accountWallet = accountService.getAccount(account, wallet);
-        if (!!accountWallet && accountWallet?.name) {
-          return accountWallet.submitOTAKey();
-        }
-      });
-      await Promise.all(task);
-    } catch (error) {
-      console.log('SUBMIT OTA KEY ERROR', error);
-    }
+    await dispatch(actionSubmitOTAKeyForListAccount(wallet));
     await dispatch(reloadWallet(listAccount[0]?.name));
     await dispatch(actionLogMeasureStorageWallet(wallet));
   } catch (error) {
