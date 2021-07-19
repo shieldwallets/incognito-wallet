@@ -23,7 +23,6 @@ import {
   makeFakeFullDisk,
 } from '@screens/Setting/features/DevSection/DevSection.utils';
 import { currentMasterKeySelector } from '@src/redux/selectors/masterKey';
-import { getWalletAccounts } from '@services/api/masterKey';
 
 const DevSection = () => {
   const [homeConfig] = React.useState(global.homeConfig);
@@ -62,10 +61,7 @@ const DevSection = () => {
     try {
       const wallet = await currentMasterKey.loadWallet();
       const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
-      const accounts = await getWalletAccounts(
-        masterAccountInfo.PublicKeyCheckEncode,
-      );
-      return Clipboard.setString(JSON.stringify(accounts));
+      return Clipboard.setString(masterAccountInfo.PublicKeyCheckEncode);
     } catch (error) {
       console.log('ERROR', error);
     }

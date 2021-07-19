@@ -152,6 +152,7 @@ export const loadAllMasterKeys = () => async (dispatch, getState) => {
       let masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
       const serverAccounts = await getWalletAccounts(
         masterAccountInfo.PublicKeyCheckEncode,
+        dispatch,
       );
       const accountIds = [];
       for (const account of wallet.MasterAccount.child) {
@@ -254,11 +255,12 @@ const importMasterKeySuccess = (newMasterKey) => ({
   payload: newMasterKey,
 });
 
-const syncServerAccounts = async (wallet) => {
+const syncServerAccounts = async (wallet, dispatch) => {
   try {
     const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
     const accounts = await getWalletAccounts(
       masterAccountInfo.PublicKeyCheckEncode,
+      dispatch,
     );
     if (accounts.length > 0) {
       wallet.MasterAccount.child = [];
@@ -338,7 +340,7 @@ export const importMasterKey = (data) => async (dispatch, getState) => {
       data.mnemonic,
       newMasterKey.getStorageName(),
     );
-    await syncServerAccounts(wallet);
+    await syncServerAccounts(wallet, dispatch);
     newMasterKey.wallet = wallet;
     newMasterKey.mnemonic = wallet.Mnemonic;
     await dispatch(importMasterKeySuccess(newMasterKey));
