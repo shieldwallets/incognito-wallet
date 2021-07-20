@@ -56,9 +56,6 @@ export async function loadWallet(passphrase, name = 'Wallet') {
   try {
     let wallet = new Wallet();
     wallet.Name = name;
-    // TODO: mockup;
-    const keyMeasureStorage = wallet.getKeyMeasureStorage();
-    await wallet.clearWalletStorage({ key: keyMeasureStorage });
     await configsWallet(wallet);
     await wallet.loadWallet(passphrase, name);
     return wallet?.Name ? wallet : false;
