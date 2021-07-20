@@ -84,6 +84,15 @@ export class PDexTradeHistoryModel {
     }
     this.networkFeeTokenSymbol = PRV.symbol;
 
+    this.tradingFee = history.tradingFee;
+    if (this.tradingFee) {
+      this.tradingFee = formatUtil.amountFull(
+        this.tradingFee,
+        PRV.pDecimals,
+      );
+    }
+    this.tradingFeeTokenSymbol = PRV.symbol;
+
     this.account = history.accountName;
     this.type = 'Trade';
     this.exchange = 'Incognito';

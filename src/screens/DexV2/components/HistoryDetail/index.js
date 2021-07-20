@@ -77,8 +77,8 @@ const HistoryDetail = ({ history }) => {
         valueText: `${history?.sellAmount} ${history?.sellTokenSymbol}`,
       },
       {
-        label: 'Fee',
-        valueText: `${history?.networkFee} ${history?.networkFeeTokenSymbol}`,
+        label: 'Trading fee',
+        valueText: `${history?.tradingFee} ${history?.tradingFeeTokenSymbol}`,
       },
       {
         label: 'Time',
@@ -91,11 +91,6 @@ const HistoryDetail = ({ history }) => {
       {
         label: 'Account',
         valueText: history?.account,
-      },
-      {
-        label: 'Trading fee',
-        valueText: history?.tradingFee,
-        disabled: !history?.tradingFee,
       },
       {
         label: 'Exchange',
