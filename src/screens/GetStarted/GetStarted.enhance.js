@@ -42,6 +42,7 @@ import {
 import withDetectStatusNetwork from './GetStarted.enhanceNetwork';
 
 const enhance = (WrappedComp) => (props) => {
+  const [statusConfigs, setStatusConfigs] = React.useState('');
   const [loadMasterKeys, setLoadMasterKeys] = useState(false);
   const { isFetching, isFetched } = useSelector(wizardSelector);
   const pin = useSelector((state) => state?.pin?.pin);
@@ -171,30 +172,28 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'CONFIGS_APP',
         }),
       );
+      await setStatusConfigs('Load pin');
       await dispatch(loadPin());
       await dispatch(
         actionLogEvent({
           desc: 'LOAD_PIN',
         }),
       );
+      await setStatusConfigs('Get device info');
       await login();
       await dispatch(
         actionLogEvent({
           desc: 'LOGIN',
         }),
       );
-      await dispatch(actionFetchProfile());
-      await dispatch(
-        actionLogEvent({
-          desc: 'PROFILE',
-        }),
-      );
+      await setStatusConfigs('Get configs');
       const [servers] = await new Promise.all([
         serverService.get(),
         getFunctionConfigs().catch((e) => e),
         dispatch(actionFetchHomeConfigs()),
         dispatch(getPTokenList()),
         dispatch(getInternalTokenList()),
+        dispatch(actionFetchProfile()),
       ]);
       if (!servers || servers?.length === 0) {
         await serverService.setDefaultList();
@@ -204,12 +203,14 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'CONFIGS',
         }),
       );
+      await setStatusConfigs('Load all master keys');
       await dispatch(loadAllMasterKeys());
       await dispatch(
         actionLogEvent({
           desc: 'LOAD_ALL_MASTER_KEYS',
         }),
       );
+      await setStatusConfigs('Load all master keys accounts');
       await dispatch(loadAllMasterKeyAccounts());
       await dispatch(
         actionLogEvent({
@@ -285,20 +286,32 @@ const enhance = (WrappedComp) => (props) => {
             size="large"
             custom={
               isFetched && (
-                <Text
-                  style={{
-                    color: COLORS.colorGreyBold,
-                    fontFamily: FONT.NAME.medium,
-                    fontSize: FONT.SIZE.medium,
-                    lineHeight: FONT.SIZE.medium + 5,
-                    textAlign: 'center',
-                    marginTop: 30,
-                  }}
-                >
-                  {
-                    'This may take a couple of minutes.\nPlease do not navigate away from the app.'
-                  }
-                </Text>
+                <>
+                  <Text
+                    style={{
+                      color: COLORS.colorGreyBold,
+                      fontFamily: FONT.NAME.medium,
+                      fontSize: FONT.SIZE.medium,
+                      lineHeight: FONT.SIZE.medium + 5,
+                      textAlign: 'center',
+                      marginTop: 30,
+                    }}
+                  >
+                    {'This may take a couple of minutes.\nPlease do not navigate away from the app.'}
+                  </Text>
+                  <Text
+                    style={{
+                      color: COLORS.colorGreyBold,
+                      fontFamily: FONT.NAME.medium,
+                      fontSize: FONT.SIZE.regular,
+                      lineHeight: FONT.SIZE.regular + 5,
+                      textAlign: 'center',
+                      marginTop: 5,
+                    }}
+                  >
+                    {`(${statusConfigs}...)`}
+                  </Text>
+                </>
               )
             }
           />
