@@ -57,7 +57,7 @@ export async function loadWallet(passphrase, name = 'Wallet') {
     let wallet = new Wallet();
     wallet.Name = name;
     await configsWallet(wallet);
-    await wallet.loadWallet(passphrase, name);
+    wallet = await wallet.loadWallet(passphrase, name);
     return wallet?.Name ? wallet : false;
   } catch (error) {
     console.log('ERROR WHEN LOAD WALLET', error);

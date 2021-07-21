@@ -144,11 +144,10 @@ export const loadAllMasterKeys = () => async (dispatch, getState) => {
       await LocalDatabase.getMasterKeyList(),
       (item) => item.name,
     ).map((item) => new MasterKeyModel(item));
-    let task = [];
-    task = masterKeyList.map(async (key) => {
+    for (let key of masterKeyList) {
       await key.loadWallet();
       if (key.name.toLowerCase() === 'masterless') {
-        return;
+        continue;
       }
       let wallet = key.wallet;
       await configsWallet(wallet);
@@ -186,8 +185,7 @@ export const loadAllMasterKeys = () => async (dispatch, getState) => {
         await wallet.save();
       }
       await dispatch(actionLogMeasureStorageWallet(wallet));
-    });
-    await Promise.all(task);
+    }
     await dispatch(loadAllMasterKeysSuccess(masterKeyList));
   } catch (error) {
     console.log('loadAllMasterKeys error', error);
@@ -402,8 +400,12 @@ export const loadAllMasterKeyAccounts = () => async (dispatch, getState) => {
   ];
   let accounts = [];
   for (const masterKey of masterKeys) {
-    const masterKeyAccounts = await masterKey.getAccounts(true);
-    accounts = [...accounts, ...masterKeyAccounts];
+    try {
+      const masterKeyAccounts = await masterKey.getAccounts(true);
+      accounts = [...accounts, ...masterKeyAccounts];
+    } catch (error) {
+      console.log('ERROR LOAD ACCOUNTS OF MASTER KEYS', error);
+    }
   }
   await dispatch(loadAllMasterKeyAccountsSuccess(accounts));
 };
