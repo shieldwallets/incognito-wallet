@@ -179,7 +179,7 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'LOAD_PIN',
         }),
       );
-      await setStatusConfigs('Get device info');
+      await setStatusConfigs('Get info');
       await login();
       await dispatch(
         actionLogEvent({
@@ -210,7 +210,7 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'LOAD_ALL_MASTER_KEYS',
         }),
       );
-      await setStatusConfigs('Load all master keys accounts');
+      await setStatusConfigs('Load all master keys keychain');
       await dispatch(loadAllMasterKeyAccounts());
       await dispatch(
         actionLogEvent({
