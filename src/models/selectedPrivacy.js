@@ -68,7 +68,8 @@ class SelectedPrivacy {
     const tokenId = pTokenData?.tokenId || token?.id;
 
     const isUnknown = (_tokenID !== PRV_ID) && !tokenId;
-    const unknownText = 'Unknown';
+    const unknownText = 'Incognito Token';
+
     this.currencyType = pTokenData.currencyType;
     this.isToken = tokenId !== CONSTANT_COMMONS.PRV_TOKEN_ID && !!tokenId; // all kind of tokens (private tokens, incognito tokens)
     this.isMainCrypto =
@@ -109,14 +110,14 @@ class SelectedPrivacy {
       isUnknown ? unknownText : 'Privacy',
     );
     this.amount = (this.isToken ? token.amount : account.value) || 0;
-    this.tokenId = this.isMainCrypto ? CONSTANT_COMMONS.PRV_TOKEN_ID : tokenId;
+    this.tokenId = _tokenID ? _tokenID : (this.isMainCrypto ? CONSTANT_COMMONS.PRV_TOKEN_ID : tokenId);
     this.contractId = pTokenData.contractId;
     this.decimals = this.isMainCrypto
       ? CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY
       : pTokenData.decimals;
     this.pDecimals = this.isMainCrypto
       ? CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY
-      : pTokenData.pDecimals;
+      : (pTokenData.pDecimals ? pTokenData.pDecimals : CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY);
     this.externalSymbol = pTokenData.symbol;
     this.paymentAddress = account.PaymentAddress;
     this.isWithdrawable = this.isPToken;
@@ -149,7 +150,7 @@ class SelectedPrivacy {
     this.rootNetworkName = rootNetworkName;
     this.isUSDT = this.tokenId === BIG_COINS.USDT;
     this.isPRV = this.tokenId === BIG_COINS.PRV;
-    this.symbol = isUnknown ? unknownText : this.externalSymbol || this.symbol;
+    this.symbol = isUnknown ? '' : (this.externalSymbol || this.symbol);
   }
 }
 

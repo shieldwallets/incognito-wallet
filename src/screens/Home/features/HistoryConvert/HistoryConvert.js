@@ -26,7 +26,7 @@ const HistoryConvert = () => {
   const { handleRefresh } = useHistoryEffect({ version: PrivacyVersion.ver1 });
   return (
     <View style={styled.container}>
-      <Header title={selectedPrivacy?.name} customHeaderTitle={<BtnInfo />} />
+      <Header title={selectedPrivacy?.name || 'Incognito Token'} customHeaderTitle={<BtnInfo />} />
       <View style={{ flex: 1, paddingTop: 15 }}>
         <HistoryList
           histories={histories}
