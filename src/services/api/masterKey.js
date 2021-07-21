@@ -6,30 +6,13 @@ export const getWalletAccounts = async (masterAccountPublicKey, dispatch) => {
   try {
     const url = `hd-wallet/recovery?Key=${masterAccountPublicKey}`;
     const res = await http.get(url);
-    if (dispatch) {
-      await dispatch(
-        actionLogEvent({
-          desc: `RESULT: ${masterAccountPublicKey} + getWalletAccounts ${JSON.stringify(
-            res,
-          )}`,
-        }),
-      );
-    }
     result =
       res?.Accounts?.map((account) => ({
         name: account?.Name,
         id: account?.AccountID,
       })) || [];
-  } catch (error) {
-    if (dispatch) {
-      await dispatch(
-        actionLogEvent({
-          desc: `ERROR getWalletAccounts ${masterAccountPublicKey} ${JSON.stringify(
-            error,
-          )}`,
-        }),
-      );
-    }
+  } catch {
+    //
   }
   return result;
 };

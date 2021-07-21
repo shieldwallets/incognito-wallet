@@ -11,11 +11,7 @@ import {
   masterlessKeyChainSelector,
   noMasterLessSelector,
 } from '@src/redux/selectors/masterKey';
-import {
-  actionLogMeasureStorageWallet,
-  switchMasterKey,
-  updateMasterKey,
-} from '@src/redux/actions/masterKey';
+import { switchMasterKey, updateMasterKey } from '@src/redux/actions/masterKey';
 import { storeWalletAccountIdsOnAPI } from '@services/wallet/WalletService';
 import { devSelector } from '@src/screens/Dev';
 import {
@@ -353,7 +349,6 @@ export const actionFetchCreateAccount = ({ accountName }) => async (
     await dispatch(actionFetchedCreateAccount());
     await dispatch(actionSwitchAccount(serializedAccount?.name, true));
     await storeWalletAccountIdsOnAPI(wallet);
-    await dispatch(actionLogMeasureStorageWallet(wallet));
     return serializedAccount;
   } catch (error) {
     console.log('CREATE ACCOUNT ERROR', error);
