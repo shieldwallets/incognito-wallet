@@ -15,13 +15,16 @@ import withValidate from '@screens/Dex/features/HistoryContributeDetail/enhanceV
 import {compose} from 'recompose';
 import linkingService from '@services/linking';
 import { CONSTANT_CONFIGS } from '@src/constants';
+import {Text} from '@components/core';
+import styles from '@screens/DexV2/components/Trade/style';
 
 const HistoryContributeDetail = React.memo(({
   history,
-  canRetry,
   loading,
   showRetry,
+  showRefund,
   navigateToRetry,
+  error,
 }) => {
   const getPrivacyDataByTokenID = useSelector(selectedPrivacySelector.getPrivacyDataByTokenID);
   const { pairId, statusText } = history;
@@ -100,10 +103,10 @@ const HistoryContributeDetail = React.memo(({
   return (
     <View style={{ marginHorizontal: 25, flex: 1 }}>
       <Header title="Liquidity" />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {historyFactory.map(data => <Hook key={data?.label} {...data} />)}
         {renderContent()}
-        {canRetry && (
+        {showRefund && (
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <ButtonBasic
               title="Refund"
@@ -111,7 +114,7 @@ const HistoryContributeDetail = React.memo(({
                 styled.submitBtn,
                 showRetry ? { width: '48%' } : { flex: 1 }
               ]}
-              disabled={loading}
+              disabled={loading || error}
               loading={loading}
               onPress={() => navigateToRetry(false)}
             />
@@ -122,29 +125,30 @@ const HistoryContributeDetail = React.memo(({
                   styled.submitBtn,
                   { width: '48%' }
                 ]}
-                disabled={loading}
+                disabled={loading || error}
                 loading={loading}
                 onPress={() => navigateToRetry(true)}
               />
             )}
           </View>
         )}
+        {!!error && <Text style={[ styles.error, { marginTop: -25, textAlign: 'center', marginBottom: 40 } ]}>{error}</Text>}
       </ScrollView>
     </View>
   );
 });
 
+HistoryContributeDetail.defaultProps = {
+  error: '',
+};
+
 HistoryContributeDetail.propTypes = {
   history: PropTypes.object.isRequired,
-  canRetry: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
-  prvBalance: PropTypes.number.isRequired,
-  pTokenBalance: PropTypes.number.isRequired,
-  retryTokenId: PropTypes.string.isRequired,
-  retryAmount: PropTypes.number.isRequired,
-  isRetryPRV: PropTypes.bool.isRequired,
-  showRetry: PropTypes.bool.isRequired,
   navigateToRetry: PropTypes.func.isRequired,
+  showRefund: PropTypes.bool.isRequired,
+  showRetry: PropTypes.bool.isRequired,
+  error: PropTypes.string,
 };
 
 

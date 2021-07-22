@@ -1,48 +1,48 @@
 import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import {TRANSACTION_FEE} from '@screens/Dex/Liquidity.constants';
-import {MESSAGES} from '@screens/Dex/constants';
+import {MESSAGES, PRV_ID} from '@screens/Dex/constants';
 
 const withValidate = WrappedComp => props => {
   const {
-    canRetry,
+    showRetry,
+    showRefund,
+    refundTokenBalance,
+    retryTokenBalance,
     prvBalance,
-    pTokenBalance,
-    retryTokenId,
+
+    retryTokenID,
+    refundTokenID,
     retryAmount,
-    isRetryPRV,
-    contributes
   } = props;
 
   const [error, setError] = React.useState('');
-  const [showRetry, setShowRetry] = React.useState(true);
 
   const handleValidate = () => {
-    setError('');
     if (prvBalance < TRANSACTION_FEE) {
       setError(MESSAGES.NOT_ENOUGH_PRV_NETWORK_FEE);
-      setShowRetry(false);
     }
-
-    if (isRetryPRV) {
-      if (retryAmount > prvBalance + TRANSACTION_FEE) {
-        setShowRetry(false);
-      }
-    } else {
-      if (pTokenBalance && pTokenBalance < retryAmount) {
-        setError(MESSAGES.BALANCE_INSUFFICIENT);
-        setShowRetry(false);
-      }
+    if (showRetry && retryTokenID === PRV_ID && retryTokenBalance < TRANSACTION_FEE + retryAmount) {
+      setError(MESSAGES.BALANCE_INSUFFICIENT);
     }
-    if (contributes.length === 1) {
-      setShowRetry(false);
+    if (showRetry && retryTokenID === PRV_ID && retryTokenBalance < retryAmount) {
+      setError(MESSAGES.BALANCE_INSUFFICIENT);
     }
   };
 
   React.useEffect(() => {
-    if (!canRetry) return;
+    if (!refundTokenID || !retryTokenID) return;
     handleValidate();
-  }, [canRetry, prvBalance, pTokenBalance, retryAmount, retryTokenId, retryAmount, isRetryPRV, contributes]);
+  }, [
+    showRetry,
+    showRefund,
+    refundTokenBalance,
+    retryTokenBalance,
+    prvBalance,
+    retryAmount,
+    retryTokenID,
+    refundTokenID,
+  ]);
 
   return (
     <ErrorBoundary>
@@ -50,7 +50,6 @@ const withValidate = WrappedComp => props => {
         {...{
           ...props,
           error,
-          showRetry
         }}
       />
     </ErrorBoundary>

@@ -3,8 +3,6 @@ import { View } from 'react-native';
 import {Header} from '@src/components';
 import Balance from '@screens/DexV2/components/Balance';
 import { RoundCornerButton, ScrollView, Text } from '@components/core';
-import { useSelector } from 'react-redux';
-import { selectedPrivacySelector } from '@src/redux/selectors';
 import styles from '@screens/DexV2/components/TradeConfirm/style';
 import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
 import formatUtil from '@utils/format';
@@ -16,36 +14,24 @@ import PropTypes from 'prop-types';
 const ConfirmRetry = React.memo((props) => {
   const {
     isRetry,
-    retryToken,
     retryAmount,
-    prvBalance,
-    pTokenBalance,
-    inputTokenId,
-    inputAmount,
-    outputTokenId,
-    outputAmount,
+    refundAmount,
     account,
     onConfirmPress,
+    retryToken,
+    refundToken,
     error,
   } = props;
 
-  const getPrivacyDataByTokenID = useSelector(selectedPrivacySelector.getPrivacyDataByTokenID);
-
-  const inputToken = getPrivacyDataByTokenID(inputTokenId);
-  let outputToken;
-  if (outputTokenId) {
-    outputToken = getPrivacyDataByTokenID(outputTokenId);
-  }
-
   const balanceFactories = React.useMemo(() => (
     [{
-      token: inputToken,
-      balance: prvBalance,
+      token: retryToken,
+      balance: retryToken?.amount,
     }, {
-      token: outputToken,
-      balance: pTokenBalance,
+      token: refundToken,
+      balance: refundToken?.amount,
     }]
-  ), [inputToken, prvBalance, outputToken]);
+  ), [retryToken, refundToken]);
 
   const renderBalance = ({ token, balance }) => {
     if (!token || balance === undefined) return null;
@@ -61,32 +47,21 @@ const ConfirmRetry = React.memo((props) => {
   };
 
   const renderExchangeRate = () => {
+    if (!retryAmount || !refundAmount) return null;
     return (
       <ExchangeRate
-        inputToken={inputToken}
-        inputValue={inputAmount}
-        outputToken={outputToken}
-        outputValue={outputAmount}
+        inputToken={retryToken}
+        inputValue={retryAmount}
+        outputToken={refundToken}
+        outputValue={refundAmount}
       />
     );
   };
 
   const getRefundText = () => {
-    let message = '';
-    if ((!retryToken || !outputTokenId) && inputTokenId) {
-      message = `${formatUtil.amountFull(inputAmount, inputToken.pDecimals)} ${inputToken.symbol}`;
-    } else {
-      let {
-        tokenId,
-        amount
-      } = {
-        tokenId: (!retryToken || (inputToken?.tokenId === retryToken?.tokenId)) ? outputTokenId : inputTokenId,
-        amount: (!retryToken || (inputToken?.tokenId === retryToken?.tokenId)) ? outputAmount : inputAmount
-      };
-      const token = getPrivacyDataByTokenID(tokenId);
-      message = `${formatUtil.amountFull(amount, token.pDecimals)} ${token.symbol}`;
-    }
-    return message;
+    const token = isRetry ? retryToken : refundToken;
+    const amount = isRetry ? retryAmount : refundAmount;
+    return `${formatUtil.amountFull(amount, token.pDecimals)} ${token.symbol}` || '';
   };
 
   return (
@@ -95,13 +70,7 @@ const ConfirmRetry = React.memo((props) => {
       <ScrollView>
         <View style={styles.mainInfo}>
           <Text style={styles.bigText}>{isRetry ? 'Retry add liquidity' : 'Refund liquidity'}</Text>
-          {
-            isRetry ? (
-              <Text style={styles.bigText} numberOfLines={3}>{`${formatUtil.amountFull(retryAmount, retryToken.pDecimals)} ${retryToken.symbol}`}</Text>
-            ) : (
-              <Text style={styles.bigText} numberOfLines={3}>{getRefundText()}</Text>
-            )
-          }
+          <Text style={styles.bigText} numberOfLines={3}>{getRefundText()}</Text>
         </View>
         {balanceFactories.map(renderBalance)}
         <ExtraInfo
@@ -127,13 +96,9 @@ ConfirmRetry.propTypes = {
 ConfirmRetry.propTypes = {
   isRetry: PropTypes.bool.isRequired,
   retryToken: PropTypes.object.isRequired,
+  refundToken: PropTypes.object.isRequired,
   retryAmount: PropTypes.number.isRequired,
-  prvBalance: PropTypes.number.isRequired,
-  pTokenBalance: PropTypes.number.isRequired,
-  inputTokenId: PropTypes.string.isRequired,
-  inputAmount: PropTypes.number.isRequired,
-  outputTokenId: PropTypes.string.isRequired,
-  outputAmount: PropTypes.number.isRequired,
+  refundAmount: PropTypes.number.isRequired,
   account: PropTypes.object.isRequired,
   onConfirmPress: PropTypes.func.isRequired,
   error: PropTypes.string,

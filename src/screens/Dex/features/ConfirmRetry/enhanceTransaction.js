@@ -13,18 +13,17 @@ import routeNames from '@routers/routeNames';
 import { actionFetchHistories } from '@screens/Dex/Liquidity.actions';
 
 const withTransaction = WrappedComp => props => {
+  const params = useNavigationParam('params') || {};
   const {
     isRetry,
-    retryToken,
+    retryTokenID,
+    refundTokenID,
     retryAmount,
-    prvBalance,
-    pTokenBalance,
-    inputTokenId,
-    inputAmount,
-    outputTokenId,
-    outputAmount,
+    refundAmount,
     pairId,
-  } = useNavigationParam('params') || {};
+    retryToken,
+    refundToken,
+  } = params;
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -36,12 +35,12 @@ const withTransaction = WrappedComp => props => {
   const [visible, setVisible] = React.useState(false);
 
   const onCreateContribute = async () => {
-    const tokenId = isRetry ? retryToken.tokenId : (inputTokenId !== retryToken.tokenId ? inputTokenId : outputTokenId);
+    const tokenId = isRetry ? retryTokenID : refundTokenID;
     await accountServices.createAndSendTxWithRetryContribution({
       account,
       wallet,
       tokenID: tokenId,
-      amount: isRetry ? retryAmount : 0,
+      amount: isRetry ? retryAmount : 1,
       fee: TRANSACTION_FEE,
       pairID: pairId
     });
@@ -77,16 +76,14 @@ const withTransaction = WrappedComp => props => {
           error,
           loading,
           isRetry,
-          retryToken,
-          retryAmount,
-          prvBalance,
-          pTokenBalance,
-          inputTokenId,
-          inputAmount,
-          outputTokenId,
-          outputAmount,
           account,
-
+          retryTokenID,
+          refundTokenID,
+          retryAmount,
+          refundAmount,
+          pairId,
+          retryToken,
+          refundToken,
           onConfirmPress,
         }}
       />

@@ -12,10 +12,9 @@ import { isEmpty, orderBy, uniq, isNumber, floor, ceil } from 'lodash';
 import memoize from 'memoize-one';
 import { HISTORY_STATUS } from '@src/constants/trading';
 import { TX_STATUS } from 'incognito-chain-web-js/build/wallet';
-import { PRV_ID } from '@src/constants/common';
 import BigNumber from 'bignumber.js';
 import formatUtils from '@utils/format';
-
+import {selectedPrivacySelector} from '@src/redux/selectors';
 
 export const liquiditySelector = createSelector(
   (state) => state.liquidity,
@@ -115,7 +114,8 @@ export const historiesSelector = createSelector(
 export const getHistoryById = createSelector(
   historiesSelector,
   historyTabNameSelector,
-  (histories, historyTabName) => memoize((id) => {
+  selectedPrivacySelector.getPrivacyDataByTokenID,
+  (histories, historyTabName, getPrivacyDataByTokenID) => memoize((id) => {
     let statusText;
     const history = histories().find(history => history.pairId === id || history.id === id);
     if (historyTabName !== HEADER_TABS.Add) {
@@ -183,34 +183,23 @@ export const getHistoryById = createSelector(
       outputAmount = (contributes.find(contribute => contribute.tokenId === outputTokenId) || {})?.amount;
     }
 
+    let refundTokenID;
+    let refundAmount;
+    let retryTokenID;
+    let retryAmount;
+    const waitingTokens = contributes.filter(contribute => (contribute.status).toLowerCase() === LIQUIDITY_STATUS.WAITING.toLowerCase());
+    if (statusText === LIQUIDITY_STATUS_MESSAGE.WAITING && waitingTokens.length === 1) {
+      /** filter refund */
+      refundTokenID = (inputAmount && inputTokenId) ? inputTokenId : outputTokenId;
+      refundAmount = (inputAmount && inputTokenId) ? inputAmount : outputAmount;
 
-    let canRetry = false;
-    let retryTokenId;
-    let retryAmount = 0;
-
-    /** Don't have local storage, 1 contribute is waiting, can retry */
-    const countWaiting = contributes.filter(contribute => (contribute.status).toLowerCase() === LIQUIDITY_STATUS.WAITING.toLowerCase()).length;
-    if (
-      storageContributes.length === 0 &&
-      tokenIds.length === 2 &&
-      countWaiting === 1 &&
-      statusText === LIQUIDITY_STATUS_MESSAGE.WAITING)
-    {
-      retryTokenId = tokenIds.find(tokenId => contributes.some(contribute => contribute.tokenId !== tokenId));
-      canRetry = Boolean(retryTokenId);
-    }
-
-    if (storageContributes.length > 0 && [LIQUIDITY_STATUS_MESSAGE.FAILED, LIQUIDITY_STATUS_MESSAGE.WAITING].includes(statusText)) {
-      /** Have local storage, contribute is waiting, can retry */
-      canRetry = (storageContributes.length > 0) && !storageContributes.some(item => item.status !== LIQUIDITY_STATUS.FAIL);
-      if (canRetry) {
-        const storageTokenIds = storageContributes.filter(item => item.status === LIQUIDITY_STATUS.FAIL).map(item => item?.tokenId);
-        if (storageTokenIds.length > 0) {
-          retryTokenId = storageTokenIds[0];
-        }
-        if (Boolean(canRetry) && Boolean(retryTokenId)) {
-          retryAmount = storageContributes.find(item => item.status === LIQUIDITY_STATUS.FAIL)?.amount;
-        }
+      /** filter retry */
+      const retryTokenFilter = tokenIds.filter(tokenID => tokenID !== refundTokenID);
+      if (retryTokenFilter && retryTokenFilter.length > 0) {
+        retryTokenID = retryTokenFilter[0];
+      }
+      if (retryTokenID && storageContributes.length > 0) {
+        retryAmount = storageContributes.find(item => item.tokenId === retryTokenID)?.amount;
       }
     }
 
@@ -221,14 +210,15 @@ export const getHistoryById = createSelector(
       allStatus,
       contributes,
 
-      canRetry,
-      isRetryPRV: retryTokenId === PRV_ID,
-      retryTokenId,
+      refundTokenID,
+      refundAmount,
+      retryTokenID,
       retryAmount,
-      inputTokenId,
-      inputAmount,
-      outputTokenId,
-      outputAmount,
+
+      showRetry: !!retryTokenID && !!retryAmount,
+      showRefund: !!refundTokenID,
+      retryToken: retryTokenID && getPrivacyDataByTokenID(retryTokenID),
+      refundToken: refundTokenID && getPrivacyDataByTokenID(refundTokenID)
     };
   }),
 );
