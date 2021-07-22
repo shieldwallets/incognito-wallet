@@ -134,13 +134,13 @@ const Node = (props) => {
             onRefresh={refreshData}
             refreshing={isRefreshing}
           />
-          <View style={{ marginHorizontal: 25 }}>
-            <RoundCornerButton
-              style={[style.buyButton, theme.BUTTON.BLACK_TYPE]}
-              title={string.get_node_device}
-              onPress={onBuyNodePress}
-            />
-          </View>
+          {/*<View style={{ marginHorizontal: 25 }}>*/}
+          {/*  <RoundCornerButton*/}
+          {/*    style={[style.buyButton, theme.BUTTON.BLACK_TYPE]}*/}
+          {/*    title={string.get_node_device}*/}
+          {/*    onPress={onBuyNodePress}*/}
+          {/*  />*/}
+          {/*</View>*/}
           <SuccessModal
             title={string.remove_from_display}
             extraInfo={string.add_node_again}
