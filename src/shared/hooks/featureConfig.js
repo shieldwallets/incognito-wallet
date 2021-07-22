@@ -9,18 +9,18 @@ export const getDurationShowMessage = (message) => {
 };
 
 export const handleGetFunctionConfigs = async (featureName) => {
+  let result = {};
   try {
     const features = await getFunctionConfigs();
     if (features && features.length) {
       return (
         features.find((featureItem) => featureItem.name === featureName) || {}
       );
-    } else {
-      return {};
     }
   } catch (e) {
     console.debug('CAN NOT GET FEATURE', featureName, e);
   }
+  return result;
 };
 
 function useFeatureConfig(featureName, onPress) {

@@ -1,6 +1,10 @@
 import React from 'react';
 import firebase from 'react-native-firebase';
-import { actionInit, actionNavigate, normalizedData, } from '@src/screens/Notification';
+import {
+  actionInit,
+  actionNavigate,
+  normalizedData,
+} from '@src/screens/Notification';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
@@ -15,9 +19,10 @@ import { isIOS } from '@utils/platform';
 import { Toast } from '@components/core';
 import {
   getDurationShowMessage,
-  handleGetFunctionConfigs
+  handleGetFunctionConfigs,
 } from '@src/shared/hooks/featureConfig';
 import { CONSTANT_APP } from '@src/constants';
+import { actionLogEvent } from '@src/screens/Performance';
 
 const sentIds = {};
 let component;
@@ -31,7 +36,7 @@ const notificationHandler = (notification) => {
         data: {
           ...notification,
           ...notification.data,
-        }
+        },
       });
     }
 
@@ -54,30 +59,52 @@ PushNotification.configure({
   requestPermissions: true,
 });
 
-const enhance = WrappedComponent =>
+const enhance = (WrappedComponent) =>
   class extends React.Component {
-    onNavigateNotification = async notification => {
+    onNavigateNotification = async (notification) => {
+      // TODO: remove log event
+      const { actionLogEvent } = this.props;
       try {
         // eslint-disable-next-line react/prop-types
         const { navigateNotification, navigation } = this.props;
-
         const _normalizedData = normalizedData({
           ...notification?.data,
-          ...sentIds[notification?.data?.ID],
+          ...sentIds[(notification?.data?.ID)],
         });
-        const featureName = CONSTANT_APP.FEATURES_TYPE_MAP[_normalizedData.type] || CONSTANT_APP.FEATURES_ROUTE_MAP[_normalizedData.screen];
+        const featureName =
+          CONSTANT_APP.FEATURES_TYPE_MAP[_normalizedData.type] ||
+          CONSTANT_APP.FEATURES_ROUTE_MAP[_normalizedData.screen];
+        await actionLogEvent({
+          desc: `Handle navigate notification\n
+        data: ${_normalizedData}\n
+        featureName: ${featureName}
+        `,
+        });
         const feature = await handleGetFunctionConfigs(featureName);
-        const { disabled, message } = feature;
+        await actionLogEvent({
+          desc: `Handle navigate notification\n
+          feature: ${feature}\n
+        `,
+        });
+        const { disabled = false, message = '' } = feature || {};
+        await actionLogEvent({
+          desc: `Handle navigate notification\n
+          disabled: ${disabled}\n
+          message: ${message}\n
+        `,
+        });
         if (disabled) {
           const duration = getDurationShowMessage(message);
-          Toast.showInfo(message, {duration});
+          Toast.showInfo(message, { duration });
           return;
         }
-        await navigateNotification(
-          _normalizedData,
-          navigation,
-        );
+        await navigateNotification(_normalizedData, navigation);
       } catch (error) {
+        await actionLogEvent({
+          desc: `Handle navigate notification\n
+          error: ${JSON.stringify(error)}\n
+        `,
+        });
         new ExHandler(error).showErrorToast();
       }
     };
@@ -130,23 +157,23 @@ const enhance = WrappedComponent =>
     }
 
     onListenerEventFCM = async () => {
-      await firebase
-        .messaging()
-        .ios.registerForRemoteNotifications();
+      await firebase.messaging().ios.registerForRemoteNotifications();
       firebase.messaging().ios.getAPNSToken();
 
-      firebase.messaging().subscribeToTopic(global.isMainnet ? 'all-production' : 'all-staging');
+      firebase
+        .messaging()
+        .subscribeToTopic(global.isMainnet ? 'all-production' : 'all-staging');
 
       firebase.messaging().onMessage(this.handleSendNotificationToSystem);
-      firebase.notifications().onNotification(this.handleSendNotificationToSystem);
+      firebase
+        .notifications()
+        .onNotification(this.handleSendNotificationToSystem);
 
       if (isIOS()) {
-        firebase
-          .notifications()
-          .onNotificationOpened(notificationOpen => {
-            const notification = notificationOpen.notification;
-            this.onNavigateNotification(notification);
-          });
+        firebase.notifications().onNotificationOpened((notificationOpen) => {
+          const notification = notificationOpen.notification;
+          this.onNavigateNotification(notification);
+        });
       }
 
       PushNotification.popInitialNotification(notificationHandler);
@@ -161,19 +188,28 @@ const enhance = WrappedComponent =>
     }
   };
 
-const mapState = state => ({
+const mapState = (state) => ({
   accountList: accountSelector.listAccount(state),
 });
 
 const mapDispatch = {
   navigateNotification: actionNavigate,
   initNotification: actionInit,
+  actionLogEvent,
 };
 
 enhance.propTypes = {
   navigateNotification: PropTypes.func.isRequired,
   navigation: PropTypes.any.isRequired,
   accountList: PropTypes.array.isRequired,
+  actionLogEvent: PropTypes.func.isRequired,
 };
 
-export default compose(withNavigation, connect(mapState, mapDispatch), enhance);
+export default compose(
+  withNavigation,
+  connect(
+    mapState,
+    mapDispatch,
+  ),
+  enhance,
+);
