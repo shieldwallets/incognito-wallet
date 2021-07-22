@@ -22,7 +22,6 @@ import {
   handleGetFunctionConfigs,
 } from '@src/shared/hooks/featureConfig';
 import { CONSTANT_APP } from '@src/constants';
-import { actionLogEvent } from '@src/screens/Performance';
 
 const sentIds = {};
 let component;
@@ -62,8 +61,6 @@ PushNotification.configure({
 const enhance = (WrappedComponent) =>
   class extends React.Component {
     onNavigateNotification = async (notification) => {
-      // TODO: remove log event
-      const { actionLogEvent } = this.props;
       try {
         // eslint-disable-next-line react/prop-types
         const { navigateNotification, navigation } = this.props;
@@ -74,25 +71,8 @@ const enhance = (WrappedComponent) =>
         const featureName =
           CONSTANT_APP.FEATURES_TYPE_MAP[_normalizedData.type] ||
           CONSTANT_APP.FEATURES_ROUTE_MAP[_normalizedData.screen];
-        await actionLogEvent({
-          desc: `Handle navigate notification\n
-        data: ${_normalizedData}\n
-        featureName: ${featureName}
-        `,
-        });
         const feature = await handleGetFunctionConfigs(featureName);
-        await actionLogEvent({
-          desc: `Handle navigate notification\n
-          feature: ${feature}\n
-        `,
-        });
         const { disabled = false, message = '' } = feature || {};
-        await actionLogEvent({
-          desc: `Handle navigate notification\n
-          disabled: ${disabled}\n
-          message: ${message}\n
-        `,
-        });
         if (disabled) {
           const duration = getDurationShowMessage(message);
           Toast.showInfo(message, { duration });
@@ -100,11 +80,6 @@ const enhance = (WrappedComponent) =>
         }
         await navigateNotification(_normalizedData, navigation);
       } catch (error) {
-        await actionLogEvent({
-          desc: `Handle navigate notification\n
-          error: ${JSON.stringify(error)}\n
-        `,
-        });
         new ExHandler(error).showErrorToast();
       }
     };
@@ -195,14 +170,12 @@ const mapState = (state) => ({
 const mapDispatch = {
   navigateNotification: actionNavigate,
   initNotification: actionInit,
-  actionLogEvent,
 };
 
 enhance.propTypes = {
   navigateNotification: PropTypes.func.isRequired,
   navigation: PropTypes.any.isRequired,
   accountList: PropTypes.array.isRequired,
-  actionLogEvent: PropTypes.func.isRequired,
 };
 
 export default compose(
