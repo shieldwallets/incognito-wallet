@@ -126,9 +126,9 @@ export const actionFetchTx = () => async (dispatch, getState) => {
         return tx;
       }
       tx = mappingTxTransactorSelector(state)({
-        ...txt,
-        txType: tx?.txType,
-        txTypeStr: tx?.txTypeStr,
+        ...tx,
+        status: txt?.status || tx?.status,
+        statusStr: txt?.statusStr || tx?.statusStr,
       });
       break;
     }
