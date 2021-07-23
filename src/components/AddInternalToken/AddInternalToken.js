@@ -166,8 +166,9 @@ class AddInternalToken extends Component {
         // setWallet(wallet);
         actionAddFollowTokenAfterMint(tokenID);
 
-        this.goBack();
-        // refetch internal token list
+        setTimeout(() => {
+          this.goBack();
+        }, 500);
       } else {
         throw new Error('Something went wrong. Please refresh the screen.');
       }

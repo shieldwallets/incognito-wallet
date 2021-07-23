@@ -72,8 +72,7 @@ class SelectedPrivacy {
 
     this.currencyType = pTokenData.currencyType;
     this.isToken = tokenId !== CONSTANT_COMMONS.PRV_TOKEN_ID && !!tokenId; // all kind of tokens (private tokens, incognito tokens)
-    this.isMainCrypto =
-      tokenId === PRV_ID || !this.isToken; // PRV
+    this.isMainCrypto = _tokenID === PRV_ID; // PRV
     this.isPrivateToken =
       pTokenData?.type === CONSTANT_COMMONS.PRIVATE_TOKEN_TYPE.TOKEN; // ERC20 tokens, BEP2 tokens
     this.isPrivateCoin =
@@ -117,7 +116,7 @@ class SelectedPrivacy {
       : pTokenData.decimals;
     this.pDecimals = this.isMainCrypto
       ? CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY
-      : (pTokenData.pDecimals ? pTokenData.pDecimals : CONSTANT_COMMONS.DECIMALS.MAIN_CRYPTO_CURRENCY);
+      : pTokenData.pDecimals;
     this.externalSymbol = pTokenData.symbol;
     this.paymentAddress = account.PaymentAddress;
     this.isWithdrawable = this.isPToken;
@@ -150,7 +149,7 @@ class SelectedPrivacy {
     this.rootNetworkName = rootNetworkName;
     this.isUSDT = this.tokenId === BIG_COINS.USDT;
     this.isPRV = this.tokenId === BIG_COINS.PRV;
-    this.symbol = isUnknown ? '' : (this.externalSymbol || this.symbol);
+    this.symbol = this.externalSymbol || this.symbol || '';
   }
 }
 
