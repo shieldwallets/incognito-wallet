@@ -39,10 +39,10 @@ const Convert = () => {
   };
 
   React.useEffect(() => {
-    if (!isConverting && isConverted) {
+    if (!isConverting && isConverted && !isError) {
       setVisible(true);
     }
-  }, [isConverting, isConverted]);
+  }, [isConverting, isConverted, isError]);
 
   return (
     <View style={{ flex: 1 }}>

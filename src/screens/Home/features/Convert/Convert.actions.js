@@ -90,7 +90,7 @@ export const actionConvertCoins = () => async (dispatch, getState) => {
     const { prvUnspent, pTokenUnspent } = convertCoinsDataSelector(state);
     const accountWallet = getDefaultAccountWalletSelector(state);
     if (!isEmpty(prvUnspent)) {
-      const { tokenID, balance, unspentCoins } = prvUnspent;
+      const { tokenID, unspentCoins } = prvUnspent;
       const totalCoinsConvert = unspentCoins.length;
       let errorMessage = undefined;
       try {
@@ -103,9 +103,9 @@ export const actionConvertCoins = () => async (dispatch, getState) => {
             dispatch(actionUpdatePercentConvert({ tokenID, percent }));
           });
         };
-        await accountWallet.createAndSendConvertNativeToken({ tokenID, balance, txHandler });
+        await accountWallet.createAndSendConvertNativeToken({ tokenID, txHandler });
       } catch (error) {
-        errorMessage = new ExHandler(error).getMessage();
+        errorMessage = new ExHandler(error).getMessage(error?.message);
       } finally {
         dispatch(actionUpdateConvertMessages({ tokenID, errorMessage }));
       }
@@ -113,7 +113,7 @@ export const actionConvertCoins = () => async (dispatch, getState) => {
 
     if (!isEmpty(pTokenUnspent)) {
       for (const coin of pTokenUnspent) {
-        const { tokenID, balance, unspentCoins } = coin;
+        const { tokenID, unspentCoins } = coin;
         const totalCoinsConvert = unspentCoins.length;
         let errorMessage = undefined;
         try {
@@ -126,9 +126,9 @@ export const actionConvertCoins = () => async (dispatch, getState) => {
             });
           };
           dispatch(actionUpdateCurrentConvertStep(tokenID));
-          await accountWallet.createAndSendConvertPToken({ tokenID, balance, txHandler });
+          await accountWallet.createAndSendConvertPToken({ tokenID, txHandler });
         } catch (error) {
-          errorMessage = new ExHandler(error).getMessage();
+          errorMessage = new ExHandler(error).getMessage(error?.message);
         } finally {
           dispatch(actionUpdateConvertMessages({ tokenID, errorMessage }));
         }
