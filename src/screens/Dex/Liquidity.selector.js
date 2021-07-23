@@ -294,12 +294,20 @@ export const calculatorShareWithDrawSelector = createSelector(
   (liquidity, shareValueSelector) => memoize((inputToken, inputValue, outputToken, isInput) => {
     if (!inputToken || !outputToken) return;
     const { share, totalShare, userPair } = shareValueSelector(inputToken, outputToken);
+    const { maxInputShare: maxInput, maxOutputShare: maxOutput } = liquidity[INPUT_FIELDS.REMOVE_POOL];
     const poolInputValue = userPair[inputToken.id];
     const poolOutputValue = userPair[outputToken.id];
     const sharePercent = new BigNumber(share).dividedBy(totalShare).toNumber();
     const maxInputShare = new BigNumber(sharePercent).multipliedBy(poolInputValue).toNumber() || 0; // Max_Token_A
     const maxOutputShare = new BigNumber(sharePercent).multipliedBy(poolOutputValue).toNumber() || 0; // Max_Token_B
-    const number = new BigNumber(inputValue).multipliedBy(maxOutputShare).dividedBy(maxInputShare).toNumber();
+    let number;
+    if (isInput && inputValue === Math.ceil(maxInput)) {
+      number = maxOutput;
+    } else if (!isInput && inputValue === Math.ceil(maxOutput)) {
+      number = maxInput;
+    } else {
+      number = new BigNumber(inputValue).multipliedBy(maxOutputShare).dividedBy(maxInputShare).toNumber();
+    }
     const outputValue = isInput ? floor(number) : ceil(number);
     const outputText = formatUtils.amountFull(outputValue, outputToken.pDecimals);
     return {
