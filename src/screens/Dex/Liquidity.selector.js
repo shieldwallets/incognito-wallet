@@ -120,7 +120,7 @@ export const getHistoryById = createSelector(
     const history = histories().find(history => history.pairId === id || history.id === id);
     if (historyTabName !== HEADER_TABS.Add) {
       const status = history.status;
-      if (HISTORY_STATUS.REFUND.includes(status) || HISTORY_STATUS.REJECTED.includes(status)) {
+      if (HISTORY_STATUS.REFUND.includes(status) || HISTORY_STATUS.REJECTED.includes(status) || HISTORY_STATUS?.FAIL.includes(status)) {
         statusText = LIQUIDITY_STATUS_MESSAGE.FAILED;
       } else if (HISTORY_STATUS.ACCEPTED.includes(status)) {
         statusText = LIQUIDITY_STATUS_MESSAGE.SUCCESSFUL;
