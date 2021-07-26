@@ -148,9 +148,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - get_app_info
-      - run: git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
-      - run: git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask fetch --unshallow
+      - get_app_info 
       - run: bundle install
       - run: bundle exec fastlane android release
       - run: chmod +x .circleci/slack-upload.sh
