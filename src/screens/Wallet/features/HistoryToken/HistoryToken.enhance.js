@@ -1,29 +1,22 @@
 import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { ExHandler } from '@src/services/exception';
-import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
+import { accountSelector, selectedPrivacySelector } from '@src/redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeHistory } from '@src/services/api/history';
 import { Toast } from '@src/components/core';
-import {
-  getBalance as getBalanceToken,
-  actionFetchHistoryToken,
-} from '@src/redux/actions/token';
-import { useHistoryList } from '@src/components/HistoryList';
+import { actionFetchHistoryToken } from '@src/redux/actions/token';
 
 const enhance = (WrappedComp) => (props) => {
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
-  const token = useSelector(
-    selectedPrivacySeleclor.selectedPrivacyByFollowedSelector,
-  );
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const signPublicKeyEncode = useSelector(
-    accountSeleclor.signPublicKeyEncodeSelector,
+    accountSelector.signPublicKeyEncodeSelector,
   );
 
   const dispatch = useDispatch();
   const handleLoadHistory = async (refreshing) => {
     try {
-      if (!!selectedPrivacy?.isToken && !!token?.id) {
+      if (selectedPrivacy?.isToken) {
         dispatch(actionFetchHistoryToken(refreshing));
       }
     } catch (error) {
@@ -49,23 +42,6 @@ const enhance = (WrappedComp) => (props) => {
       ).showErrorToast();
     }
   };
-  const handleLoadBalance = () => {
-    try {
-      if (token) {
-        dispatch(getBalanceToken(token));
-      }
-    } catch (error) {
-      new ExHandler(error).showErrorToast();
-    }
-  };
-  const handleRefresh = () => {
-    handleLoadBalance();
-    handleLoadHistory(true);
-  };
-  const [showEmpty, refreshing] = useHistoryList({
-    handleLoadHistory,
-    handleLoadBalance,
-  });
   return (
     <ErrorBoundary>
       <WrappedComp
@@ -73,9 +49,6 @@ const enhance = (WrappedComp) => (props) => {
           ...props,
           handleCancelEtaHistory,
           handleLoadHistory,
-          showEmpty,
-          refreshing,
-          handleRefresh,
         }}
       />
     </ErrorBoundary>

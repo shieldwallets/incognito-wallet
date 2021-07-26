@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { COLORS, FONT } from '@src/styles';
-import { TouchableOpacity } from '@src/components/core';
+import { ActivityIndicator, TouchableOpacity, View } from '@src/components/core';
 
 const styled = StyleSheet.create({
   container: {
@@ -32,6 +32,7 @@ const ButtonBasic = (props) => {
     titleStyle = null,
     customContent,
     disabled = false,
+    loading = false,
     ...rest
   } = props;
 
@@ -43,7 +44,10 @@ const ButtonBasic = (props) => {
       {customContent ? (
         customContent
       ) : (
-        <Text style={[styled.title, titleStyle]}>{title}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          {loading ? (<ActivityIndicator style={{ marginRight: 5 }} color={COLORS.white} />) : null}
+          <Text style={[styled.title, titleStyle]}>{title}</Text>
+        </View>
       )}
     </TouchableOpacity>
   );

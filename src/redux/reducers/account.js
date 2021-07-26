@@ -1,5 +1,5 @@
 import type from '@src/redux/types/account';
-import _ from 'lodash';
+import _, { cloneDeep } from 'lodash';
 
 const TAG = 'reducers-account';
 const initialState = {
@@ -9,14 +9,17 @@ const initialState = {
   switch: false,
   create: false,
   import: false,
-  signPublicKeyEncode: ''
+  signPublicKeyEncode: '',
+  burnerAddress: '',
 };
 
 const setAccount = (list, account) => {
   let newList = [...list];
   // console.log(TAG,'setAccount account = ',account);
   try {
-    const foundIndex = list.findIndex((a) => a.PaymentAddress === account.PaymentAddress);
+    const foundIndex = list.findIndex(
+      (a) => a.PaymentAddress === account.PaymentAddress,
+    );
     if (foundIndex >= 0) {
       newList[foundIndex] = account;
     }
@@ -61,7 +64,7 @@ const reducer = (state = initialState, action) => {
   case type.SET_LIST:
     return {
       ...state,
-      list: [...action.data],
+      list: cloneDeep(action.data),
     };
   case type.REMOVE_BY_PRIVATE_KEY:
     newList = removeByPrivateKey(state.list, action.data);
@@ -148,7 +151,13 @@ const reducer = (state = initialState, action) => {
     const { signPublicKeyEncode } = action;
     return {
       ...state,
-      signPublicKeyEncode
+      signPublicKeyEncode,
+    };
+  }
+  case type.ACTION_GET_BURNER_ADDRESS: {
+    return {
+      ...state,
+      burnerAddress: action.payload,
     };
   }
   default:

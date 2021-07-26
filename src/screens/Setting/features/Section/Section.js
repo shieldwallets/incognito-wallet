@@ -21,7 +21,8 @@ export const SectionItem = (
   </TouchableOpacity>
 );
 
-const Section = ({ label, items, customItems, headerRight, labelStyle }) => {
+const Section = (props) => {
+  const { label, items, customItems, headerRight, labelStyle } = props;
   return (
     <View style={sectionStyle.container}>
       <View style={sectionStyle.header}>

@@ -1,16 +1,16 @@
 import React from 'react';
 import { ExHandler } from '@services/exception';
 import { withdrawReward } from '@services/api/pool';
-import { signPoolWithdraw } from '@services/gomobile';
 import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
 import appConstant from '@src/constants/app';
+import { accountServices } from '@services/wallet';
 
 const withConfirm = WrappedComp => (props) => {
   const captchaRef = React.useRef(null);
   const [error, setError] = React.useState('');
   const [disable, setDisable] = React.useState(true);
   const [withdrawing, setWithdrawing] = React.useState(false);
-  const { account, onSuccess } = props;
+  const { account, wallet, onSuccess } = props;
 
   const onConfirmPress = async () => {
     if(captchaRef.current && !withdrawing) {
@@ -29,7 +29,11 @@ const withConfirm = WrappedComp => (props) => {
     setError('');
 
     try {
-      const signEncode = await signPoolWithdraw(account.PrivateKey, account.PaymentAddress, 0);
+      const signEncode = await accountServices.signPoolWithdraw({
+        account,
+        wallet,
+        amount: 0
+      });
       await withdrawReward(account.PaymentAddress, signEncode, verifyCode);
       onSuccess(true);
     } catch (error) {

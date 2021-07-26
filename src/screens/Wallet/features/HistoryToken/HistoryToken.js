@@ -1,44 +1,29 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import HistoryList from '@src/components/HistoryList';
+import HistoryList from '@src/screens/Wallet/features/HistoryList';
 import { useSelector } from 'react-redux';
-import { tokenSeleclor } from '@src/redux/selectors';
-import withHistoryToken from './HistoryToken.enhance';
+import { historyTxsSelector } from '@src/redux/selectors/history';
+import { useHistoryEffect } from '@src/screens/Wallet/features/History/History.useEffect';
 import EmptyHistory from './HistoryToken.empty';
 
-const HistoryToken = (props) => {
-  const { histories } = useSelector(tokenSeleclor.historyTokenSelector);
-  const { isFetching, oversize } = useSelector(
-    tokenSeleclor.receiveHistorySelector,
+const HistoryToken = () => {
+  const { histories, isEmpty, loading, refreshing, oversize } = useSelector(
+    historyTxsSelector,
   );
-  const {
-    handleCancelEtaHistory,
-    handleLoadHistory,
-    showEmpty,
-    refreshing,
-    handleRefresh,
-  } = props;
+  const { handleRefresh, handleCancelEtaHistory } = useHistoryEffect();
   return (
     <HistoryList
       histories={histories}
       onCancelEtaHistory={handleCancelEtaHistory}
       onRefreshHistoryList={handleRefresh}
-      onLoadmoreHistory={() => !oversize && handleLoadHistory(false)}
       refreshing={refreshing}
-      loading={isFetching}
+      loading={loading}
       renderEmpty={() => <EmptyHistory />}
-      showEmpty={showEmpty}
+      showEmpty={isEmpty}
       oversize={oversize}
     />
   );
 };
 
-HistoryToken.propTypes = {
-  handleCancelEtaHistory: PropTypes.func.isRequired,
-  handleLoadHistory: PropTypes.func.isRequired,
-  showEmpty: PropTypes.bool.isRequired,
-  refreshing: PropTypes.bool.isRequired,
-  handleRefresh: PropTypes.func.isRequired,
-};
+HistoryToken.propTypes = {};
 
-export default withHistoryToken(HistoryToken);
+export default HistoryToken;

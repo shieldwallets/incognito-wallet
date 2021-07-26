@@ -26,7 +26,7 @@ react-native run-android (for Android)
 react-native run-ios (for iOS)
 ```
 
-## Additional
+## Additional recommended
 [React Native Debugger](https://github.com/jhen0409/react-native-debugger) can help more easier to debug the app.
 
 [VSCode](https://code.visualstudio.com/) is recommended.

@@ -26,7 +26,7 @@ import {
   BtnResume,
 } from '@src/components/Button';
 import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import HTML from 'react-native-render-html';
 import { devSelector } from '@src/screens/Dev';
 import includes from 'lodash/includes';
@@ -170,7 +170,7 @@ export const Hook = (props) => {
 };
 
 const TxHistoryDetail = (props) => {
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const dev = useSelector(devSelector);
   const keySave = CONSTANT_KEYS.DEV_TEST_TOGGLE_HISTORY_DETAIL;
   const toggleTxHistoryDetail = global.isDebug() && dev[keySave];
@@ -198,8 +198,17 @@ const TxHistoryDetail = (props) => {
         true,
       )) ||
     formatUtil.number(history?.requestedAmount);
-  const isInvalidAmount =  history.isShieldTx === true && history.statusCode === 17 && (history.currencyType !== 1 && history.currencyType !== 3);
-  const isBTCInvalidAmount = history.isShieldTx === true && history.statusCode === 17 && history.currencyType === 2 && history.symbol === 'BTC';
+  const {
+    STATUS_CODE_SHIELD_CENTRALIZED,
+  } = CONSTANT_COMMONS.HISTORY;
+  const isInvalidAmount =  history.isShieldTx === true &&
+    STATUS_CODE_SHIELD_CENTRALIZED.INVALID_AMOUNT.includes(history.statusCode) &&
+    (history.currencyType !== 1 && history.currencyType !== 3);
+
+  const isBTCInvalidAmount =
+    history.isShieldTx === true &&
+    STATUS_CODE_SHIELD_CENTRALIZED.INVALID_AMOUNT.includes(history.statusCode) &&
+    history.currencyType === 2;
 
   const receiveFund = React.useMemo(() => {
     return (

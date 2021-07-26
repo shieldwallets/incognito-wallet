@@ -9,12 +9,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { COLORS, FONT } from '@src/styles';
-import { accountSeleclor, selectedPrivacySeleclor } from '@src/redux/selectors';
+import { accountSelector, selectedPrivacySelector } from '@src/redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { actionToggleModal } from '@src/components/Modal';
 import { AccountIcon } from '@src/components/Icons';
 import format from '@src/utils/format';
-import { switchAccount } from '@src/redux/actions/account';
+import { actionSwitchAccount } from '@src/redux/actions/account';
 import PropTypes from 'prop-types';
 import srcAccountIcon from '@src/assets/images/icons/account_staking_pool.png';
 import { ExHandler } from '@src/services/exception';
@@ -65,7 +65,7 @@ const styled = StyleSheet.create({
 const Account = props => {
   const { account, lastChild, isLoadingBalance, onSelectAccount } = props;
   const dispatch = useDispatch();
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.getPrivacyDataBaseOnAccount)(account);
+  const selectedPrivacy = useSelector(selectedPrivacySelector.getPrivacyDataBaseOnAccount)(account);
   const { symbol, pDecimals, amount } = selectedPrivacy;
   const shouldShowBalance = true;
   const onChooseAccount = async (name) => {
@@ -74,7 +74,7 @@ const Account = props => {
         return;
       }
       onSelectAccount && onSelectAccount(account);
-      await dispatch(switchAccount(name));
+      await dispatch(actionSwitchAccount(name));
       await dispatch(actionToggleModal());
 
     } catch (error) {
@@ -113,8 +113,8 @@ const Account = props => {
 
 const ChooseAccount = props => {
   const { fetchData, onSelectAccount } = props;
-  const accountList = useSelector(accountSeleclor.listAccount);
-  const isGettingBalance = useSelector(accountSeleclor.isGettingBalance);
+  const accountList = useSelector(accountSelector.listAccount);
+  const isGettingBalance = useSelector(accountSelector.isGettingBalance);
   const refreshing = isGettingBalance.length > 0;
   return (
     <ScrollView

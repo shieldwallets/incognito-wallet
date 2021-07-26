@@ -1,61 +1,51 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { ActivityIndicator } from '@components/core/index';
 import routeNames from '@routers/routeNames';
+import { useNavigation, useNavigationParam } from 'react-navigation-hooks';
 import UnstakeVNode from './UnstakeVNode';
 import UnstakePNode from './UnstakePNode';
 
-class UnstakeContainer extends PureComponent {
-  constructor(props) {
-    super(props);
-    const { navigation } = props;
-    const { params } = navigation.state;
-    const { device } = params;
 
-    this.state = {
-      device,
-    };
-  }
+const UnstakeContainer = React.memo(() => {
+  const device = useNavigationParam('device');
+  const navigation = useNavigation();
 
-  handleCompleteUnstake = async () => {
-    const { navigation } = this.props;
+  const handleCompleteUnstake = () => {
     navigation.navigate(routeNames.Node, {
       refresh: new Date().getTime()
     });
   };
 
-  render() {
-    const { device } = this.state;
+  const renderUnstakePNode = () => (
+    <UnstakePNode
+      device={device}
+      onFinish={handleCompleteUnstake}
+    />
+  );
 
-    if (!device) {
-      return <ActivityIndicator size="small" />;
-    }
+  const renderUnstakeVNode = () => (
+    <UnstakeVNode
+      device={device}
+      onFinish={handleCompleteUnstake}
+    />
+  );
 
-    if (device.IsPNode && !device.IsFundedUnstaked) {
-      return (
-        <>
-          <UnstakePNode
-            device={device}
-            onFinish={this.handleCompleteUnstake}
-          />
-        </>
-      );
-    }
+  const isVNode = React.useMemo(() => {
+    return !device.IsPNode || device.IsFundedUnstaked;
+  });
 
-    return (
-      <>
-        <UnstakeVNode
-          device={device}
-          onFinish={this.handleCompleteUnstake}
-        />
-      </>
-    );
+  if (!device) {
+    return <ActivityIndicator size="small" />;
   }
-}
 
-UnstakeContainer.propTypes = {
-  navigation: PropTypes.object.isRequired,
-};
-
+  return (
+    <>
+      {isVNode
+        ? renderUnstakeVNode()
+        : renderUnstakePNode()
+      }
+    </>
+  );
+});
 
 export default UnstakeContainer;

@@ -6,7 +6,7 @@ import IncognitoCoinInfo from '@src/models/incognitoCoinInfo';
 import http from '@src/services/http';
 import { CONSTANT_CONFIGS } from '@src/constants';
 import axios from 'axios';
-import { cachePromise, KEYS } from '@services/cache';
+import { cachePromise, EXPIRED_TIME, KEYS } from '@services/cache';
 
 let BEP2Tokens = [];
 
@@ -15,8 +15,8 @@ const getTokenListNoCache = () => {
     .then(res => res.map(token => new PToken(token)));
 };
 
-export const getTokenList = () => {
-  return cachePromise(KEYS.P_TOKEN, getTokenListNoCache);
+export const getTokenList = ({ expiredTime = EXPIRED_TIME } ={}) => {
+  return cachePromise(KEYS.P_TOKEN, getTokenListNoCache, expiredTime);
 };
 
 export const detectERC20Token = erc20Address => {

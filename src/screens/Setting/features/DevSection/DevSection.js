@@ -17,16 +17,20 @@ import {
   actionToggleTradeDebug,
 } from '@src/screens/Dev';
 import { CONSTANT_KEYS } from '@src/constants';
-import { accountSeleclor } from '@src/redux/selectors';
-import { clearFakeFullDisk, makeFakeFullDisk } from '@screens/Setting/features/DevSection/DevSection.utils';
+import { accountSelector } from '@src/redux/selectors';
+import {
+  clearFakeFullDisk,
+  makeFakeFullDisk,
+} from '@screens/Setting/features/DevSection/DevSection.utils';
+import { currentMasterKeySelector } from '@src/redux/selectors/masterKey';
 
 const DevSection = () => {
   const [homeConfig] = React.useState(global.homeConfig);
   const navigation = useNavigation();
   const dev = useSelector(devSelector);
   const dispatch = useDispatch();
-  const account = useSelector(accountSeleclor.defaultAccountSelector);
-
+  const account = useSelector(accountSelector.defaultAccountSelector);
+  const currentMasterKey = useSelector(currentMasterKeySelector);
   const toggleHomeConfig = async () => {
     await AsyncStorage.setItem(
       'home-config',
@@ -52,6 +56,16 @@ const DevSection = () => {
   const onToggleLogApp = () => dispatch(actionToggleLogApp());
 
   const isStagingConfig = homeConfig === 'staging';
+
+  const onGetMasterKeyRecovery = async () => {
+    try {
+      const wallet = await currentMasterKey.loadWallet();
+      const masterAccountInfo = await wallet.MasterAccount.getDeserializeInformation();
+      return Clipboard.setString(masterAccountInfo.PublicKeyCheckEncode);
+    } catch (error) {
+      console.log('ERROR', error);
+    }
+  };
 
   const onCopySerialNumberCache = () => {
     Clipboard.setString(JSON.stringify(account?.derivatorToSerialNumberCache));
@@ -167,12 +181,17 @@ const DevSection = () => {
     {
       id: 'make-full-disk',
       desc: 'Toggle make full disk',
-      onPress: makeFakeFullDisk
+      onPress: makeFakeFullDisk,
     },
     {
       id: 'clear-full-disk',
       desc: 'Toggle clear fake full disk',
-      onPress: clearFakeFullDisk
+      onPress: clearFakeFullDisk,
+    },
+    {
+      id: 'master-keys-recovery',
+      desc: 'Get list master key recovery',
+      onPress: onGetMasterKeyRecovery,
     },
   ];
 

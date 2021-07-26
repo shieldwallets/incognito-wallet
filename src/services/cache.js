@@ -25,6 +25,7 @@ export function cache(key, data, expiredTime) {
   };
 }
 
+export const EXPIRED_TIME = 40000;
 /**
  *
  * @param {string} key should be a key of KEYS dictionary above
@@ -32,16 +33,15 @@ export function cache(key, data, expiredTime) {
  * @param {number} expiredTime in ms
  * @returns {Promise<*>}
  */
-export async function cachePromise(key, promiseFunc, expiredTime = 40000) {
+export async function cachePromise(key, promiseFunc, expiredTime = EXPIRED_TIME) {
   const cachedData = getCache(key);
-
   if (cachedData !== null) {
     return cachedData;
   }
-
   const data = await promiseFunc();
-  cache(key, data, expiredTime);
-
+  if (data) {
+    cache(key, data, expiredTime);
+  }
   return data;
 }
 
@@ -72,15 +72,13 @@ export const clearCache = (key) => {
 };
 
 export const clearAllCaches = () => {
-  Object.keys(caches)
-    .forEach(key => delete caches[key]);
+  Object.keys(caches).forEach((key) => delete caches[key]);
 };
 
 export const clearWalletCaches = () => {
-  Object.keys(caches)
-    .forEach(key => {
-      if (key.includes(KEYS.PDEX_HISTORY)) {
-        delete caches[key];
-      }
-    });
+  Object.keys(caches).forEach((key) => {
+    if (key.includes(KEYS.PDEX_HISTORY)) {
+      delete caches[key];
+    }
+  });
 };

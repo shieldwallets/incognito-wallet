@@ -36,12 +36,111 @@ public class GomobileModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void deriveSerialNumber(String data, Callback successCallback) {
+    public void createTransaction(String data, Integer myTime, Callback successCallback) {
         try {
-            Log.d(TAG, "deriveSerialNumber: begin");
-            successCallback.invoke(null, Gomobile.deriveSerialNumber(data));
+            Log.d(TAG, "createTransaction: begin");
+            successCallback.invoke(null, Gomobile.createTransaction(data, myTime));
         } catch (Exception e) {
-            Log.d(TAG, "deriveSerialNumber: error");
+            Log.d(TAG, "maketx: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void createConvertTx(String data, Integer myTime, Callback successCallback) {
+        try {
+            Log.d(TAG, "createConvertTx: begin");
+            successCallback.invoke(null, Gomobile.createConvertTx(data, myTime));
+        } catch (Exception e) {
+            Log.d(TAG, "maketx convert: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void newKeySetFromPrivate(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "newKeySetFromPrivate: begin");
+            successCallback.invoke(null, Gomobile.newKeySetFromPrivate(data));
+        } catch (Exception e) {
+            Log.d(TAG, "newKeySetFromPrivate: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void decryptCoin(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "decryptCoin: begin");
+            successCallback.invoke(null, Gomobile.decryptCoin(data));
+        } catch (Exception e) {
+            Log.d(TAG, "decryptCoin: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void createCoin(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "createCoin: begin");
+            successCallback.invoke(null, Gomobile.createCoin(data));
+        } catch (Exception e) {
+            Log.d(TAG, "createCoin: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void generateBLSKeyPairFromSeed(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "generateBLSKeyPairFromSeed: begin");
+            successCallback.invoke(null, Gomobile.generateBLSKeyPairFromSeed(data));
+        } catch (Exception e) {
+            Log.d(TAG, "generateBLSKeyPairFromSeed: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void generateKeyFromSeed(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "generateKeyFromSeed: begin");
+            successCallback.invoke(null, Gomobile.generateKeyFromSeed(data));
+        } catch (Exception e) {
+            Log.d(TAG, "generateKeyFromSeed: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void hybridEncrypt(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "hybridEncrypt: begin");
+            successCallback.invoke(null, Gomobile.hybridEncrypt(data));
+        } catch (Exception e) {
+            Log.d(TAG, "hybridEncrypt: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void hybridDecrypt(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "hybridDecrypt: begin");
+            successCallback.invoke(null, Gomobile.hybridDecrypt(data));
+        } catch (Exception e) {
+            Log.d(TAG, "hybridDecrypt: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void scalarMultBase(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "scalarMultBase: begin");
+            successCallback.invoke(null, Gomobile.scalarMultBase(data));
+        } catch (Exception e) {
+            Log.d(TAG, "scalarMultBase: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }
@@ -58,191 +157,12 @@ public class GomobileModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void initPrivacyTx(String data, Integer time, Callback successCallback) {
+    public void getSignPublicKey(String data, Callback successCallback) {
         try {
-            Log.d(TAG, "initPrivacyTx: begin");
-            successCallback.invoke(null, Gomobile.initPrivacyTx(data, time));
+            Log.d(TAG, "getSignPublicKey: begin");
+            successCallback.invoke(null, Gomobile.getSignPublicKey(data));
         } catch (Exception e) {
-            Log.d(TAG, "initPrivacyTx: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initPrivacyTokenTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "initPrivacyTokenTx: begin");
-            successCallback.invoke(null, Gomobile.initPrivacyTokenTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "initPrivacyTokenTx: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initBurningRequestTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "initBurningRequestTx: begin");
-            successCallback.invoke(null, Gomobile.initBurningRequestTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "initBurningRequestTx: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initWithdrawRewardTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "initWithdrawRewardTx: begin");
-            successCallback.invoke(null, Gomobile.initWithdrawRewardTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "initWithdrawRewardTx: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void staking(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.staking(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initPRVContributionTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.initPRVContributionTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initPTokenContributionTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.initPTokenContributionTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initPRVTradeTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.initPRVTradeTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void initPTokenTradeTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.initPTokenTradeTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void withdrawDexTx(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.withdrawDexTx(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void hybridDecryptionASM(String data, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.hybridDecryptionASM(data));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void hybridEncryptionASM(String data, Callback successCallback) {
-        try {
-            Log.d(TAG, "staking: begin");
-            successCallback.invoke(null, Gomobile.hybridEncryptionASM(data));
-        } catch (Exception e) {
-            Log.d(TAG, "staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void stopAutoStaking(String data, Integer time, Callback successCallback) {
-        try {
-            Log.d(TAG, "stop staking: begin");
-            successCallback.invoke(null, Gomobile.stopAutoStaking(data, time));
-        } catch (Exception e) {
-            Log.d(TAG, "stop staking: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void generateBLSKeyPairFromSeed(String data, Callback successCallback) {
-        try {
-            Log.d(TAG, "generateBLSKeyPairFromSeed: begin");
-            ExecutorService executorService = Executors.newFixedThreadPool(10);
-
-            executorService.execute(new Runnable() {
-                public void run() {
-//                    successCallback.invoke(null,Gomobile.sayHello("sssss"));
-                    Log.d(TAG, "generateBLSKeyPairFromSeed: begin run " + Thread.currentThread().getName());
-                    String response = Gomobile.generateBLSKeyPairFromSeed(data);
-                    Log.d(TAG, "generateBLSKeyPairFromSeed: begin run data --- " + response);
-                    successCallback.invoke(null, response);
-                    executorService.shutdown();
-                }
-            });
-
-
-            Log.d(TAG, "generateBLSKeyPairFromSeed: begin01");
-        } catch (Exception e) {
-            successCallback.invoke(e.getMessage(), null);
-            Log.d(TAG, "generateBLSKeyPairFromSeed: begin02 error");
-        }
-    }
-
-    @ReactMethod
-    public void scalarMultBase(String data, Callback successCallback) {
-        try {
-            Log.d(TAG, "Sign 0x: begin");
-            successCallback.invoke(null, Gomobile.scalarMultBase(data));
-        } catch (Exception e) {
-            Log.d(TAG, "Sign 0x: error");
-            successCallback.invoke(e.getMessage(), null);
-        }
-    }
-
-    @ReactMethod
-    public void generateKeyFromSeed(String data, Callback successCallback) {
-        try {
-            Log.d(TAG, "Sign 0x: begin");
-            successCallback.invoke(null, Gomobile.generateKeyFromSeed(data));
-        } catch (Exception e) {
-            Log.d(TAG, "Sign 0x: error");
+            Log.d(TAG, "getSignPublicKey: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }
@@ -250,39 +170,65 @@ public class GomobileModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void signPoolWithdraw(String data, Callback successCallback) {
         try {
-            Log.d(TAG, "Sign 0x: begin");
+            Log.d(TAG, "signPoolWithdraw: begin");
             successCallback.invoke(null, Gomobile.signPoolWithdraw(data));
         } catch (Exception e) {
-            Log.d(TAG, "Sign 0x: error");
+            Log.d(TAG, "signPoolWithdraw: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }
 
     @ReactMethod
-    public void getSignPublicKey(String data, Callback successCallback) {
+    public void verifySign(String data, Callback successCallback) {
         try {
-            Log.d(TAG, "Sign 0x: begin");
-            successCallback.invoke(null, Gomobile.getSignPublicKey(data));
+            Log.d(TAG, "verifySign: begin");
+            successCallback.invoke(null, Gomobile.verifySign(data));
         } catch (Exception e) {
-            Log.d(TAG, "Sign 0x: error");
+            Log.d(TAG, "verifySign: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }
 
     @ReactMethod
-    public void parseNativeRawTx(String data, Callback successCallback) {
+    public void estimateTxSize(String data, Callback successCallback) {
         try {
-            successCallback.invoke(null, Gomobile.parseNativeRawTx(data));
+            Log.d(TAG, "estimateTxSize: begin");
+            successCallback.invoke(null, Gomobile.estimateTxSize(data));
         } catch (Exception e) {
+            Log.d(TAG, "estimateTxSize: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }
 
     @ReactMethod
-    public void parsePrivacyTokenRawTx(String data, Callback successCallback) {
+    public void aesEncrypt(String data, Callback successCallback) {
         try {
-            successCallback.invoke(null, Gomobile.parsePrivacyTokenRawTx(data));
+            Log.d(TAG, "aesEncrypt: begin");
+            successCallback.invoke(null, Gomobile.aesEncrypt(data));
         } catch (Exception e) {
+            Log.d(TAG, "aesEncrypt: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void aesDecrypt(String data, Callback successCallback) {
+        try {
+            Log.d(TAG, "aesDecrypt: begin");
+            successCallback.invoke(null, Gomobile.aesDecrypt(data));
+        } catch (Exception e) {
+            Log.d(TAG, "aesDecrypt: error");
+            successCallback.invoke(e.getMessage(), null);
+        }
+    }
+
+    @ReactMethod
+    public void setShardCount(String data, Integer shardNum, Callback successCallback) {
+        try {
+            Log.d(TAG, "setShardCount: begin");
+            successCallback.invoke(null, Gomobile.setShardCount(data, shardNum));
+        } catch (Exception e) {
+            Log.d(TAG, "maketx: error");
             successCallback.invoke(e.getMessage(), null);
         }
     }

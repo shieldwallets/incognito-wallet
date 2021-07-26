@@ -2,7 +2,11 @@ import React, { memo } from 'react';
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 import { styled } from '@screens/Shield/features/GenQRCode/GenQRCode.styled';
-import { ActivityIndicator, BaseTextInput, RoundCornerButton } from '@components/core';
+import {
+  ActivityIndicator,
+  BaseTextInput,
+  RoundCornerButton,
+} from '@components/core';
 import { useWalletConnect } from '@walletconnect/react-native-dapp';
 import { CONSTANT_COMMONS } from '@src/constants';
 import withBridgeConnect from '@screens/Wallet/features/BridgeConnect/WalletConnect.enhance';
@@ -12,13 +16,14 @@ import { isEmpty } from 'lodash';
 import { BtnInfinite, ButtonBasic } from '@components/Button';
 import {
   SHIELD_BUTTON_TITLE,
-  SHIELD_MESSAGE
+  SHIELD_MESSAGE,
 } from '@screens/Shield/features/ShieldDecentralized/ShieldDecentralized.constants';
 import mainStyle from '@screens/PoolV2/style';
-import {Row, Header, SuccessModal} from '@src/components';
+import { Row, Header, SuccessModal } from '@src/components';
 import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
 import styles from '@screens/PoolV2/Provide/Input/style';
 import routeNames from '@routers/routeNames';
+import {COLORS} from '@src/styles';
 
 const ShieldDecentralized = (props) => {
   const {
@@ -32,7 +37,7 @@ const ShieldDecentralized = (props) => {
     handleDepositERC20,
     handleGetNonce,
     setShowTerm,
-    selectedPrivacy
+    selectedPrivacy,
   } = props;
 
   // state
@@ -47,20 +52,31 @@ const ShieldDecentralized = (props) => {
   // selector
   const connector = useWalletConnect();
   const { externalSymbol, contractId } = selectedPrivacy;
-  const isBSC = (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB
-    || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20);
-  const isNativeToken = ( selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB);
+  const isBSC =
+    selectedPrivacy?.currencyType ===
+      CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB ||
+    selectedPrivacy?.currencyType ===
+      CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BEP20;
+  const isNativeToken =
+    selectedPrivacy?.currencyType ===
+      CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.ETH ||
+    selectedPrivacy?.currencyType ===
+      CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB;
   const tokenIDInput = React.useMemo(() => {
     return contractId ? contractId : CONSTANT_COMMONS.ETH_TOKEN_ADDRESS;
   }, [contractId]);
 
   const isConnect = React.useMemo(() => {
-    return connector.connected && connector.accounts && connector.accounts.length > 0;
+    return (
+      connector.connected && connector.accounts && connector.accounts.length > 0
+    );
   }, [connector]);
 
   const shieldButtonText = React.useMemo(() => {
     if (!isConnect) return SHIELD_BUTTON_TITLE.CONNECT;
-    return isNativeToken ? SHIELD_BUTTON_TITLE.SHIELD : SHIELD_BUTTON_TITLE.APPROVE_SHIELD;
+    return isNativeToken
+      ? SHIELD_BUTTON_TITLE.SHIELD
+      : SHIELD_BUTTON_TITLE.APPROVE_SHIELD;
   }, [externalSymbol, isConnect]);
 
   const handleShield = () => {
@@ -73,15 +89,37 @@ const ShieldDecentralized = (props) => {
         let nonce = -1;
         try {
           if (isNativeToken) {
-            tx = await handleDepositETH(shieldAmountNum, connector.accounts[0], account?.PaymentAddress, isBSC);
+            tx = await handleDepositETH(
+              shieldAmountNum,
+              connector.accounts[0],
+              account?.PaymentAddress,
+              isBSC,
+            );
             setShieldTxHash(tx);
           } else {
-            const isApproved = await isApprovedFunc(shieldAmountNum, tokenIDInput, connector.accounts[0], isBSC);
+            const isApproved = await isApprovedFunc(
+              shieldAmountNum,
+              tokenIDInput,
+              connector.accounts[0],
+              isBSC,
+            );
             if (!isApproved) {
               nonce = await handleGetNonce(connector.accounts[0], isBSC);
-              await handleApproveERC20(tokenIDInput, connector.accounts[0], nonce++, isBSC);
+              await handleApproveERC20(
+                tokenIDInput,
+                connector.accounts[0],
+                nonce++,
+                isBSC,
+              );
             }
-            tx = await handleDepositERC20(shieldAmountNum, tokenIDInput, connector.accounts[0], account?.PaymentAddress, nonce, isBSC);
+            tx = await handleDepositERC20(
+              shieldAmountNum,
+              tokenIDInput,
+              connector.accounts[0],
+              account?.PaymentAddress,
+              nonce,
+              isBSC,
+            );
             setIsRejected(false);
             setShieldTxHash(tx);
           }
@@ -94,10 +132,9 @@ const ShieldDecentralized = (props) => {
           }
         }
       })();
-      setTimeout(
-        () => {setIsPressed(false);},
-        1500
-      );
+      setTimeout(() => {
+        setIsPressed(false);
+      }, 1500);
     } else {
       console.log('Wallet not connected or invalid input amount');
       setIsPressed(false);
@@ -105,7 +142,11 @@ const ShieldDecentralized = (props) => {
   };
 
   const web3LoadBalance = async () => {
-    const balance = await handleGetBalance(tokenIDInput, connector.accounts[0], isBSC);
+    const balance = await handleGetBalance(
+      tokenIDInput,
+      connector.accounts[0],
+      isBSC,
+    );
     setLoadBalance(balance);
   };
 
@@ -124,20 +165,15 @@ const ShieldDecentralized = (props) => {
   };
 
   const renderBalance = () => {
-    const right = balanceLoaded === undefined ?
-      (
+    const right =
+      balanceLoaded === undefined ? (
         <View style={{ maxWidth: 50, alignSelf: 'flex-end' }}>
           <ActivityIndicator size="small" />
         </View>
-      ) :
-      `${balanceLoaded} ${externalSymbol}`;
-    return(
-      <ExtraInfo
-        left="Balance"
-        right={right}
-        style={styles.extra}
-      />
-    );
+      ) : (
+        `${balanceLoaded} ${externalSymbol}`
+      );
+    return <ExtraInfo left="Balance" right={right} style={styles.extra} />;
   };
 
   const renderContent = () => (
@@ -146,7 +182,7 @@ const ShieldDecentralized = (props) => {
         <BaseTextInput
           style={mainStyle.input}
           placeholder="0"
-          onChangeText={amount => setShieldAmount(amount)}
+          onChangeText={(amount) => setShieldAmount(amount)}
           value={shieldAmount}
           editable={isConnect}
           keyboardType="decimal-pad"
@@ -176,11 +212,14 @@ const ShieldDecentralized = (props) => {
             description={SHIELD_MESSAGE.SHIELD_SUCCESS_MESS}
           />
         )}
-        { isRejected && (
-          <Text style={styled.shieldMessage}>
+        {isRejected && (
+          <Text style={[styled.shieldMessage, { color: COLORS.red }]}>
             {SHIELD_MESSAGE.REJECTED_MESS}
           </Text>
         )}
+        <Text style={styled.shieldMessage}>
+          {SHIELD_MESSAGE.NOTE_MESSAGE}
+        </Text>
       </View>
       <View style={{ marginTop: 15 }}>
         {isConnect && (
@@ -190,7 +229,7 @@ const ShieldDecentralized = (props) => {
               right={connector.accounts[0]}
               style={styles.extra}
               rightStyle={{ maxWidth: 200 }}
-              ellipsizeMode='middle'
+              ellipsizeMode="middle"
             />
             {renderBalance()}
           </>
@@ -200,7 +239,10 @@ const ShieldDecentralized = (props) => {
   );
 
   const onConnectorPress = () => {
-    if (typeof handleConnect === 'function' && typeof handleDisconnect === 'function') {
+    if (
+      typeof handleConnect === 'function' &&
+      typeof handleDisconnect === 'function'
+    ) {
       if (isConnect) {
         handleDisconnect();
         setShowTerm(true);
@@ -212,13 +254,17 @@ const ShieldDecentralized = (props) => {
 
   const renderRightHeader = () => {
     if (!isConnect) return null;
-    return(
+    return (
       <View styles={styled.wrapConnect}>
         <ButtonBasic
           onPress={onConnectorPress}
           customContent={(
             <View style={styled.connectHook}>
-              <Text numberOfLines={1} style={styled.connectStyle} ellipsizeMode="tail">
+              <Text
+                numberOfLines={1}
+                style={styled.connectStyle}
+                ellipsizeMode="tail"
+              >
                 {SHIELD_BUTTON_TITLE.DISCONNECT}
               </Text>
             </View>
@@ -230,7 +276,8 @@ const ShieldDecentralized = (props) => {
   };
 
   const handleRefresh = async () => {
-    if (!connector || !connector.connected || isEmpty(connector.accounts)) return;
+    if (!connector || !connector.connected || isEmpty(connector.accounts))
+      return;
     try {
       setRefresh(true);
       setLoadBalance(undefined);
@@ -243,18 +290,16 @@ const ShieldDecentralized = (props) => {
   };
 
   React.useEffect(() => {
-    if (!connector || !connector.connected || isEmpty(connector.accounts)) return;
+    if (!connector || !connector.connected || isEmpty(connector.accounts))
+      return;
     web3LoadBalance().then();
   }, [connector, tokenIDInput]);
 
   return (
     <ScrollView
-      refreshControl={(
-        <RefreshControl
-          refreshing={refresh}
-          onRefresh={handleRefresh}
-        />
-      )}
+      refreshControl={
+        <RefreshControl refreshing={refresh} onRefresh={handleRefresh} />
+      }
     >
       <View style={{ flex: 1 }}>
         <Header

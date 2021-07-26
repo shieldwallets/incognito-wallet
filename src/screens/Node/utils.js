@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import convert from '@utils/convert';
 import { COINS } from '@src/constants';
+import { PRV_ID } from '@screens/Dex/constants';
 
 export const parseNodeRewardsToArray = (rewards, allTokens) => {
   const rewardList = (_(Object.keys(rewards)) || [])
@@ -9,7 +10,7 @@ export const parseNodeRewardsToArray = (rewards, allTokens) => {
       const token = allTokens.find(token => token.id === id) || {};
       return token && {...token, balance: value, displayBalance: convert.toHumanAmount(value, token.pDecimals)};
     })
-    .filter(coin => coin)
+    .filter(coin => coin && coin?.id === PRV_ID)
     .orderBy(item => item.displayBalance, 'desc')
     .value();
 

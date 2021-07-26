@@ -39,9 +39,7 @@ const amountCreator = (maxDigits) => (
     };
 
     let _maxDigits = maxDigits;
-
     let _amount = convertUtil.toHumanAmount(amount, decimals);
-
     if (clipAmount) {
       let maxDigits = decimals;
       if (_amount > 0 && _amount < 1 && !!decimalDigits) {

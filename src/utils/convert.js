@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { getDecimalSeparator } from '@src/resources/separator';
 import BigNumber from 'bignumber.js';
 
-const checkAmount = amount => {
+const checkAmount = (amount) => {
   if (!Number.isFinite(amount))
     throw new Error('Can not format invalid amount');
 };
@@ -44,13 +44,23 @@ export default {
    */
   toHumanAmount(originAmount, decimals) {
     try {
-      const amount = toNumber(originAmount);
-      checkAmount(amount);
-
-      const decision_rate = Number(decimals) ? 10 ** Number(decimals) : 1;
-      return amount / decision_rate;
-    } catch {
-      return originAmount;
+      if (!originAmount) {
+        return 0;
+      }
+      // const amount = toNumber(originAmount);
+      // checkAmount(amount);
+      // const decision_rate = Number(decimals) ? 10 ** Number(decimals) : 1;
+      // return amount / decision_rate;
+      const amount = new BigNumber(originAmount).dividedBy(
+        new BigNumber('10').pow(Number(decimals) ? decimals : 0),
+      );
+      if (amount.isNaN()) {
+        return 0;
+      }
+      return amount.toNumber();
+    } catch (error) {
+      console.log('CONVERT TO HUMAN AMOUNT ERROR', originAmount, decimals);
+      return 0;
     }
     /**
      *
@@ -69,14 +79,20 @@ export default {
     // The result should be 500000100
     const decision_rate = Number(decimals) ? 10 ** Number(decimals) : 1;
     if (round) {
-      return Math.floor(BigNumber(amount).multipliedBy(BigNumber(decision_rate)).toNumber());
+      return Math.floor(
+        BigNumber(amount)
+          .multipliedBy(BigNumber(decision_rate))
+          .toNumber(),
+      );
     }
 
-    return BigNumber(amount).multipliedBy(BigNumber(decision_rate)).toNumber();
+    return BigNumber(amount)
+      .multipliedBy(BigNumber(decision_rate))
+      .toNumber();
   },
 
   toRealTokenValue(tokens, tokenId, value) {
-    const token = tokens.find(item => item.id === tokenId);
+    const token = tokens.find((item) => item.id === tokenId);
     return value / Math.pow(10, token?.pDecimals || 0);
   },
 
@@ -128,7 +144,7 @@ export default {
   },
 };
 
-export const formatTime = seconds => {
+export const formatTime = (seconds) => {
   let h = Math.floor(seconds / 3600),
     m = Math.floor(seconds / 60) % 60,
     s = seconds % 60;

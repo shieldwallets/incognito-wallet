@@ -18,8 +18,10 @@ if (__DEV__) {
   import('./ReactotronConfig').then(() => console.log('Reactotron Configured'));
 }
 
-AppRegistry.registerRunnable(appName, async initParams => {
-  const {default: serverService} = await import('@src/services/wallet/Server');
+AppRegistry.registerRunnable(appName, async (initParams) => {
+  const { default: serverService } = await import(
+    '@src/services/wallet/Server'
+  );
   const homeConfig = await AsyncStorage.getItem('home-config');
   const serverDefault =
     (await serverService.getDefaultIfNullGettingDefaulList()) ?? {};
@@ -29,8 +31,9 @@ AppRegistry.registerRunnable(appName, async initParams => {
     (_.isEmpty(serverDefault)
       ? global.isMainnet
       : serverService.isMainnet(serverDefault)) ?? true;
-  const {default: App} = await import('@src/App');
-
+  global.severDefault = serverDefault;
+  const { default: App } = await import('@src/App');
+  console.log('GO_BRIDGE', global.__gobridge__);
   console.debug('GLOBAL', global.isMainnet, global.homeConfig);
   AppRegistry.registerComponent(appName, () => App);
   AppRegistry.runApplication(appName, initParams);

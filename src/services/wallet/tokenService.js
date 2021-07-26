@@ -1,10 +1,11 @@
-import { Wallet } from 'incognito-chain-web-js/build/wallet';
+import { Wallet, Validator } from 'incognito-chain-web-js/build/wallet';
 import _, { isArray } from 'lodash';
 import storage from '@src/services/storage';
 import { CONSTANT_KEYS } from '@src/constants';
 import { getTokenInfo } from '@services/api/token';
 import { PRIORITY_LIST } from '@screens/Dex/constants';
-// eslint-disable-next-line import/no-cycle
+/* eslint-disable import/no-cycle */
+import { getAccountWallet } from '@src/services/wallet/Wallet.shared';
 import { saveWallet, updateStatusHistory } from './WalletService';
 
 export const PRV = {
@@ -22,104 +23,34 @@ export const PRV = {
 const BurningForDepositToSCRequestMeta = 96;
 
 export default class Token {
-  static async createSendPToken(
-    submitParam,
-    feeNativeToken = 0,
-    account,
+  static async createSendPToken({
     wallet,
-    paymentInfo,
-    feePToken = 0,
-    info = '',
-    actionLogEvent = null,
-    txHandler,
-    depositId,
-    tradeHandler = null,
-  ) {
-    await Wallet.resetProgressTx();
-    const { TokenSymbol, TokenName, TokenAmount } = submitParam;
-    let _submitParam = { ...submitParam };
-    if (typeof TokenSymbol !== 'string' || TokenSymbol.trim() === '')
-      throw new Error('TokenSymbol is invalid');
-    if (typeof TokenName !== 'string' || TokenName.trim() === '')
-      throw new Error('TokenName is invalid');
-    if (typeof TokenAmount !== 'number' || TokenAmount <= 0)
-      throw new Error('TokenAmount is invalid');
-
-    // get index account by name
-    const indexAccount = wallet.getAccountIndexByName(
-      account.name || account.AccountName,
-    );
-
-    let paymentInfos = [];
-    if (isArray(paymentInfo)) {
-      paymentInfos = [...paymentInfo];
-    } else if (!!paymentInfo && typeof paymentInfo === 'object') {
-      paymentInfos = [paymentInfo];
-    }
-
-    if (isArray(paymentInfos) && paymentInfos?.length > 0) {
-      paymentInfos = [
-        ...paymentInfos.filter(
-          (item) => Number(item?.amount) > 0 && item?.paymentAddressStr !== '',
-        ),
-      ];
-    }
-
-    if (
-      isArray(submitParam?.TokenReceivers) &&
-      submitParam?.TokenReceivers?.length > 0
-    ) {
-      _submitParam.TokenReceivers = [
-        ..._submitParam?.TokenReceivers.filter(
-          (item) => Number(item?.Amount) > 0 && item?.PaymentAddress !== '',
-        ),
-      ];
-    }
-
+    account,
+    fee,
+    info,
+    tokenName,
+    tokenSymbol,
+    tokenAmount,
+  }) {
     let response;
-    const hasPrivacyForNativeToken = true;
-    const hasPrivacyForPToken = true;
-    const strInfo = typeof info !== 'string' ? JSON.stringify(info) : info;
-
     try {
-      typeof actionLogEvent === 'function'
-        ? actionLogEvent({
-          desc: `create send 
-            \n_submitParam: ${JSON.stringify(_submitParam)},
-            \nfeeNativeToken: ${feeNativeToken},
-            \nfeePToken: ${feePToken},
-            \npaymentInfos: ${JSON.stringify(paymentInfos)},
-            \ninfo: ${info}
-            \nhasPrivacyForNativeToken: ${hasPrivacyForNativeToken},
-            \nhasPrivacyForPToken: ${hasPrivacyForPToken},
-            \ntrInfo: ${strInfo}
-          `,
-        })
-        : null;
-      response = await wallet.MasterAccount.child[
-        indexAccount
-      ].createAndSendPrivacyToken(
-        paymentInfos,
-        _submitParam,
-        feeNativeToken,
-        feePToken,
-        hasPrivacyForNativeToken,
-        hasPrivacyForPToken,
-        strInfo,
-        false,
-        false,
-        txHandler,
-        depositId,
-        tradeHandler
-      );
-
-      await saveWallet(wallet);
+      const accountWallet = getAccountWallet(account, wallet);
+      response = await accountWallet.createAndSendInitTokenTx({
+        transfer: {
+          fee,
+          info,
+          tokenPayments: [
+            { Amount: tokenAmount, PaymentAddress: account.PaymentAddress },
+          ],
+        },
+        extra: {
+          tokenName,
+          tokenSymbol,
+        },
+      });
     } catch (e) {
       throw e;
     }
-
-    await Wallet.resetProgressTx();
-
     return response;
   }
 
@@ -137,24 +68,10 @@ export default class Token {
     metatype,
   ) {
     await Wallet.resetProgressTx();
-    // get index account by name
-    let indexAccount = wallet.getAccountIndexByName(
-      account.name || account.AccountName,
-    );
-    // prepare param for create and send privacy custom token
-    // payment info
-    // @@ Note: it is use for receivers constant
-    // let paymentInfos = [];
-    //   paymentInfos[0] = {
-    //     paymentAddressStr: submitParam.TokenReceivers.PaymentAddress,
-    //     amount: 100
-    //   };
-
     let response;
     try {
-      response = await wallet.MasterAccount.child[
-        indexAccount
-      ].createAndSendBurningRequestTx(
+      const accountWallet = getAccountWallet(account, wallet);
+      response = await accountWallet.createAndSendBurningRequestTx(
         paymentInfos,
         submitParam,
         feeNativeToken,
@@ -166,7 +83,6 @@ export default class Token {
         undefined,
         txHandler,
       );
-      await saveWallet(wallet);
     } catch (e) {
       throw e;
     }
@@ -184,15 +100,11 @@ export default class Token {
     wallet,
   ) {
     await Wallet.resetProgressTx();
-    let indexAccount = wallet.getAccountIndexByName(
-      account.name || account.AccountName,
-    );
     let paymentInfos = [];
     let response;
     try {
-      response = await wallet.MasterAccount.child[
-        indexAccount
-      ].createAndSendBurningRequestTx(
+      const accountWallet = this.getAccount(account, wallet);
+      response = await accountWallet.createAndSendBurningRequestTx(
         paymentInfos,
         submitParam,
         feeNativeToken,
@@ -200,7 +112,6 @@ export default class Token {
         remoteAddress,
         BurningForDepositToSCRequestMeta,
       );
-      await saveWallet(wallet);
     } catch (e) {
       throw e;
     }
@@ -210,37 +121,6 @@ export default class Token {
 
   static getPrivacyTokens() {
     return getTokenInfo();
-  }
-
-  static getFollowingTokens({ account, wallet }) {
-    try {
-      const accountWallet = wallet.getAccountByName(account.name);
-      const followingTokens = accountWallet.listFollowingTokens();
-
-      return followingTokens;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  static getFollowingPrivacyTokens({ account, wallet }) {
-    try {
-      const followingTokens = Token.getFollowingTokens({ account, wallet });
-
-      return followingTokens.filter((token) => token?.IsPrivacy);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  static getFollowingNormalTokens({ account, wallet }) {
-    try {
-      const followingTokens = Token.getFollowingTokens({ account, wallet });
-
-      return followingTokens.filter((token) => !token?.IsPrivacy);
-    } catch (e) {
-      throw e;
-    }
   }
 
   static async getTokenHistory({ account, wallet, token }) {

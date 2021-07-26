@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector } from '@src/redux/selectors';
 import { COLORS, FONT } from '@src/styles';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from 'react-navigation-hooks';
@@ -37,15 +37,17 @@ const styled = StyleSheet.create({
   },
 });
 
-const SelectAccountButton = ({ ignoredAccounts }) => {
-  const account = useSelector(accountSeleclor.defaultAccountSelector);
+const SelectAccountButton = ({ ignoredAccounts, disabled }) => {
+  const account = useSelector(accountSelector.defaultAccountSelector);
   const accounts = useSelector(listAllMasterKeyAccounts);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const onNavSelectAccount = () =>
+  const onNavSelectAccount = () => {
+    if (disabled) return;
     navigation.navigate(routeNames.SelectAccount, {
       ignoredAccounts,
     });
+  };
 
   const checkAccount = async () => {
     if (ignoredAccounts.includes(account.name.toLowerCase())) {
@@ -64,6 +66,7 @@ const SelectAccountButton = ({ ignoredAccounts }) => {
   return (
     <View style={styled.container}>
       <ButtonBasic
+        disabled={disabled}
         onPress={onNavSelectAccount}
         customContent={(
           <View style={styled.hook}>
@@ -81,10 +84,12 @@ const SelectAccountButton = ({ ignoredAccounts }) => {
 
 SelectAccountButton.propTypes = {
   ignoredAccounts: PropTypes.array,
+  disabled: PropTypes.bool,
 };
 
 SelectAccountButton.defaultProps = {
-  ignoredAccounts: []
+  ignoredAccounts: [],
+  disabled: false
 };
 
 export default SelectAccountButton;

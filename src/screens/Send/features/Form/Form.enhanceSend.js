@@ -1,6 +1,10 @@
 /* eslint-disable no-unreachable */
 /* eslint-disable import/no-cycle */
 import React from 'react';
+import {
+  ACCOUNT_CONSTANT,
+  PrivacyVersion,
+} from 'incognito-chain-web-js/build/wallet';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { useSelector, useDispatch } from 'react-redux';
 import convert from '@src/utils/convert';
@@ -9,19 +13,18 @@ import { feeDataSelector } from '@src/components/EstimateFee/EstimateFee.selecto
 import format from '@src/utils/format';
 import { reset } from 'redux-form';
 import { Toast } from '@src/components/core';
-import { MESSAGES, CONSTANT_KEYS, CONSTANT_COMMONS } from '@src/constants';
+import { MESSAGES, CONSTANT_KEYS } from '@src/constants';
 import { ExHandler } from '@src/services/exception';
 import { walletSelector } from '@src/redux/selectors/wallet';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import accountService from '@services/wallet/accountService';
-import tokenService from '@services/wallet/tokenService';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import { formName } from './Form.enhance';
 
 export const enhanceSend = (WrappedComp) => (props) => {
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const feeData = useSelector(feeDataSelector);
@@ -30,26 +33,23 @@ export const enhanceSend = (WrappedComp) => (props) => {
 
   const handleSendMainCrypto = async (payload) => {
     const { toAddress, message, originalFee, originalAmount } = payload;
-    const paymentInfos = [
-      {
-        paymentAddressStr: toAddress,
-        amount: originalAmount,
-      },
-    ];
     try {
-      const res = await accountService.createAndSendNativeToken(
-        paymentInfos,
-        originalFee,
-        true,
-        account,
+      const res = await accountService.createAndSendNativeToken({
         wallet,
-        message,
-      );
-      if (res.txId) {
-        return res;
-      } else {
-        throw new Error('Sent tx, but doesnt have txID, please check it');
-      }
+        account,
+        fee: originalFee,
+        info: message,
+        prvPayments: [
+          {
+            PaymentAddress: toAddress,
+            Amount: originalAmount,
+            Message: message,
+          },
+        ],
+        txType: ACCOUNT_CONSTANT.TX_TYPE.SEND,
+        version: PrivacyVersion.ver2,
+      });
+      return res;
     } catch (e) {
       throw e;
     }
@@ -57,48 +57,24 @@ export const enhanceSend = (WrappedComp) => (props) => {
 
   const handleSendToken = async (payload) => {
     try {
-      const {
-        toAddress,
-        message,
-        isUseTokenFee,
-        originalFee,
-        originalAmount,
-      } = payload;
-      const type = CONSTANT_COMMONS.TOKEN_TX_TYPE.SEND;
-      const tokenObject = {
-        Privacy: true,
-        TokenID: selectedPrivacy?.tokenId,
-        TokenName: selectedPrivacy?.name,
-        TokenSymbol: selectedPrivacy?.symbol,
-        TokenTxType: type,
-        TokenAmount: originalAmount,
-        TokenReceivers: [
+      const { toAddress, message, originalFee, originalAmount } = payload;
+      const res = await accountService.createAndSendPrivacyToken({
+        wallet,
+        account,
+        fee: originalFee,
+        info: message,
+        tokenPayments: [
           {
             PaymentAddress: toAddress,
             Amount: originalAmount,
+            Message: message,
           },
         ],
-      };
-      if (!isUseTokenFee) {
-        const prvBalance = await accountService.getBalance(account, wallet);
-        if (prvBalance < originalFee) {
-          throw new Error(MESSAGES.NOT_ENOUGH_NETWORK_FEE);
-        }
-      }
-      const res = await tokenService.createSendPToken(
-        tokenObject,
-        isUseTokenFee ? 0 : originalFee,
-        account,
-        wallet,
-        null,
-        isUseTokenFee ? originalFee : 0,
-        message,
-      );
-      if (res.txId) {
-        return res;
-      } else {
-        throw new Error('Sent tx, but doesnt have txID, please check it');
-      }
+        txType: ACCOUNT_CONSTANT.TX_TYPE.SEND,
+        tokenID: selectedPrivacy?.tokenId,
+        version: PrivacyVersion.ver2,
+      });
+      return res;
     } catch (e) {
       throw e;
     }
@@ -130,6 +106,7 @@ export const enhanceSend = (WrappedComp) => (props) => {
       if (selectedPrivacy?.isMainCrypto) {
         res = await handleSendMainCrypto(payload);
       }
+      console.log('res', res);
       if (res) {
         const params = {
           ...res,

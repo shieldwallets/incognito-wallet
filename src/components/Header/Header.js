@@ -73,6 +73,7 @@ const Header = ({
   placeHolder,
   ignoredAccounts,
   hideBackButton,
+  disableAccountButton,
 }) => {
   const { goBack } = useNavigation();
   const handleGoBack = () =>
@@ -130,7 +131,7 @@ const Header = ({
         {!!rightHeader && rightHeader}
         {accountSelectable && (
           <View>
-            <SelectAccountButton ignoredAccounts={ignoredAccounts} />
+            <SelectAccountButton disabled={disableAccountButton} ignoredAccounts={ignoredAccounts} />
           </View>
         )}
       </View>
@@ -154,6 +155,7 @@ Header.defaultProps = {
   placeHolder: '',
   ignoredAccounts: [],
   hideBackButton: false,
+  disableAccountButton: false
 };
 
 Header.propTypes = {
@@ -175,6 +177,7 @@ Header.propTypes = {
   placeHolder: PropTypes.string,
   ignoredAccounts: PropTypes.array,
   hideBackButton: PropTypes.bool,
+  disableAccountButton: PropTypes.bool,
 };
 
 export default withHeader(React.memo(Header));

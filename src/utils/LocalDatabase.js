@@ -1,8 +1,12 @@
 import User from '@models/user';
 import AsyncStorage from '@services/storage';
-import { CONSTANT_KEYS, MESSAGES } from '@src/constants';
+import { CONSTANT_KEYS } from '@src/constants';
 import _ from 'lodash';
-import {array} from 'prop-types';
+import isEmpty from 'lodash/isEmpty';
+// eslint-disable-next-line import/no-cycle
+import Device from '@models/device';
+// eslint-disable-next-line import/no-cycle
+import {findAccountFromListAccounts} from '@screens/Node/Node.utils';
 
 const TAG = 'LocalDatabase';
 export const KEY_SAVE = {
@@ -36,10 +40,26 @@ export default class LocalDatabase {
     await AsyncStorage.setItem(key, value);
   };
 
-  static getListDevices = async (): [] => {
+  static getListDevices = async (accountList = []): [] => {
     let listDevice = '';
     try {
       listDevice = JSON.parse((await LocalDatabase.getValue(KEY_SAVE.LIST_DEVICE)) || '[]');
+      if(!isEmpty(accountList) && !isEmpty(listDevice)) {
+        listDevice = listDevice.map(item => Device.getInstance(item));
+        listDevice = listDevice.map(device => {
+          const account = findAccountFromListAccounts({
+            accounts: accountList,
+            address: device?.PaymentAddress,
+          });
+          if (device.PaymentAddress && account) {
+            device.Account = account;
+            device.ValidatorKey = device.Account.ValidatorKey;
+            device.PublicKey = device.Account.PublicKeyCheckEncode;
+            device.PaymentAddressFromServer = account?.PaymentAddress;
+          }
+          return device;
+        });
+      }
     } catch (error) {
       console.log(TAG, ' getListDevices error ', error);
       throw new Error(error);
@@ -95,7 +115,10 @@ export default class LocalDatabase {
     if (!_.isEmpty(product_id)) {
       const deviceJSON =
         (await LocalDatabase.getDevice(product_id).catch(
-          e => throw new Error('device not found in local'),
+          e => {
+            console.log('saveUpdatingFirware error: ', e);
+            throw new Error('device not found in local');
+          },
         )) ?? undefined;
       if (deviceJSON) {
         deviceJSON['minerInfo'] = {

@@ -7,6 +7,15 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
+const logger = (store) => (next) => (action) => {
+  console.group(action.type);
+  console.info('dispatching', action);
+  let result = next(action);
+  console.log('next state', store.getState());
+  console.groupEnd();
+  return result;
+};
+
 export default function configureStore(preloadedState) {
   const persistConfig = {
     key: 'root',
@@ -24,19 +33,21 @@ export default function configureStore(preloadedState) {
       'streamline',
       'txHistoryDetail',
       'node',
-      'trade'
+      'trade',
     ],
     stateReconciler: autoMergeLevel2,
   };
   const persistedReducer = persistReducer(persistConfig, rootReducer);
-  const middlewares = [thunkMiddleware];
-  const middlewareEnhancer = applyMiddleware(...middlewares);
-  const enhancers = [middlewareEnhancer];
-  const composedEnhancers = composeWithDevTools(...enhancers);
+  const _composedEnhancers = composeWithDevTools(
+    applyMiddleware(
+      thunkMiddleware,
+      // logger
+    ),
+  );
   const store = createStore(
     persistedReducer,
     preloadedState,
-    composedEnhancers,
+    _composedEnhancers,
   );
   const persistor = persistStore(store);
   if (__DEV__ && module.hot) {

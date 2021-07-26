@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { setTokenHeader } from '@src/services/http';
 import { getToken as getFirebaseToken } from '@src/services/firebase';
 import DeviceInfo from 'react-native-device-info';
@@ -14,14 +15,11 @@ export const getToken = async () => {
     firebaseToken = DeviceInfo.getUniqueId() + new Date().getTime();
     console.debug('Can not get firebase token');
   }
-
-  const uniqueId = (await LocalDatabase.getDeviceId()) || DeviceInfo.getUniqueId() || v4();
+  const uniqueId =
+    (await LocalDatabase.getDeviceId()) || DeviceInfo.getUniqueId() || v4();
   const tokenData = await getUserToken(uniqueId, firebaseToken);
-
   await LocalDatabase.saveDeviceId(uniqueId);
-
   const { token } = tokenData;
-
   return token;
 };
 

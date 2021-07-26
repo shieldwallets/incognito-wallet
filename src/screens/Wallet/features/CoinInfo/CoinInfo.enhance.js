@@ -2,7 +2,7 @@ import React from 'react';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { getTokenInfo } from '@src/services/api/token';
 import { useSelector } from 'react-redux';
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import { compose } from 'recompose';
 import { withLayout_2 } from '@src/components/Layout';
 import { useNavigation } from 'react-navigation-hooks';
@@ -17,7 +17,7 @@ const enhance = (WrappedComp) => (props) => {
   const { info } = state;
   const navigation = useNavigation();
 
-  const selectedPrivacy = useSelector(selectedPrivacySeleclor.selectedPrivacy);
+  const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const {
     tokenId,
     isVerified,
@@ -41,16 +41,15 @@ const enhance = (WrappedComp) => (props) => {
     if (selectedPrivacy?.isBep20Token) {
       return 'BSC network (BEP20)';
     }
-    if (selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB) {
+    if (
+      selectedPrivacy?.currencyType ===
+      CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BNB
+    ) {
       return 'Binance network';
     }
     return `${networkName} network`;
   };
   const infosFactories = [
-    {
-      label: 'Balance',
-      value: format.amount(amount, pDecimals),
-    },
     {
       label: 'Origin',
       value: getNetworkName(),
@@ -71,8 +70,9 @@ const enhance = (WrappedComp) => (props) => {
     {
       label: 'Contract ID',
       value: contractId,
-      link: isErc20Token ? `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}` :
-        `${CONSTANT_CONFIGS.BSCSCAN_URL}/token/${contractId}`,
+      link: isErc20Token
+        ? `${CONSTANT_CONFIGS.ETHERSCAN_URL}/token/${contractId}`
+        : `${CONSTANT_CONFIGS.BSCSCAN_URL}/token/${contractId}`,
     },
     {
       label: 'Coin supply',

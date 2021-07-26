@@ -8,26 +8,18 @@ import withWallet from '@screens/Wallet/features/Home/Wallet.enhance';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFocusEffect } from 'react-navigation-hooks';
 import APIService from '@src/services/api/miner/APIService';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector } from '@src/redux/selectors';
 import { ExHandler } from '@src/services/exception';
 import { BackHandler } from 'react-native';
 import AppUpdater from '@components/AppUpdater';
 import { useBackHandler } from '@src/components/UseEffect';
-import {
-  isFollowDefaultPTokensSelector,
-  actionToggleFollowDefaultPTokens,
-} from '@screens/GetStarted';
-import { followDefaultTokens } from '@src/redux/actions/account';
-import { pTokensSelector } from '@src/redux/selectors/token';
 import { withNews, actionCheckUnreadNews } from '@screens/News';
-import { CONSTANT_KEYS } from '@src/constants';
 import {
   withSyncIncognitoAddress,
   withSyncDetectNetwork,
 } from '@screens/FrequentReceivers';
 import { loadAllMasterKeyAccounts } from '@src/redux/actions/masterKey';
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
-import { configRPC } from '@services/wallet/WalletService';
 import withPin from '@components/pin.enhance';
 import { homeSelector } from './Home.selector';
 import { actionFetch as actionFetchHomeConfigs } from './Home.actions';
@@ -42,11 +34,7 @@ const enhance = (WrappedComp) => (props) => {
     retryLastTxsUnshieldCentralized,
   } = props;
   const { categories, headerTitle, isFetching } = useSelector(homeSelector);
-  const pTokens = useSelector(pTokensSelector);
-  const defaultAccount = useSelector(accountSeleclor.defaultAccountSelector);
-  const isFollowedDefaultPTokens = useSelector(isFollowDefaultPTokensSelector)(
-    CONSTANT_KEYS.IS_FOLLOW_DEFAULT_PTOKENS,
-  );
+  const defaultAccount = useSelector(accountSelector.defaultAccountSelector);
   const masterKeys = useSelector(masterKeysSelector);
   const dispatch = useDispatch();
 
@@ -78,37 +66,18 @@ const enhance = (WrappedComp) => (props) => {
       new ExHandler(e);
     }
   };
-  const followDefaultPTokens = async () => {
-    try {
-      await dispatch(followDefaultTokens(defaultAccount, pTokens));
-      await dispatch(
-        actionToggleFollowDefaultPTokens({
-          keySave: CONSTANT_KEYS.IS_FOLLOW_DEFAULT_PTOKENS,
-        }),
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleGoBack = () => BackHandler.exitApp();
 
   useBackHandler({ handleGoBack });
 
   React.useEffect(() => {
-    configRPC();
     fetchData();
     retryLastTxsUnshieldDecentralized();
     retryLastTxsUnshieldCentralized();
     airdrop();
     getFollowingToken(false);
   }, []);
-
-  React.useEffect(() => {
-    if (!isFollowedDefaultPTokens && pTokens.length > 0) {
-      followDefaultPTokens();
-    }
-  }, [pTokens]);
 
   useFocusEffect(
     React.useCallback(() => {

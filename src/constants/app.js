@@ -15,6 +15,7 @@ const DISABLED = {
   UNSHIELD_CENTRALIZED:   'unshield-centralized',
   SHIELD_DECENTRALIZED:   'shield-decentralized',
   SHIELD_CENTRALIZED:     'shield-centralized',
+  CONVERT_COINS_VER1:     'convert_coins_ver1'
 };
 
 const FEATURES_ROUTE_MAP = {

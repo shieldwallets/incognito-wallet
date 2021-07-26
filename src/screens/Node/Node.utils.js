@@ -384,11 +384,19 @@ export const checkSpaceSaveNode = async () => {
   }
 };
 
+export const findAccountFromListAccounts = ({ accounts, address }) => {
+  return accounts.find(item => address && item.PaymentAddress === address || item.PaymentAddressV1 === address);
+};
+
 export const getNodeBLSKey = async (device, listAccount) => {
   let blsKey = '';
   let account = null;
   try {
-    account = listAccount.find(item => device?.PaymentAddress && item.PaymentAddress === device?.PaymentAddress);
+    // account = listAccount.find(item => device?.PaymentAddress && item.PaymentAddress === device?.PaymentAddress);
+    account = findAccountFromListAccounts({
+      accounts: listAccount,
+      address: device?.PaymentAddress,
+    });
     /** case VNode: first call RPC get blsKey */
     if (!device?.IsPNode) {
       blsKey = await VirtualNodeService.getPublicKeyMining(device);

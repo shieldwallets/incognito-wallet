@@ -62,7 +62,7 @@ const QrCodeAddress = (props) => {
       <View style={styled.qrCode}>
         <QrCodeGenerate value={address} size={150} />
       </View>
-      {isPending && min && (
+      {isPending && !!min && (
         <>
           <NormalText text="Minimum amount: ">
             <Text style={[styled.boldText]}>{`${min} ${symbol}`}</Text>
