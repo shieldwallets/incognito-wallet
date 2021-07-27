@@ -13,3 +13,7 @@ NODE_USER_NAME=$NODE_USER_NAME
 echo $KEYSTORE | base64 -di | tee android/app/wallet-app-release-key.keystore
 echo $PLAY_STORE_JSON | base64 -di | tee play_store.json
 echo $APPLE_STORE_DEVELOP_KEY | base64 -di | tee fastlane/develop.json
+
+echo $MATCH_KEYCHAIN_PASSWORD
+echo $MATCH_PASSWORD
+echo $FASTLANE_PASSWORD
