@@ -495,6 +495,7 @@ export const historyDetailFactoriesSelector = createSelector(
           timeStr,
           status,
           statusStr,
+          senderSeal,
         } = tx;
         let factories = [
           {
@@ -546,6 +547,12 @@ export const historyDetailFactoriesSelector = createSelector(
             label: 'Type',
             value: txTypeStr,
             disabled: !txTypeStr,
+          },
+          {
+            label: 'Sender seal',
+            value: senderSeal,
+            disabled: !senderSeal,
+            copyable: true,
           },
         ];
         try {
