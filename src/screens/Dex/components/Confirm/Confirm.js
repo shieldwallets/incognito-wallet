@@ -17,6 +17,8 @@ import ExchangeRate from '@screens/Dex/components/ExchangeRate';
 import PoolSize from '@screens/Dex/components/PoolSize';
 import withSuccess from '@screens/Dex/components/Confirm/Confirm.enhanceSuccess';
 import withTransaction from '@screens/Dex/components/Confirm/Confirm.enhanceTransaction';
+import {useSelector} from 'react-redux';
+import {shareSelectorWithToken} from '@screens/Dex/Liquidity.selector';
 
 const Confirm = (props) => {
   const {
@@ -26,8 +28,6 @@ const Confirm = (props) => {
     inputValue,
     outputValue,
     pair,
-    share,
-    totalShare,
     inputToken,
     outputToken,
     fee,
@@ -46,7 +46,7 @@ const Confirm = (props) => {
     let outputText = ` + ${formatUtil.amountFull(outputValue, outputToken.pDecimals)} ${outputToken.symbol}`;
     return inputText + outputText;
   };
-
+  const { share, totalShare } = useSelector(shareSelectorWithToken)(inputToken, outputToken);
   return (
     <FlexView style={{ marginHorizontal: 25 }}>
       <Header title={title} />
@@ -115,8 +115,6 @@ Confirm.propTypes = {
   inputToken: PropTypes.object.isRequired,
   fee: PropTypes.number.isRequired,
   account: PropTypes.object.isRequired,
-  share: PropTypes.number.isRequired,
-  totalShare: PropTypes.number.isRequired,
   inputBalance: PropTypes.number.isRequired,
   outputBalance: PropTypes.number.isRequired,
   loading: PropTypes.bool.isRequired,
