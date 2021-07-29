@@ -11,7 +11,7 @@ platform :ios do
 
    lane :release do
      setup_circle_ci 
-     match(type: 'appstore', readonly: true)
+     match(type: 'appstore', readonly: true ,api_key_path: "fastlane/develop.json")
      build_app(
        workspace: './ios/Incognito.xcworkspace',
        scheme: 'Incognito',
