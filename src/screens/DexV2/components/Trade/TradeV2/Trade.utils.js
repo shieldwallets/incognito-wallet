@@ -383,11 +383,12 @@ export const calculateOutputERC20NetWork = async (payload) => {
 /** Check can trade in Incognito or ERC20 network */
 export const checkMethodGetNetworkTrading = (inputToken, outputToken) => ({
   validToken: inputToken && outputToken && inputToken?.id !== outputToken?.id,
-  isERC20NetWork:
-    inputToken.address &&
-    outputToken.address &&
-    ERC20_CURRENCY_TYPE.includes(inputToken.currencyType) &&
-    ERC20_CURRENCY_TYPE.includes(outputToken.currencyType),
+  // isERC20NetWork:
+  //   inputToken.address &&
+  //   outputToken.address &&
+  //   ERC20_CURRENCY_TYPE.includes(inputToken.currencyType) &&
+  //   ERC20_CURRENCY_TYPE.includes(outputToken.currencyType),
+  isERC20NetWork: false,
 });
 
 /**
