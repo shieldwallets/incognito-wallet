@@ -44,12 +44,13 @@ export const tradeSelector = createSelector(
       minimumAmount: trade?.minimumAmount,
       loadingBox: trade?.loadingBox,
       quote: trade?.quote,
-      isErc20: !!(
-        trade?.inputToken?.address &&
-        trade?.outputToken?.address &&
-        ERC20_CURRENCY_TYPE.includes(trade?.inputToken?.currencyType) &&
-        ERC20_CURRENCY_TYPE.includes(trade?.outputToken?.currencyType)
-      ),
+      // isErc20: !!(
+      //   trade?.inputToken?.address &&
+      //   trade?.outputToken?.address &&
+      //   ERC20_CURRENCY_TYPE.includes(trade?.inputToken?.currencyType) &&
+      //   ERC20_CURRENCY_TYPE.includes(trade?.outputToken?.currencyType)
+      // ),
+      isErc20: false,
       priority: trade?.priority,
       priorityList: trade?.priorityList,
 
