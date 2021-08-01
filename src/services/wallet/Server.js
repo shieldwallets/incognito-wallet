@@ -25,6 +25,22 @@ const MAIN_NET_SERVER = {
   username: '',
   password: '',
   name: 'Mainnet',
+  coinServices: 'https://api-coinservice.incognito.org',
+  pubsubServices: 'https://api-coinservice.incognito.org/txservice',
+  requestServices: 'https://api-coinservice.incognito.org/airdrop-service',
+  apiServices: 'https://api-service.incognito.org',
+  shardNumber: DEFAULT_SHARD_NUMBER,
+  IncContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
+  IncBSCContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
+  explorer: 'https://incscan.io'
+};
+const BETA_SERVER = {
+  id: 'beta',
+  default: false,
+  address: MAINNET_FULLNODE,
+  username: '',
+  password: '',
+  name: 'Beta',
   coinServices: 'https://api-coinservice-beta.incognito.org',
   pubsubServices: 'https://api-coinservice-beta.incognito.org/txservice',
   requestServices: 'https://api-coinservice-beta.incognito.org/airdrop-service',
@@ -98,6 +114,7 @@ const DEFAULT_LIST_SERVER = [
   MAIN_NET_SERVER,
   TEST_NET_1_SERVER,
   DEV_TEST_SERVER,
+  BETA_SERVER,
 ];
 
 export const KEY = {
