@@ -118,8 +118,7 @@ export const mainStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 40,
+    marginVertical: 30,
   },
   arrow: {
     marginHorizontal: 7.5,
@@ -473,4 +472,56 @@ export const tokenStyle = StyleSheet.create({
     marginTop: 30,
     width: '100%',
   }
+});
+
+export const headerTabStyle = StyleSheet.create({
+  wrapper: {
+    marginTop: 34,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: COLORS.lightGrey30,
+    padding: 3,
+    borderRadius: 25
+  },
+  wrapItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    height: 44,
+    borderRadius: 22,
+  },
+  itemSelected: {
+    backgroundColor: COLORS.white,
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  textSelected: {
+    color: COLORS.black,
+    fontSize: 18,
+    ...FONT.STYLE.medium,
+  },
+  textUnSelected: {
+    color: COLORS.lightGrey17,
+    fontSize: 18,
+    ...FONT.STYLE.medium,
+  }
+});
+
+export const styled = StyleSheet.create({
+  warning: {
+    ...FONT.STYLE.medium,
+    color: COLORS.orange,
+    fontSize: 16,
+    textAlign: 'center',
+    top: -35,
+  },
 });

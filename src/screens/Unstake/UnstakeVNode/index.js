@@ -7,6 +7,7 @@ import LocalDatabase from '@utils/LocalDatabase';
 import _ from 'lodash';
 import Device from '@models/device';
 import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
+import { PRVIDSTR } from 'incognito-chain-web-js/build/wallet';
 import Unstake from './Unstake';
 
 export const TAG = 'Unstake';
@@ -21,42 +22,44 @@ class UnstakeVNode extends PureComponent {
   }
 
   async componentDidMount() {
-    this.getBalance().catch(error => new ExHandler(error).showErrorToast(true));
+    this.getBalance().catch((error) =>
+      new ExHandler(error).showErrorToast(true),
+    );
   }
 
   async getBalance() {
     const { device } = this.props;
     const account = device.Account;
-    const balance = await accountService.getBalance(account, account.Wallet);
+    const balance = await accountService.getBalance({
+      account,
+      wallet: account.Wallet,
+      tokenID: PRVIDSTR
+    });
     this.setState({ balance });
   }
 
   handleUnstake = async () => {
     const { isUnstaking, fee } = this.state;
-
     if (isUnstaking) {
       return;
     }
-
     try {
       this.setState({ isUnstaking: true });
       const { onFinish, device } = this.props;
       const account = device.Account;
-      const validatorKey = account.ValidatorKey;
       const name = device.AccountName;
-      const rs = await accountService.createAndSendStopAutoStakingTx(
-        account.Wallet,
+      const rs = await accountService.createAndSendStopAutoStakingTx({
         account,
+        wallet: account.Wallet,
         fee,
-        account.PaymentAddress,
-        validatorKey,
-      );
-      const listDevice = (await LocalDatabase.getListDevices()) || [];
+      });
+      console.log('res', rs);
+      const listDevice = ((await LocalDatabase.getListDevices()) || []).map(device => Device.getInstance(device));
       await LocalDatabase.saveListDevices(listDevice);
-      const deviceIndex = listDevice.findIndex(item =>
-        _.isEqual(Device.getInstance(item).AccountName, name),
+      const deviceIndex = listDevice.findIndex((item) =>
+        _.isEqual(item.AccountName, name),
       );
-      listDevice[deviceIndex].minerInfo.unstakeTx = rs.txId;
+      listDevice[deviceIndex].SelfUnstakeTx = rs.txId;
       await LocalDatabase.saveListDevices(listDevice);
       Toast.showInfo('Unstaking complete.');
       onFinish();

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { compose } from 'recompose';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import Wizard from '@screens/Wizard';
@@ -16,14 +17,21 @@ import { actionFetch as actionFetchHomeConfigs } from '@screens/Home/Home.action
 import { useNavigation, useFocusEffect } from 'react-navigation-hooks';
 import { useMigrate } from '@src/components/UseEffect/useMigrate';
 import storageService from '@src/services/storage';
-import { LoadingContainer } from '@src/components/core';
+import { LoadingContainer, Text, View } from '@src/components/core';
 import { actionFetch as actionFetchProfile } from '@screens/Profile';
 import { KEYS } from '@src/constants/keys';
 import { getFunctionConfigs } from '@services/api/misc';
-import { loadAllMasterKeyAccounts, loadAllMasterKeys } from '@src/redux/actions/masterKey';
+import {
+  loadAllMasterKeyAccounts,
+  loadAllMasterKeys,
+} from '@src/redux/actions/masterKey';
 import { masterKeysSelector } from '@src/redux/selectors/masterKey';
 import Welcome from '@screens/GetStarted/Welcome';
 import withPin from '@components/pin.enhance';
+import KeepAwake from 'react-native-keep-awake';
+import { COLORS, FONT } from '@src/styles';
+import { accountServices } from '@src/services/wallet';
+import { actionLogEvent } from '@src/screens/Performance';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,
@@ -32,8 +40,52 @@ import {
   actionToggleShowWizard,
   actionToggleFollowDefaultPTokens,
 } from './GetStarted.actions';
+import withDetectStatusNetwork from './GetStarted.enhanceNetwork';
+
+const subStyled = StyleSheet.create({
+  mainText: {
+    color: COLORS.colorGreyBold,
+    fontFamily: FONT.NAME.medium,
+    fontSize: FONT.SIZE.medium,
+    lineHeight: FONT.SIZE.medium + 5,
+    textAlign: 'center',
+  },
+  subText: {
+    color: COLORS.colorGreyBold,
+    fontFamily: FONT.NAME.medium,
+    fontSize: FONT.SIZE.regular,
+    lineHeight: FONT.SIZE.regular + 5,
+    textAlign: 'center',
+    marginTop: 5,
+  },
+});
+
+const SubComponent = React.memo((props) => {
+  const { isFetched, statusConfigs } = props;
+  return (
+    <LoadingContainer
+      size="large"
+      custom={
+        isFetched && (
+          <View>
+            <Text style={{ ...subStyled.mainText, marginTop: 30 }}>
+              This may take a couple of minutes.
+            </Text>
+            {statusConfigs === 'Load all master keys' && (
+              <Text style={subStyled.mainText}>
+                Please do not navigate away from the app.
+              </Text>
+            )}
+            <Text style={subStyled.subText}>{`(${statusConfigs}...)`}</Text>
+          </View>
+        )
+      }
+    />
+  );
+});
 
 const enhance = (WrappedComp) => (props) => {
+  const [statusConfigs, setStatusConfigs] = React.useState('');
   const [loadMasterKeys, setLoadMasterKeys] = useState(false);
   const { isFetching, isFetched } = useSelector(wizardSelector);
   const pin = useSelector((state) => state?.pin?.pin);
@@ -100,7 +152,8 @@ const enhance = (WrappedComp) => (props) => {
 
   const getExistedWallet = async () => {
     try {
-      const wallet = await dispatch(reloadWallet());
+      const defaultAccountName = await accountServices.getDefaultAccountName();
+      const wallet = await dispatch(reloadWallet(defaultAccountName));
       if (wallet) {
         return wallet;
       }
@@ -112,6 +165,16 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
+  const getErrorMsg = (error) => {
+    const errorMessage = new ExHandler(
+      error,
+      'Something\'s not quite right. Please make sure you\'re connected to the internet.\n' +
+        '\n' +
+        'If your connection is strong but the app still won\'t load, please contact us at go@incognito.org.\n',
+    )?.writeLog()?.message;
+    return errorMessage;
+  };
+
   const goHome = async () => {
     try {
       dispatch(initNotification());
@@ -120,35 +183,20 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
-  const checkWallet = async () => {
-    const wallet = await getExistedWallet();
-    await goHome({ wallet });
-  };
-
   const initApp = async () => {
     let errorMessage = null;
     try {
-      await dispatch(loadAllMasterKeyAccounts());
       await setState({ ...initialState, isInitialing: true });
-      await login();
-      dispatch(actionFetchHomeConfigs());
-      dispatch(getInternalTokenList());
-      const [servers] = await new Promise.all([
-        serverService.get(),
-        dispatch(actionFetchProfile()),
-        getFunctionConfigs().catch(e => e),
-      ]);
-      if (!servers || servers?.length === 0) {
-        await serverService.setDefaultList();
-      }
-      await checkWallet();
+      const wallet = await getExistedWallet();
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_WALLET',
+        }),
+      );
+      await goHome({ wallet });
     } catch (e) {
-      errorMessage = new ExHandler(
-        e,
-        'Something\'s not quite right. Please make sure you\'re connected to the internet.\n' +
-        '\n' +
-        'If your connection is strong but the app still won\'t load, please contact us at go@incognito.org.\n',
-      )?.writeLog()?.message;
+      console.log('INIT APP ERROR', e);
+      errorMessage = getErrorMsg(e);
     } finally {
       await setState({
         ...state,
@@ -159,12 +207,82 @@ const enhance = (WrappedComp) => (props) => {
     }
   };
 
+  const configsApp = async () => {
+    try {
+      await dispatch(
+        actionLogEvent({
+          restart: true,
+          desc: 'CONFIGS_APP',
+        }),
+      );
+      await setStatusConfigs('Load pin');
+      await dispatch(loadPin());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_PIN',
+        }),
+      );
+      await setStatusConfigs('Get info');
+      await login();
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOGIN',
+        }),
+      );
+      await setStatusConfigs('Get configs');
+      const [servers] = await new Promise.all([
+        serverService.get(),
+        getFunctionConfigs().catch((e) => e),
+        dispatch(actionFetchHomeConfigs()),
+        dispatch(getPTokenList()),
+        dispatch(getInternalTokenList()),
+        dispatch(actionFetchProfile()),
+      ]);
+      if (!servers || servers?.length === 0) {
+        await serverService.setDefaultList();
+      }
+      await dispatch(
+        actionLogEvent({
+          desc: 'CONFIGS',
+        }),
+      );
+      await setStatusConfigs('Load all master keys');
+      await dispatch(loadAllMasterKeys());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_ALL_MASTER_KEYS',
+        }),
+      );
+      await setStatusConfigs('Load all master keys keychain');
+      await dispatch(loadAllMasterKeyAccounts());
+      await dispatch(
+        actionLogEvent({
+          desc: 'LOAD_ALL_MASTER_KEYS_ACCOUNTS',
+        }),
+      );
+    } catch (error) {
+      console.log('CONFIGS APP ERROR', error);
+      await setState({
+        ...state,
+        errorMsg: getErrorMsg(error),
+      });
+      throw error;
+    }
+    setLoadMasterKeys(true);
+  };
+
+  const onRetry = async () => {
+    try {
+      await configsApp();
+      await initApp();
+    } catch {
+      //
+    }
+  };
+
   React.useEffect(() => {
     requestAnimationFrame(async () => {
-      await dispatch(loadPin());
-      await dispatch(getPTokenList());
-      await dispatch(loadAllMasterKeys());
-      setLoadMasterKeys(true);
+      await configsApp();
     });
   }, []);
 
@@ -172,7 +290,6 @@ const enhance = (WrappedComp) => (props) => {
     if (!masterKeys || !loadMasterKeys || isFetching) {
       return;
     }
-
     if (masterKeys.length) {
       initApp();
     }
@@ -201,28 +318,35 @@ const enhance = (WrappedComp) => (props) => {
     }
   }, [pin]);
 
-  if (isMigrating || !loadMasterKeys) {
-    return <LoadingContainer size="large" />;
-  }
-
-  if (isFetching) {
-    return <Wizard />;
-  }
-
-  if (masterKeys.length === 0) {
-    return <Welcome />;
-  }
+  const renderMain = () => {
+    if (isFetching) {
+      return <Wizard />;
+    }
+    if (!errorMsg) {
+      if (isMigrating || !loadMasterKeys) {
+        return <SubComponent {...{ isFetched, statusConfigs }} />;
+      }
+      if (masterKeys.length === 0) {
+        return <Welcome />;
+      }
+    }
+    return (
+      <WrappedComp
+        {...{ ...props, errorMsg, isInitialing, isCreating, onRetry }}
+      />
+    );
+  };
 
   return (
     <ErrorBoundary>
-      <WrappedComp
-        {...{ ...props, errorMsg, isInitialing, isCreating, onRetry: initApp }}
-      />
+      {renderMain()}
+      <KeepAwake />
     </ErrorBoundary>
   );
 };
 
 export default compose(
+  withDetectStatusNetwork,
   withPin,
   enhance,
 );

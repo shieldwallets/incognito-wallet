@@ -19,7 +19,7 @@ import TradeHistory from '@screens/DexV2/components/History';
 import TradeHistoryDetail from '@screens/DexV2/components/HistoryDetail';
 import UnShieldModal from '@screens/UnShield/UnShield.modal';
 import pApp from '@src/screens/PappView';
-import TxHistoryDetail from '@screens/Wallet/features/TxHistoryDetail';
+import TxHistoryDetail from '@screens/Wallet/features/History';
 import ImportAccount from '@src/screens/Account/features/ImportAccount';
 import CreateAccount from '@src/screens/Account/features/CreateAccount';
 import BackupKeys from '@src/screens/BackupKeys';
@@ -73,7 +73,7 @@ import {
   KeysExplained,
   MasterKeyList,
   Passphrase,
-  VerifyPassPhrase
+  VerifyPassPhrase,
 } from '@screens/BackUpPassphrase';
 import ManageStorage from '@screens/ManageStorage';
 import BackUpAllData from '@screens/BackUpAllData';
@@ -83,6 +83,16 @@ import ExportCSV from '@screens/ExportCSV';
 import TermOfUseShield from '@screens/Shield/features/TermOfUseShield';
 import MonitorDetail from '@screens/Node/MonitorDetail';
 import ShieldDecentralizeDescription from '@screens/Shield/features/ShieldDecentralizeDescription';
+import Convert from '@screens/Home/features/Convert';
+import ConfirmLiquidity from '@screens/Dex/components/Confirm';
+import HistoriesLiquidity from '@screens/Dex/features/Histories';
+import HistoryContributeDetail from '@screens/Dex/features/HistoryContributeDetail';
+import HistoryWithdrawDetail from '@screens/Dex/features/HistoryWithdrawDetail';
+import ConfirmRetryLiquidity from '@screens/Dex/features/ConfirmRetry';
+import TwoTokensSelect from '@screens/Dex/features/TwoTokensSelect';
+import SelectTokenStreamline from '@screens/Streamline/features/SelectTokens';
+import ConvertTokenList from '@screens/Home/features/ConvertTokenList';
+import HistoryConvert from '@src/screens/Home/features/HistoryConvert';
 
 const masterKeyRoutes = [
   {
@@ -428,7 +438,47 @@ const routes = [
   {
     screen: ShieldDecentralizeDescription,
     name: routeNames.ShieldDecentralizeDescription,
-  }
+  },
+  {
+    screen: Convert,
+    name: routeNames.Convert,
+  },
+  {
+    screen: ConfirmLiquidity,
+    name: routeNames.ConfirmLiquidity,
+  },
+  {
+    screen: HistoriesLiquidity,
+    name: routeNames.HistoriesLiquidity,
+  },
+  {
+    screen: HistoryContributeDetail,
+    name: routeNames.HistoryContributeDetail,
+  },
+  {
+    screen: HistoryWithdrawDetail,
+    name: routeNames.HistoryWithdrawDetail,
+  },
+  {
+    screen: ConfirmRetryLiquidity,
+    name: routeNames.ConfirmRetryLiquidity,
+  },
+  {
+    screen: TwoTokensSelect,
+    name: routeNames.TwoTokensSelect,
+  },
+  {
+    screen: SelectTokenStreamline,
+    name: routeNames.SelectTokenStreamline,
+  },
+  {
+    screen: ConvertTokenList,
+    name: routeNames.ConvertTokenList,
+  },
+  {
+    screen: HistoryConvert,
+    name: routeNames.HistoryConvert,
+  },
 ];
 
 export const getRoutesNoHeader = () =>

@@ -5,7 +5,7 @@ import { BtnChevron } from '@src/components/Button';
 import stylesheet from './style';
 
 const ExtraInfo = (props) => {
-  const { left, right, style, rightStyle, wrapperStyle, message, ellipsizeMode } = props;
+  const { left, right, style, rightStyle, wrapperStyle, message, ellipsizeMode, numberOfLines } = props;
 
   const LeftWrapper = typeof left === 'object' ? View : Text;
   const RightWrapper = typeof right === 'object' ? View : Text;
@@ -26,7 +26,7 @@ const ExtraInfo = (props) => {
       <View style={[stylesheet.wrapper, wrapperStyle]}>
         <LeftWrapper style={[stylesheet.text, stylesheet.textLeft, style]}>{left}</LeftWrapper>
         <RightWrapper
-          numberOfLines={1}
+          numberOfLines={numberOfLines}
           ellipsizeMode={ellipsizeMode}
           style={[stylesheet.text, stylesheet.textRight, style, rightStyle, { flex: 1 }]}
         >
@@ -61,6 +61,7 @@ ExtraInfo.propTypes = {
   rightStyle: PropTypes.object,
   message: PropTypes.string,
   ellipsizeMode: PropTypes.string,
+  numberOfLines: PropTypes.number,
 };
 
 ExtraInfo.defaultProps = {
@@ -68,7 +69,8 @@ ExtraInfo.defaultProps = {
   rightStyle: null,
   wrapperStyle: null,
   message: null,
-  ellipsizeMode: 'tail'
+  ellipsizeMode: 'tail',
+  numberOfLines: 1
 };
 
 export default ExtraInfo;

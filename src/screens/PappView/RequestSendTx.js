@@ -9,9 +9,9 @@ import {
   Container,
 } from '@src/components/core';
 import {
-  accountSeleclor,
-  tokenSeleclor,
-  selectedPrivacySeleclor,
+  accountSelector,
+  tokenSelector,
+  selectedPrivacySelector,
 } from '@src/redux/selectors';
 import formatUtil from '@src/utils/format';
 import accountService from '@src/services/wallet/accountService';
@@ -20,7 +20,7 @@ import LoadingTx from '@src/components/LoadingTx';
 import { CONSTANT_COMMONS } from '@src/constants';
 import { ExHandler } from '@src/services/exception';
 import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
-import { MESSAGES } from '@screens/Dex/constants';
+import {MESSAGES, PRV_ID} from '@screens/Dex/constants';
 import { actionLogEvent } from '@src/screens/Performance';
 import convert from '@src/utils/convert';
 import { compose } from 'recompose';
@@ -100,31 +100,21 @@ class RequestSendTx extends Component {
     };
     try {
       this.setState({ isSending: true });
-      const balanceToken = await accountService.getBalance(
+      const balanceToken = await accountService.getBalance({
         account,
         wallet,
-        selectedPrivacy?.tokenId,
-      );
-      const balancePRV = await accountService.getBalance(account, wallet);
+        tokenID: selectedPrivacy?.tokenId,
+      });
+      const balancePRV = await accountService.getBalance({
+        account,
+        wallet,
+        tokenID: PRV_ID,
+      });
       if (balanceToken < originalAmount) {
         throw new Error(MESSAGES.BALANCE_INSUFFICIENT);
       }
       if (balancePRV < totalFee) {
         throw new Error(MESSAGES.BALANCE_INSUFFICIENT);
-      }
-      const spendingPRV = await accountService.hasSpendingCoins(
-        account,
-        wallet,
-        originalAmount,
-      );
-      const spendingCoin = await accountService.hasSpendingCoins(
-        account,
-        wallet,
-        originalAmount,
-        selectedPrivacy?.tokenId,
-      );
-      if (spendingCoin || spendingPRV) {
-        throw new Error(MESSAGES.PENDING_TRANSACTIONS);
       }
       const res = await tokenService.createSendPToken(
         tokenObject,
@@ -241,10 +231,10 @@ class RequestSendTx extends Component {
 }
 
 const mapState = (state) => ({
-  account: accountSeleclor.defaultAccount(state),
+  account: accountSelector.defaultAccount(state),
   wallet: state.wallet,
-  tokens: tokenSeleclor.followed(state),
-  selectPrivacyByTokenID: selectedPrivacySeleclor.getPrivacyDataByTokenID(
+  tokens: tokenSelector.followed(state),
+  selectPrivacyByTokenID: selectedPrivacySelector.getPrivacyDataByTokenID(
     state,
   ),
 });

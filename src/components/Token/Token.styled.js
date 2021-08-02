@@ -10,6 +10,14 @@ export const styled = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
   extraTop: {
     marginBottom: 5,
   },

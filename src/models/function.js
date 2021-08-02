@@ -4,9 +4,9 @@ class FunctionConfigModel {
       return {};
     }
 
-    this.name = data.Name;
-    this.message = data.Message;
-    this.disabled = data.Disable;
+    this.name = data?.Name || '';
+    this.message = data?.Message || '';
+    this.disabled = !!data?.Disable;
   }
 }
 

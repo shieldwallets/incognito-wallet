@@ -1,44 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import {
-  Text,
-  View,
-} from '@src/components/core';
+import { isNumber } from 'lodash';
 import formatUtil from '@utils/format';
-import style from './style';
+import ExtraInfo from '@screens/DexV2/components/ExtraInfo';
+import BigNumber from 'bignumber.js';
 
-class ExchangeRate extends React.PureComponent {
-  render() {
-    const {
-      inputToken,
-      inputValue,
-      outputToken,
-      outputValue,
-    } = this.props;
+const ExchangeRate = React.memo((props) => {
+  const {
+    inputToken,
+    inputValue,
+    outputToken,
+    outputValue,
+  } = props;
 
-    if (
-      !outputToken ||
-      !outputValue ||
-      !_.isNumber(outputValue) ||
-      !inputValue || !_.isNumber(inputValue)
-    ) {
-      return null;
-    }
-
-    const rawRate = outputValue / (inputValue / Math.pow(10, inputToken.pDecimals || 0));
-    return (
-      <View style={style.twoColumns}>
-        <Text style={[style.feeTitle]}>Exchange Rate:</Text>
-        <Text style={[style.fee, style.textRight, style.ellipsis]} numberOfLines={1}>
-          1 {inputToken?.symbol} =&nbsp;
-          {formatUtil.amount(rawRate, outputToken.pDecimals)}
-          &nbsp;{outputToken?.symbol}
-        </Text>
-      </View>
-    );
+  if (
+    !outputToken ||
+    !outputValue ||
+    !isNumber(outputValue) ||
+    !inputValue || !isNumber(inputValue)
+  ) {
+    return null;
   }
-}
+
+  const rawRate = Math.floor(new BigNumber(outputValue).dividedBy(inputValue / Math.pow(10, inputToken.pDecimals || 0)).toNumber());
+
+  return (
+    <ExtraInfo
+      left="Exchange Rate"
+      right={`1 ${inputToken.symbol} = ${formatUtil.amount(rawRate, outputToken.pDecimals)} ${outputToken?.symbol}`}
+    />
+  );
+});
 
 ExchangeRate.propTypes = {
   inputToken: PropTypes.object.isRequired,

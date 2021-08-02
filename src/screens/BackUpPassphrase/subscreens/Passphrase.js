@@ -9,9 +9,6 @@ import routeNames from '@routers/routeNames';
 import { generateNewMnemonic } from '@services/wallet/mnemonicService';
 import QrCodeGenerate from '@components/QrCodeGenerate/index';
 import clipboard from '@services/clipboard';
-import storage from '@services/storage';
-import { loadWallet as loadWalletFromStorage } from '@services/wallet/WalletService';
-import { getPassphrase } from '@services/wallet/passwordService';
 
 const styles = StyleSheet.create({
   desc: {

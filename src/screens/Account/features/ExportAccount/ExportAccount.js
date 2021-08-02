@@ -24,9 +24,7 @@ const ExportItem = ({ label, data, onPress, onPressQRCode }) => (
         <BtnCopy onPress={onPress} />
       </View>
     </View>
-    <Text style={styleSheet.itemData}>
-      {data}
-    </Text>
+    <Text style={styleSheet.itemData}>{data}</Text>
   </View>
 );
 
@@ -66,6 +64,7 @@ const ExportAccount = ({ account, token, title }) => {
           {renderItem('Readonly key', account?.ReadonlyKey)}
           {renderItem('Validator key', account?.ValidatorKey)}
           {renderItem('Validator Public key', account?.BLSPublicKey)}
+          {renderItem('OTA key', account?.OTAKey)}
           {__DEV__ || global.isDEV ? renderItem('Device token', token) : null}
           {renderItem('ID', account?.ID.toString())}
           {__DEV__ || global.isDEV

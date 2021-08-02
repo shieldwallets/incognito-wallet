@@ -1,3 +1,5 @@
+import {TX_STATUS} from '@src/redux/utils/history';
+
 const PROTOCOLS = {
   OX: '0x',
   KYBER: 'Kyber',
@@ -11,10 +13,11 @@ const ERC20_NETWORK = {
 };
 
 export const HISTORY_STATUS = {
-  PENDING:      'Pending',
-  UNSUCCESSFUL: 'Unsuccessful',
-  SUCCESSFUL:   'Successful',
-  DEPOSIT_FAILD: 'Deposit failed'
+  REFUND: ['refund', 'xPoolTradeRefundFee', 'xPoolTradeRefundSellingToken'],
+  REJECTED: ['rejected', 'withPRVFeeRejected'],
+  ACCEPTED: ['accepted', 'xPoolTradeAccepted', TX_STATUS.TXSTATUS_SUCCESS],
+  FAIL: [TX_STATUS.TXSTATUS_FAILED, TX_STATUS.TXSTATUS_CANCELED],
+
 };
 
 let kyberTradeAddress = '';

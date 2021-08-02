@@ -1,4 +1,4 @@
-import { selectedPrivacySeleclor } from '@src/redux/selectors';
+import { selectedPrivacySelector } from '@src/redux/selectors';
 import { getMinMaxDepositAmount } from '@src/services/api/misc';
 import {
   genETHDepositAddress,
@@ -7,12 +7,7 @@ import {
   genBSCDepositAddress,
 } from '@src/services/api/deposit';
 import { CONSTANT_COMMONS } from '@src/constants';
-import { setSelectedPrivacy } from '@src/redux/actions/selectedPrivacy';
-import { actionAddFollowToken } from '@src/redux/actions/token';
-import {
-  defaultAccountSelector,
-  signPublicKeyEncodeSelector
-} from '@src/redux/selectors/account';
+import { signPublicKeyEncodeSelector } from '@src/redux/selectors/account';
 import formatUtil from '@utils/format';
 import {
   ACTION_FETCHING,
@@ -43,7 +38,11 @@ export const actionGetMinMaxShield = async ({ tokenId }) => {
   }
 };
 
-export const actionGetAddressToShield = async ({ selectedPrivacy, account, signPublicKeyEncode }) => {
+export const actionGetAddressToShield = async ({
+  selectedPrivacy,
+  account,
+  signPublicKeyEncode,
+}) => {
   try {
     let generateResult = {};
     if (!selectedPrivacy?.isPToken) {
@@ -66,16 +65,20 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         tokenId: selectedPrivacy?.tokenId,
         tokenContractID: selectedPrivacy?.contractId,
         currencyType: selectedPrivacy?.currencyType,
-        signPublicKeyEncode
+        signPublicKeyEncode,
       });
-    } else if (selectedPrivacy?.isBep20Token || selectedPrivacy?.currencyType === CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB) {
+    } else if (
+      selectedPrivacy?.isBep20Token ||
+      selectedPrivacy?.currencyType ===
+        CONSTANT_COMMONS.PRIVATE_TOKEN_CURRENCY_TYPE.BSC_BNB
+    ) {
       generateResult = await genBSCDepositAddress({
         paymentAddress: account.PaymentAddress,
         walletAddress: account.PaymentAddress,
         tokenId: selectedPrivacy?.tokenId,
         tokenContractID: selectedPrivacy?.contractId,
         currencyType: selectedPrivacy?.currencyType,
-        signPublicKeyEncode
+        signPublicKeyEncode,
       });
     } else {
       generateResult = await genCentralizedDepositAddress({
@@ -83,10 +86,16 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
         walletAddress: account.PaymentAddress,
         tokenId: selectedPrivacy?.tokenId,
         currencyType: selectedPrivacy?.currencyType,
-        signPublicKeyEncode
+        signPublicKeyEncode,
       });
     }
-    const { address, expiredAt, decentralized, estimateFee, tokenFee } = generateResult;
+    const {
+      address,
+      expiredAt,
+      decentralized,
+      estimateFee,
+      tokenFee,
+    } = generateResult;
     if (!address) {
       throw 'Can not gen new deposit address';
     }
@@ -96,7 +105,10 @@ export const actionGetAddressToShield = async ({ selectedPrivacy, account, signP
   }
 };
 
-export const actionFetch = ({ tokenId, selectedPrivacy, account }) => async (dispatch, getState) => {
+export const actionFetch = ({ tokenId, selectedPrivacy, account }) => async (
+  dispatch,
+  getState,
+) => {
   try {
     const state = getState();
     const { isFetching } = shieldSelector(state);
@@ -107,7 +119,11 @@ export const actionFetch = ({ tokenId, selectedPrivacy, account }) => async (dis
     dispatch(actionFetching());
     const [dataMinMax, addressShield] = await Promise.all([
       actionGetMinMaxShield({ tokenId }),
-      actionGetAddressToShield({ selectedPrivacy, account, signPublicKeyEncode }),
+      actionGetAddressToShield({
+        selectedPrivacy,
+        account,
+        signPublicKeyEncode,
+      }),
     ]);
 
     let {

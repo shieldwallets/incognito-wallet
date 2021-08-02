@@ -8,13 +8,11 @@ import trim from 'lodash/trim';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccount from '@src/components/Account/Account.useEffect';
 import { change } from 'redux-form';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector } from '@src/redux/selectors';
 import handleRandomName from '@src/utils/randomName';
 import { Keyboard } from 'react-native';
 import { actionFetchImportAccount } from '@src/redux/actions/account';
-import {
-  actionClearListNodes as clearListNodes
-} from '@screens/Node/Node.actions';
+import { actionClearListNodes as clearListNodes } from '@screens/Node/Node.actions';
 import routeNames from '@routers/routeNames';
 import { noMasterLessSelector } from '@src/redux/selectors/masterKey';
 import accountService from '@services/wallet/accountService';
@@ -23,7 +21,7 @@ import { formImportAccount } from './ImportAccount';
 const enhance = (WrappedComponent) => (props) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const accountList = useSelector(accountSeleclor.listAccountSelector);
+  const accountList = useSelector(accountSelector.listAccountSelector);
   const onGoBack = useNavigationParam('onGoBack');
   const redirect = useNavigationParam('redirect');
   const [useRandomName, setUseRandomName] = React.useState({
@@ -96,19 +94,17 @@ const enhance = (WrappedComponent) => (props) => {
 
       const masterKey = await hasImportedMasterKey(privateKey);
       if (masterKey) {
-        const isExisted = masterKey.wallet.MasterAccount.child
-          .find(item => item.name.toLowerCase() === accountName.toLowerCase());
-
+        const isExisted = masterKey.wallet.MasterAccount.child.find(
+          (item) => item.name.toLowerCase() === accountName.toLowerCase(),
+        );
         if (isExisted) {
           throw new CustomError(ErrorCode.web_js_import_invalid_key_2);
         }
-
         await handleImportAccount({ privateKey, accountName });
       } else {
         if (isAccountExist) {
           throw new CustomError(ErrorCode.importAccount_existed);
         }
-
         setWantImport(true);
         setPrivateKey(privateKey);
         setName(accountName);
@@ -141,7 +137,6 @@ const enhance = (WrappedComponent) => (props) => {
         dispatch(clearListNodes());
         onGoBack();
       }
-
       Toast.showSuccess('Import successful.');
     } catch (error) {
       new ExHandler(
@@ -153,7 +148,9 @@ const enhance = (WrappedComponent) => (props) => {
   };
   const handleImportMasterKey = () => {
     if (!importing) {
-      navigation.navigate(routeNames.ImportMasterKey, {redirect: redirect || routeNames.Keychain});
+      navigation.navigate(routeNames.ImportMasterKey, {
+        redirect: redirect || routeNames.Keychain,
+      });
     }
   };
   const handleChangeRandomName = async () => {
@@ -196,6 +193,4 @@ const enhance = (WrappedComponent) => (props) => {
   );
 };
 
-export default compose(
-  enhance,
-);
+export default compose(enhance);

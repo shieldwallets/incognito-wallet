@@ -1,13 +1,20 @@
+// eslint-disable-next-line import/no-cycle
 import LocalDatabase from '@utils/LocalDatabase';
+// eslint-disable-next-line import/no-cycle
 import Device, {MAX_ERROR_COUNT, VALIDATOR_STATUS} from '@models/device';
+// eslint-disable-next-line import/no-cycle
 import NodeService from '@services/NodeService';
+// eslint-disable-next-line import/no-cycle
 import APIService from '@src/services/api/miner/APIService';
 import LogManager from '@src/services/LogManager';
 import { map, isEmpty, isNumber, forEach, uniq, some } from 'lodash';
 import { getTransactionByHash } from '@services/wallet/RpcClientService';
+// eslint-disable-next-line import/no-cycle
 import tokenService, { PRV } from '@services/wallet/tokenService';
+// eslint-disable-next-line import/no-cycle
 import { PRV_ID } from '@screens/Dex/constants';
 import { getTokenList } from '@services/api/token';
+// eslint-disable-next-line import/no-cycle
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
 import DeviceInfo from 'react-native-device-info';
 import Util from '@utils/Util';
@@ -15,6 +22,7 @@ import { CONSTANT_CONFIGS } from '@src/constants';
 import storage from '@services/storage';
 import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 import { getPNodeBackLog } from '@services/api/device';
+// eslint-disable-next-line import/no-cycle
 import VirtualNodeService from '@services/VirtualNodeService';
 
 export const checkIfVerifyCodeIsExisting = async () => {
@@ -384,11 +392,19 @@ export const checkSpaceSaveNode = async () => {
   }
 };
 
+export const findAccountFromListAccounts = ({ accounts, address }) => {
+  return accounts.find(item => address && (item.PaymentAddress === address || item.PaymentAddressV1 === address));
+};
+
 export const getNodeBLSKey = async (device, listAccount) => {
   let blsKey = '';
   let account = null;
   try {
-    account = listAccount.find(item => device?.PaymentAddress && item.PaymentAddress === device?.PaymentAddress);
+    // account = listAccount.find(item => device?.PaymentAddress && item.PaymentAddress === device?.PaymentAddress);
+    account = findAccountFromListAccounts({
+      accounts: listAccount,
+      address: device?.PaymentAddress,
+    });
     /** case VNode: first call RPC get blsKey */
     if (!device?.IsPNode) {
       blsKey = await VirtualNodeService.getPublicKeyMining(device);

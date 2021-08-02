@@ -1,9 +1,13 @@
 import { DEVICES } from '@src/constants/miner';
+// eslint-disable-next-line import/no-cycle
 import accountService from '@src/services/wallet/accountService';
-import _, { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { COLORS } from '@src/styles';
+// eslint-disable-next-line import/no-cycle
 import { PRV_ID } from '@screens/Dex/constants';
+// eslint-disable-next-line import/no-cycle
 import { parseNodeRewardsToArray } from '@screens/Node/utils';
+// eslint-disable-next-line import/no-cycle
 import { PRV } from '@services/wallet/tokenService';
 
 export const DEVICE_STATUS = {
@@ -266,11 +270,11 @@ export default class Device {
   }
 
   get APIUrl(){
-    if (!_.isEmpty(this.Host) && _.isEmpty(this.Port)) {
+    if (!isEmpty(this.Host) && isEmpty(this.Port)) {
       return this.Host;
     }
 
-    return !_.isEmpty(this.Host) && !_.isEmpty(this.Port) ? `${this.Host}:${this.Port}` : '';
+    return !isEmpty(this.Host) && !isEmpty(this.Port) ? `${this.Host}:${this.Port}` : '';
   }
 
   set Status(status) {
@@ -302,7 +306,11 @@ export default class Device {
   }
 
   balance = async(account,wallet)=>{
-    return (!_.isEmpty(account) && !_.isEmpty(wallet) && await accountService.getBalance(account, wallet)) || 0;
+    return (!isEmpty(account) && !isEmpty(wallet) && await accountService.getBalance({
+      account,
+      wallet,
+      tokenID: PRV_ID
+    })) || 0;
   };
 
   // Not arbitrary use this function
@@ -360,6 +368,10 @@ export default class Device {
 
   get PaymentAddressFromServer(){
     return this.data.minerInfo?.PaymentAddress ?? '';
+  }
+
+  set PaymentAddressFromServer(paymentAddress) {
+    this.data.minerInfo.PaymentAddress = paymentAddress;
   }
 
   get CommissionFromServer(){

@@ -1,51 +1,23 @@
-import React, { memo } from 'react';
-import HistoryList, { useHistoryList } from '@src/components/HistoryList';
-import { useDispatch, useSelector } from 'react-redux';
-import { accountSeleclor, tokenSeleclor } from '@src/redux/selectors';
-import { actionFetchHistoryMainCrypto } from '@src/redux/actions/token';
-import { ExHandler } from '@src/services/exception';
-import { getBalance as getAccountBalance } from '@src/redux/actions/account';
-import withMainCryptoHistory from './MainCryptoHistory.enhance';
+import React from 'react';
+import HistoryList from '@src/screens/Wallet/features/HistoryList';
+import { historyTxsSelector } from '@src/redux/selectors/history';
+import { useHistoryEffect } from '@src/screens/Wallet/features/History';
+import { useSelector } from 'react-redux';
 import EmptyHistory from './MainCryptoHistory.empty';
 
 const MainCryptoHistory = () => {
-  const account = useSelector(accountSeleclor.defaultAccountSelector);
-  const { histories } = useSelector(tokenSeleclor.historyTokenSelector);
-  const { isFetching, oversize } = useSelector(
-    tokenSeleclor.receiveHistorySelector,
+  const { histories, isEmpty, loading, refreshing, oversize } = useSelector(
+    historyTxsSelector,
   );
-  const dispatch = useDispatch();
-  const handleLoadHistory = (refreshing) => {
-    try {
-      dispatch(actionFetchHistoryMainCrypto(refreshing));
-    } catch (error) {
-      new ExHandler(error).showErrorToast();
-    }
-  };
-  const handleLoadBalance = () => {
-    try {
-      dispatch(getAccountBalance(account));
-    } catch (error) {
-      new ExHandler(error).showErrorToast();
-    }
-  };
-  const handleRefresh = () => {
-    handleLoadBalance();
-    handleLoadHistory(true);
-  };
-  const [showEmpty, refreshing] = useHistoryList({
-    handleLoadHistory,
-    handleLoadBalance,
-  });
+  const { handleRefresh } = useHistoryEffect();
   return (
     <HistoryList
       histories={histories}
       onRefreshHistoryList={handleRefresh}
-      onLoadmoreHistory={() => !oversize && handleLoadHistory(false)}
       refreshing={refreshing}
-      loading={isFetching}
+      loading={loading}
       renderEmpty={() => <EmptyHistory />}
-      showEmpty={showEmpty}
+      showEmpty={isEmpty}
       oversize={oversize}
     />
   );
@@ -53,4 +25,4 @@ const MainCryptoHistory = () => {
 
 MainCryptoHistory.propTypes = {};
 
-export default withMainCryptoHistory(memo(MainCryptoHistory));
+export default MainCryptoHistory;

@@ -12,7 +12,7 @@ const styled = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.black,
     justifyContent: 'center',
-    paddingVertical: 5,
+    paddingVertical: 10,
     marginBottom: hasNotch() ? 30 : 0,
     position: 'relative',
   },

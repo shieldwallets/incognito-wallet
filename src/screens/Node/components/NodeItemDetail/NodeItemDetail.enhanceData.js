@@ -18,12 +18,15 @@ const nodeItemDetailEnhanceData = WrappedComp => props => {
 
   const [processing, setProcessing] = useState(false);
 
-  const device      = useSelector(getDeviceByProductId)(productId);
+  const device      = useSelector(getDeviceByProductId)(productId) || {};
   const isLoading   = useSelector(checkLoadingNodeByProductId)(productId);
   const {
     accessToken,
     refreshToken
   } = useSelector(selectUserNodeToken);
+
+  if (!device) return null;
+
   const ip          = device?.Host;
   const name        = device?.Name;
   const hasAccount  = !!device?.AccountName;

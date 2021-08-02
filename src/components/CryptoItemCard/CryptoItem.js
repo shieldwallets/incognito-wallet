@@ -35,7 +35,7 @@ const CryptoItem = ({ fullName, iconUrl, name, amount, onPress, symbol, isGettin
 );
 
 CryptoItem.defaultProps = {
-  fullName: 'Sample name',
+  fullName: 'Incognito Token',
   name: 'Name',
   amount: 0,
   onPress: null,

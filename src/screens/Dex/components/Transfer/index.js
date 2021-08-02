@@ -71,7 +71,11 @@ class Transfer extends React.PureComponent {
   checkCorrectBalance = (account, token, value) => {
     let tried = 0;
     return async (resolve, reject) => {
-      const balance = await accountService.getBalance(account, account.Wallet, token.id);
+      const balance = await accountService.getBalance({
+        account,
+        wallet: account.Wallet,
+        tokenID: token.id
+      });
       if (balance >= value) {
         clearInterval(this.interval);
         WithdrawHistory.currentWithdraw.checking = true;
@@ -206,7 +210,11 @@ class Transfer extends React.PureComponent {
       try {
         this.setState({ sending: true });
         if (token.id !== PRV_ID && feeUnit === PRV?.symbol) {
-          prvBalance = await accountService.getBalance(prvAccount, prvAccount.Wallet);
+          prvBalance = await accountService.getBalance({
+            account: prvAccount,
+            wallet: prvAccount.Wallet,
+            tokenID: PRV_ID
+          });
           prvFee = fee;
           if (prvFee > prvBalance) {
             return this.updateTransfer({chainError: MESSAGES.NOT_ENOUGH_NETWORK_FEE});
@@ -231,7 +239,11 @@ class Transfer extends React.PureComponent {
       this.selectAccount(accounts[0]);
     } else {
       accounts.forEach((account, index) => {
-        accountService.getBalance(account, account.Wallet, token.id)
+        accountService.getBalance({
+          account,
+          wallet: account.Wallet,
+          tokenID: token.id
+        })
           .then(balance => {
             balances[index] = balance;
             this.setState({balances: [...balances]});
@@ -247,7 +259,11 @@ class Transfer extends React.PureComponent {
     if (transfer.action === 'deposit') {
       if (index === undefined) {
         this.updateTransfer({ account }, () => {
-          accountService.getBalance(account, account.Wallet, token.id)
+          accountService.getBalance({
+            account,
+            wallet: account.Wallet,
+            tokenID: token.id
+          })
             .then(balance => {
               this.updateTransfer({ balance });
             });
@@ -260,7 +276,11 @@ class Transfer extends React.PureComponent {
       }
     } else {
       this.updateTransfer({ account }, () => {
-        accountService.getBalance(dexMainAccount, dexMainAccount.Wallet, token.id)
+        accountService.getBalance({
+          account: dexMainAccount,
+          wallet: dexMainAccount.Wallet,
+          tokenID: token.id
+        })
           .then(balance => {
             this.updateTransfer({ balance });
           });

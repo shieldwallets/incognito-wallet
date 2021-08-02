@@ -1,24 +1,27 @@
 import React from 'react';
+import isEmpty from 'lodash/isEmpty';
+import { ACCOUNT_CONSTANT , PrivacyVersion } from 'incognito-chain-web-js/build/wallet';
 import { ExHandler } from '@services/exception';
 import accountService from '@services/wallet/accountService';
 import { submitProvideRawTx, checkPreviousProvision } from '@services/api/pool';
 import { useSelector } from 'react-redux';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector } from '@src/redux/selectors';
 import ReCaptchaV3 from '@haskkor/react-native-recaptchav3';
 import appConstant from '@src/constants/app';
-import { isEmpty } from 'lodash';
+import { PRV_ID } from '@src/constants/common';
 
-const withConfirm = WrappedComp => (props) => {
-  const signPublicKeyEncode = useSelector(accountSeleclor.signPublicKeyEncodeSelector);
+
+const withConfirm = (WrappedComp) => (props) => {
+  const signPublicKeyEncode = useSelector(
+    accountSelector.signPublicKeyEncodeSelector,
+  );
   const [error, setError] = React.useState('');
   const [providing, setProviding] = React.useState(false);
   const [provideTx, setProvideTx] = React.useState(null);
   const [disable, setDisable] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
-
   const captchaRef = React.useRef(null);
   const {
-    coins,
     value,
     coin,
     fee,
@@ -43,7 +46,7 @@ const withConfirm = WrappedComp => (props) => {
         rawData,
         amount: provideValue,
         captchaCode,
-        tokenId: coin.id
+        tokenId: coin.id,
       });
       onSuccess(true);
     } catch (e) {
@@ -54,34 +57,55 @@ const withConfirm = WrappedComp => (props) => {
     }
   };
 
-  const submitProvideRawData = (params) => {
+  const submitProvideRawData = async (params) => {
     if (!params || captchaRef.current) {
-      const { TxID: txId, RawData: rawData } = params;
+      const { txId, rawTx: rawData } = params;
       setProvideTx({ txId, rawData });
       setTimeout(() => {
         captchaRef.current?.refreshToken();
       }, 1000);
     }
+    return true;
   };
 
   const handleSendTransaction = async () => {
     try {
       if (provideTx) return;
       let provideValue = isPrv ? originProvide : value;
-      await accountService.createAndSendToken(
-        account,
-        wallet,
-        coin.masterAddress,
-        provideValue,
-        coin.id,
-        fee,
-        0,
-        0,
-        '',
-        null,
-        null,
-        submitProvideRawData
-      );
+      if (coin.id === PRV_ID) {
+        await accountService.createAndSendNativeToken({
+          wallet,
+          account,
+          fee,
+          prvPayments: [
+            {
+              PaymentAddress: coin.masterAddress,
+              Amount: provideValue,
+              Message: '',
+            },
+          ],
+          txType: ACCOUNT_CONSTANT.TX_TYPE.PROVIDE,
+          txHandler: submitProvideRawData,
+          version: PrivacyVersion.ver2,
+        });
+      } else {
+        await accountService.createAndSendPrivacyToken({
+          wallet,
+          account,
+          fee,
+          tokenPayments: [
+            {
+              PaymentAddress: coin.masterAddress,
+              Amount: provideValue,
+              Message: '',
+            },
+          ],
+          txType: ACCOUNT_CONSTANT.TX_TYPE.PROVIDE,
+          tokenID: coin.id,
+          txHandler: submitProvideRawData,
+          version: PrivacyVersion.ver2,
+        });
+      }
     } catch (e) {
       setProvideTx(null);
       setProviding(false);
@@ -95,7 +119,7 @@ const withConfirm = WrappedComp => (props) => {
       setProviding(true);
       const hasPrevious = await checkPreviousProvision({
         tokenId: coin.id,
-        paymentAddress: account.PaymentAddress
+        paymentAddress: account.PaymentAddress,
       });
       if (hasPrevious) {
         setProviding(false);

@@ -30,7 +30,7 @@ const enhancePriority = WrappedComp => props => {
     if (newPriority === priority) return;
     dispatch(updatePriority({ priority: newPriority }));
 
-    // Case user can choose Free by pToken
+    // Case user can choose fee by pToken
     if (originalFeeToken?.id !== PRV_ID) {
       const payload = newPriority !== PRIORITY_KEY.MEDIUM
         ? NETWORK_FEE_PRV

@@ -9,7 +9,10 @@ import {
   ACTION_FETCHED_ALL_TXS,
   ACTION_TOGGLE_PENDING,
   ACTION_REMOVE_LOCAL_UTXOS,
-} from './Streamline.constant';
+  ACTION_FETCHED_UTXO,
+  ACTION_CLEAR_STREAM_LINE,
+  ACTION_FETCHING_UTXO,
+} from './Streamline.actionsName';
 
 const initialState = {
   consolidated: 0,
@@ -17,6 +20,8 @@ const initialState = {
   isFetching: false,
   isFetched: false,
   isPending: false,
+  UTXOS: [],
+  isFetchingUTXOS: false,
   storage: {
     [CONSTANT_KEYS.UTXOS_DATA]: {
       data: {},
@@ -88,6 +93,29 @@ const streamlineReducer = (state = initialState, action) => {
           data: newData,
         },
       },
+    };
+  }
+  case ACTION_FETCHED_UTXO: {
+    return {
+      ...state,
+      UTXOS: action.payload,
+    };
+  }
+  case ACTION_CLEAR_STREAM_LINE: {
+    return {
+      ...state,
+      consolidated: 0,
+      times: 1,
+      isFetching: false,
+      isFetched: false,
+      isPending: false,
+      UTXOS: [],
+    };
+  }
+  case ACTION_FETCHING_UTXO: {
+    return {
+      ...state,
+      isFetchingUTXOS: action.payload
     };
   }
   default:

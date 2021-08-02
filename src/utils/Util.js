@@ -162,4 +162,8 @@ export default class Util {
       promiseObj.then(resolveWrap, rejectWrap);
     });
   };
+
+  static sleep = (sleepTime = 2000) => {
+    return new Promise(resolve => setTimeout(resolve, sleepTime));
+  };
 }

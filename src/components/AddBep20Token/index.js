@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
 import { Toast } from '@src/components/core';
-import { accountSeleclor } from '@src/redux/selectors';
+import { accountSelector } from '@src/redux/selectors';
 import { setWallet } from '@src/redux/actions/wallet';
 import { getPTokenList } from '@src/redux/actions/token';
 import accountService from '@src/services/wallet/accountService';
-import {detectBEP20Token, addBEP20Token} from '@src/services/api/token';
+import { detectBEP20Token, addBEP20Token } from '@src/services/api/token';
 import LoadingContainer from '@src/components/LoadingContainer';
 import { ExHandler, CustomError, ErrorCode } from '@src/services/exception';
 import AddBep20Token from './AddBep20Token';
@@ -24,7 +24,7 @@ export class AddBep20TokenContainer extends Component {
     this.handleSearch = debounce(this.handleSearch.bind(this), 1000);
   }
 
-  detectBep20Token = async address => {
+  detectBep20Token = async (address) => {
     const data = await detectBEP20Token(address);
     if (!data) {
       throw new CustomError(ErrorCode.addBep2Token_not_found);
@@ -33,23 +33,27 @@ export class AddBep20TokenContainer extends Component {
     return data;
   };
 
-  handleAdd = async values => {
+  handleAdd = async (values) => {
     try {
       if (!values) return;
       const { account, wallet, setWallet, getPTokenList } = this.props;
       let newPToken;
-      const {name, symbol, address, decimals} = values;
+      const { name, symbol, address, decimals } = values;
       const data = {
         name,
         symbol,
         contractId: address,
-        decimals
+        decimals,
       };
 
       newPToken = await addBEP20Token(data);
       // add this new token to user following list
 
-      await accountService.addFollowingTokens([newPToken.convertToToken()], account, wallet);
+      await accountService.addFollowingTokens(
+        [newPToken.convertToToken()],
+        account,
+        wallet,
+      );
       await getPTokenList();
       // update new wallet to store
       setWallet(wallet);
@@ -58,7 +62,7 @@ export class AddBep20TokenContainer extends Component {
       // clear prev data
       this.setState({ data: null });
       return newPToken;
-    } catch(e) {
+    } catch (e) {
       new ExHandler(e).showErrorToast();
       throw e;
     }
@@ -77,14 +81,17 @@ export class AddBep20TokenContainer extends Component {
         // TODO: search by symbol
       }
     } catch (e) {
-      new ExHandler(e, 'Can not search this Bep20 coin, please try again.').showErrorToast();
+      new ExHandler(
+        e,
+        'Can not search this Bep20 coin, please try again.',
+      ).showErrorToast();
     } finally {
       this.setState({ isSearching: false });
     }
   };
 
   render() {
-    const { data, isSearching} = this.state;
+    const { data, isSearching } = this.state;
     const { wallet, account } = this.props;
 
     if (!wallet || !account) {
@@ -102,14 +109,14 @@ export class AddBep20TokenContainer extends Component {
   }
 }
 
-const mapState = state => ({
-  account: accountSeleclor.defaultAccount(state),
+const mapState = (state) => ({
+  account: accountSelector.defaultAccount(state),
   wallet: state.wallet,
 });
 
 const mapDispatchToProps = {
   setWallet,
-  getPTokenList
+  getPTokenList,
 };
 
 AddBep20TokenContainer.propTypes = {
@@ -119,4 +126,7 @@ AddBep20TokenContainer.propTypes = {
   getPTokenList: PropTypes.func.isRequired,
 };
 
-export default connect(mapState, mapDispatchToProps)(AddBep20TokenContainer);
+export default connect(
+  mapState,
+  mapDispatchToProps,
+)(AddBep20TokenContainer);

@@ -5,13 +5,15 @@ import {
   RpcClient,
   Wallet,
 } from 'incognito-chain-web-js/build/wallet';
+import Server from '@services/wallet/Server';
 import { CustomError, ErrorCode, ExHandler } from '../exception';
 
 let lastPDEStateData = null;
 let lastBeaconHeight = null;
 
-function getRpcClient() {
-  return Wallet.RpcClient;
+async function getRpcClient() {
+  const server = await Server.getDefault();
+  return new RpcClient(server.address);
 }
 
 function setRpcClientInterceptor() {

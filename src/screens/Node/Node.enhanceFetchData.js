@@ -15,6 +15,7 @@ import {
 } from '@screens/Node/Node.actions';
 import LocalDatabase from '@utils/LocalDatabase';
 import { ExHandler } from '@services/exception';
+import { listAllMasterKeyAccounts } from '@src/redux/selectors/masterKey';
 
 let lastRefreshTime;
 
@@ -22,10 +23,10 @@ const enhanceFetchData = WrappedComp => props => {
   const {
     listDevice,
     isFetched,
-    setErrorStorage
+    setErrorStorage,
   } = props;
 
-
+  const listAccount     = useSelector(listAllMasterKeyAccounts);
   const dispatch    = useDispatch();
   const refresh     = useNavigationParam('refresh');
 
@@ -48,9 +49,9 @@ const enhanceFetchData = WrappedComp => props => {
       // make sure can storage DATA
       await checkSpaceSaveNode();
       // update list nodes from local
-      let listDevice = await LocalDatabase.getListDevices();
+      let listDevice = await LocalDatabase.getListDevices(listAccount);
       if (listDevice && listDevice.length === 0) return;
-      dispatch(updateListNode({ listDevice }));
+      dispatch(updateListNode({ listDevice, ignoredInstance: true }));
       // Add loading here
       getTotalVNodeNotHaveBlsKey()
         .then(async ({ hasVNode, vNodeNotHaveBLS, hasNode }) => {

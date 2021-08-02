@@ -1,8 +1,12 @@
-import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
-import { defaultAccountSelector } from '@src/redux/selectors/account';
-import { walletSelector } from '@src/redux/selectors/wallet';
 import { ExHandler } from '@src/services/exception';
-import accountServices from '@src/services/wallet/accountService';
+import { getDefaultAccountWalletSelector } from '@src/redux/selectors/shared';
+import { PrivacyVersion } from 'incognito-chain-web-js/build/wallet';
+import { batch } from 'react-redux';
+import {selectedPrivacySelector, tokenSelector} from '@src/redux/selectors';
+import {switchAccountSelector} from '@src/redux/selectors/account';
+import {PRV_ID} from '@screens/Dex/constants';
+import cloneDeep from 'lodash/cloneDeep';
+import { streamlineSelector } from './Streamline.selector';
 import {
   ACTION_FETCHING,
   ACTION_FETCHED,
@@ -10,8 +14,10 @@ import {
   ACTION_FETCHED_ALL_TXS,
   ACTION_TOGGLE_PENDING,
   ACTION_REMOVE_LOCAL_UTXOS,
-} from './Streamline.constant';
-import { streamlineSelector } from './Streamline.selector';
+  ACTION_FETCHED_UTXO,
+  ACTION_CLEAR_STREAM_LINE,
+  ACTION_FETCHING_UTXO,
+} from './Streamline.actionsName';
 
 export const actionFetching = () => ({
   type: ACTION_FETCHING,
@@ -26,28 +32,23 @@ export const actionFetch = () => async (dispatch, getState) => {
   let error;
   try {
     const state = getState();
-    const account = defaultAccountSelector(state);
-    const wallet = walletSelector(state);
+    const accountWallet = getDefaultAccountWalletSelector(state);
+    const selectedPrivacy = selectedPrivacySelector.selectedPrivacy(state);
     const { isFetching } = streamlineSelector(state);
 
-    if (isFetching) {
-      return;
-    }
+    if (isFetching) return;
 
     await dispatch(actionFetching());
 
-    const result = await accountServices.defragmentNativeCoin(
-      MAX_FEE_PER_TX,
-      true,
-      account,
-      wallet,
-      accountServices.MAX_DEFRAGMENT_TXS,
-    );
+    const address = accountWallet?.getPaymentAddress();
+    const tokenID = selectedPrivacy?.tokenId;
+    const result = await accountWallet.consolidate({ transfer: { tokenID }, extra: { version: PrivacyVersion.ver2 } });
 
     if (result) {
       const payload = {
-        address: account?.paymentAddress,
+        address,
         utxos: result?.map((item) => item?.txId),
+        tokenID,
       };
       await dispatch(actionFetched(payload));
     }
@@ -85,3 +86,48 @@ export const actionRemoveLocalUTXOs = (payload) => ({
   type: ACTION_REMOVE_LOCAL_UTXOS,
   payload,
 });
+
+export const actionFetchedUTXO = (payload) => ({
+  type: ACTION_FETCHED_UTXO,
+  payload,
+});
+
+export const actionClearStreamLine = () => ({
+  type: ACTION_CLEAR_STREAM_LINE
+});
+
+export const actionFetchingUTXO = (payload) => ({
+  type: ACTION_FETCHING_UTXO,
+  payload
+});
+
+export const actionConditionConsolidate = ({ version = PrivacyVersion.ver2 } = {}) => async (dispatch, getState) => {
+  try {
+    const state = getState();
+    const switchingAccount = switchAccountSelector(state);
+    if (switchingAccount) return;
+    /** start fetching UTXOS */
+    dispatch(actionFetchingUTXO(true));
+    const accountWallet = getDefaultAccountWalletSelector(state);
+    let followed = cloneDeep(tokenSelector.tokensFollowedSelector(state));
+    const address = accountWallet?.getPaymentAddress();
+    followed = [{ id: PRV_ID }].concat(followed);
+    await accountWallet.getCoinsInMempoolCached();
+    const tasks = followed.map(async ({ id: tokenID }) => {
+      const unspentCoins = (await accountWallet.getSpendingCoins({ tokenID, version })) || [];
+      return {
+        tokenID,
+        address,
+        unspentCoins,
+      };
+    });
+    const newUTXOS = (await Promise.all(tasks)).filter(item => !!item);
+    batch(() => {
+      dispatch(actionFetchingUTXO(false));
+      dispatch(actionFetchedUTXO(newUTXOS));
+    });
+  } catch (e) {
+    dispatch(actionFetchingUTXO(false));
+    console.log('actionConditionConsolidate error: ', e);
+  }
+};

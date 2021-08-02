@@ -2,23 +2,23 @@ import _ from 'lodash';
 import types from '@src/redux/types/masterKey';
 import LocalDatabase from '@src/utils/LocalDatabase';
 import storage from '@services/storage';
+import { accountServices } from '@src/services/wallet';
 
 const initialState = {
   list: [],
   accounts: [],
+  switching: false,
 };
 
 function createMasterKey(newMasterKey, list) {
-  const newList = _.uniqBy([...list, newMasterKey]
-    , item => item.name
-  );
+  const newList = _.uniqBy([...list, newMasterKey], (item) => item.name);
   LocalDatabase.setMasterKeyList(newList);
 
   return newList;
 }
 
 function updateMasterKey(newMasterKey, list) {
-  const newList = list.map(item => {
+  const newList = list.map((item) => {
     const found = item.name === newMasterKey.name;
 
     if (found) {
@@ -34,7 +34,7 @@ function updateMasterKey(newMasterKey, list) {
 }
 
 function switchMasterKey(name, list) {
-  const newList = list.map(item => {
+  const newList = list.map((item) => {
     item.isActive = item.name === name;
     return item;
   });
@@ -45,18 +45,24 @@ function switchMasterKey(name, list) {
 }
 
 function removeMasterKey(name, list) {
-  const newList = _.remove(list, item => item.name !== name);
-
-  list.forEach(async item => {
-    const wallet = await item.loadWallet();
-
-    await wallet.clearCached(storage);
+  const newList = _.remove(list, (item) => item.name !== name);
+  list.forEach(async (item) => {
+    try {
+      const wallet = await item.loadWallet();
+      const measureStorageWallet = await wallet.getKeyMeasureStorage();
+      await wallet.clearWalletStorage({ key: measureStorageWallet });
+      const listAccount = await wallet.listAccount();
+      let task = listAccount.map((account) =>
+        accountServices.removeCacheBalance(account, wallet),
+      );
+      await Promise.all(task);
+    } catch (error) {
+      console.log('ERROR remove master key', error);
+    }
 
     await storage.removeItem(item.getStorageName());
   });
-
   LocalDatabase.setMasterKeyList(newList);
-
   return newList;
 }
 
@@ -82,7 +88,7 @@ const reducer = (state = initialState, action) => {
   case types.CREATE: {
     return {
       ...state,
-      list: createMasterKey(action.payload, state.list)
+      list: createMasterKey(action.payload, state.list),
     };
   }
   case types.SWITCH:
@@ -105,6 +111,12 @@ const reducer = (state = initialState, action) => {
       ...state,
       accounts: [...action.payload],
     };
+  case types.SWITCHING: {
+    return {
+      ...state,
+      switching: action.payload,
+    };
+  }
   default:
     return state;
   }

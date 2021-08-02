@@ -1,6 +1,13 @@
 package com.incognito.wallet;
 
+import com.incognito.wallet.generated.BasePackageList;
 import android.app.Application;
+
+import java.util.Arrays;
+ 
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.SingletonModule;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -22,7 +29,7 @@ import com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import com.microsoft.codepush.react.CodePush;
 
 public class MainApplication extends Application implements ReactApplication {
-
+  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
   private final ReactNativeHost mReactNativeHost =
           new ReactNativeHost(this) {
             @Override
@@ -42,6 +49,13 @@ public class MainApplication extends Application implements ReactApplication {
               packages.add(new RNFirebaseCrashlyticsPackage());
               packages.add(new RNFirebaseAnalyticsPackage());
               packages.add(new GomobilePackage());
+              // Packages that cannot be autolinked yet can be added manually here, for example:
+              // packages.add(new MyReactNativePackage());
+              // Add unimodules
+              List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
+                new ModuleRegistryAdapter(mModuleRegistryProvider)
+              );
+              packages.addAll(unimodules);
               return packages;
             }
 

@@ -74,7 +74,6 @@ export const withdraw = (data) => {
     UserFeeSelection: isUsedPRVFee ? 2 : 1,
     UserFeeLevel: fast2x ? 2 : 1,
   };
-
   if (signPublicKeyEncode) {
     payload.SignPublicKeyEncode = signPublicKeyEncode;
   }

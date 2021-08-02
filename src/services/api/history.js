@@ -1,12 +1,16 @@
 import http from '@src/services/http';
 import historyModel from '@src/models/history';
 
-export const getpTokenHistory = ({ paymentAddress, tokenId, signPublicKeyEncode }) => {
+export const getpTokenHistory = ({
+  paymentAddress,
+  tokenId,
+  signPublicKeyEncode,
+}) => {
   return http
     .post('eta/history', {
       WalletAddress: paymentAddress,
       PrivacyTokenAddress: tokenId,
-      SignPublicKeyEncode: signPublicKeyEncode
+      SignPublicKeyEncode: signPublicKeyEncode,
     })
     .then((res) => {
       return (
@@ -18,11 +22,16 @@ export const getpTokenHistory = ({ paymentAddress, tokenId, signPublicKeyEncode 
     });
 };
 
-export const removeHistory = ({ historyId, currencyType, decentralized, signPublicKeyEncode }) => {
+export const removeHistory = ({
+  historyId,
+  currencyType,
+  decentralized,
+  signPublicKeyEncode,
+}) => {
   if (typeof historyId !== 'number' && !Number.isFinite(historyId))
-    return throw new Error('Invalid historyId');
+    throw new Error('Invalid historyId');
   if (typeof currencyType !== 'number' && !Number.isFinite(currencyType))
-    return throw new Error('Invalid currencyType');
+    throw new Error('Invalid currencyType');
 
   let body = {
     CurrencyType: currencyType,
@@ -47,34 +56,34 @@ export const retryExpiredDeposit = ({
   erc20TokenAddress,
   type,
   TxOutchain,
-  signPublicKeyEncode
+  signPublicKeyEncode,
 }) => {
   if (typeof id !== 'number' && !Number.isFinite(id)) {
-    return throw new Error('Invalid history Id');
+    throw new Error('Invalid history Id');
   }
   if (typeof decentralized !== 'number') {
-    return throw new Error('Invalid decentralized');
+    throw new Error('Invalid decentralized');
   }
   if (typeof walletAddress !== 'string') {
-    return throw new Error('Invalid walletAddress');
+    throw new Error('Invalid walletAddress');
   }
   if (typeof currencyType !== 'number') {
-    return throw new Error('Invalid currencyType');
+    throw new Error('Invalid currencyType');
   }
   if (typeof userPaymentAddress !== 'string') {
-    return throw new Error('Invalid userPaymentAddress');
+    throw new Error('Invalid userPaymentAddress');
   }
   if (typeof privacyTokenAddress !== 'string') {
-    return throw new Error('Invalid privacyTokenAddress');
+    throw new Error('Invalid privacyTokenAddress');
   }
   if (typeof erc20TokenAddress !== 'string') {
-    return throw new Error('Invalid erc20TokenAddress');
+    throw new Error('Invalid erc20TokenAddress');
   }
   if (typeof type !== 'number') {
-    return throw new Error('Invalid type');
+    throw new Error('Invalid type');
   }
   if (TxOutchain && typeof TxOutchain !== 'string') {
-    return throw new Error('Invalid TxOutChain');
+    throw new Error('Invalid TxOutChain');
   }
   let body = {
     ID: id,

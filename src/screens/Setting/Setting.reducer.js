@@ -6,7 +6,8 @@ import {
   ACTION_FETCHED_DEVICES,
   ACTION_TOGGLE_DECIMAL_DIGITS,
   ACTION_TOGGLE_CURRENCY,
-  ACTION_UPDATE_SHOW_WALLET_BALANCE
+  ACTION_UPDATE_SHOW_WALLET_BALANCE,
+  ACTION_TOGGLE_BACKUP_ALL_KEYS,
 } from './Setting.constant';
 
 const initialState = {
@@ -16,10 +17,17 @@ const initialState = {
   decimalDigits: true,
   isToggleUSD: true,
   showWalletBlance: false,
+  toggleBackupAllKeys: true,
 };
 
 const settingReducer = (state = initialState, action) => {
   switch (action.type) {
+  case ACTION_TOGGLE_BACKUP_ALL_KEYS: {
+    return {
+      ...state,
+      toggleBackupAllKeys: action.payload,
+    };
+  }
   case ACTION_FETCHED_DEVICES: {
     return {
       ...state,
@@ -58,7 +66,7 @@ const settingReducer = (state = initialState, action) => {
 const persistConfig = {
   key: 'setting',
   storage: AsyncStorage,
-  whitelist: ['decimalDigits', 'isToggleUSD'],
+  whitelist: ['decimalDigits', 'isToggleUSD', 'toggleBackupAllKeys'],
   stateReconciler: autoMergeLevel2,
 };
 

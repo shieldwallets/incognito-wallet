@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {Toast} from '@src/components/core';
+import { Toast } from '@src/components/core';
 import { ErrorCode } from '@services/exception/index';
 import CustomError from './customError/customError';
 import Message from './customError/message';
@@ -24,10 +24,10 @@ const MESSAGES = {
   CAN_NOT_SEND_TX:
     'It looks like your transaction didn\'t go through.  Please wait a few minutes and try again',
   GENERAL: 'Something went wrong. Please try again.',
-  API_POOL_ERROR: 'The network is a little busy. Please try again later.'
+  API_POOL_ERROR: 'The network is a little busy. Please try again later.',
 };
 
-const isValidException = exception => {
+const isValidException = (exception) => {
   if (exception instanceof Error) {
     return true;
   }
@@ -62,29 +62,29 @@ class Exception {
         Message[(this.exception?.code)] &&
           (this.message = Message[this.exception.code]);
       } else if (exception.name === CustomError.TYPES.WEB_JS_ERROR) {
-        Message[(this.exception?.code)] &&
-          (this.message = Message[this.exception.code]);
+        if (Message[(this.exception?.code)]) {
+          this.message = Message[this.exception.code];
+        } else {
+          this.message = `${this.exception?.name}: ${this.exception?.message ||
+            defaultMessage}.\n Code[${this.exception?.code}]`;
+        }
       }
     } else if (typeof exception === 'string') {
       this.exception = new Error(exception);
     }
-
     if (!this.exception) {
       this.exception = new Error('Unknown error');
     }
-
     /**
      * Message for debug
      */
     this.debugMessage = this.debugMessage ?? this.exception?.message;
-
     /**
      * Message for UI (display to user)
      */
     this.message =
       this.message ??
       this._getUnexpectedMessageError(exception, defaultMessage);
-
     this._log2Console();
   }
 
@@ -150,7 +150,7 @@ class Exception {
    * write log to memory or display on console.
    * Uses both memory & console as default.
    */
-  writeLog({useDisk = false, useConsole = true} = {}) {
+  writeLog({ useDisk = false, useConsole = true } = {}) {
     if (useDisk) {
       // TODO write log to file, or memory?
     }
@@ -171,7 +171,6 @@ class Exception {
     if (this.exception.code === ErrorCode.api_request_cancelled) {
       return;
     }
-
     let msg = this.message;
     if (__DEV__) {
       msg = `${msg}\n****** DEBUG ******\n(${this.debugMessage})`;
@@ -180,7 +179,6 @@ class Exception {
     if (showCode) {
       return Toast.showError(this.getMessage(msg));
     }
-
     msg && Toast.showError(msg);
     return this;
   }
@@ -236,16 +234,24 @@ class Exception {
       }
 
       if (
-        this.exception?.code?.toLowerCase().includes('econnaborted') ||
+        (typeof this.exception?.code === 'string' &&
+          this.exception?.code?.toLowerCase().includes('econnaborted')) ||
         this.message?.toLowerCase().includes('lock wait timeout exceeded;')
       ) {
         return MESSAGES.API_POOL_ERROR;
       }
 
-      if (this?.exception?.code?.toLowerCase().includes('api_error')) {
+      if (
+        typeof this.exception?.code === 'string' &&
+        this?.exception?.code?.toLowerCase().includes('api_error')
+      ) {
         return `${this.message} (${this.exception.code})`;
       }
-
+      if (typeof this.exception.code === 'number' && this.exception.name) {
+        return `${defaultMessage || MESSAGES.GENERAL} ${this.exception.name}(${
+          this.exception.code
+        })\n${this.exception?.detail || ''}`;
+      }
       return `${defaultMessage || MESSAGES.GENERAL} (${this.exception.code})`;
     } catch (error) {
       return error.message;
@@ -291,14 +297,13 @@ class Exception {
     return Toast.showError(this.getMessageError());
   }
 
-  getCodeError(){
+  getCodeError() {
     const exception = this.exception;
     if (isValidException(exception)) {
       return exception?.code;
     }
     return null;
   }
-
 }
 
 export default Exception;

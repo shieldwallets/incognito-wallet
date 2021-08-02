@@ -10,10 +10,10 @@ import { VirtualizedList } from 'react-native';
 import { useNavigation } from 'react-navigation-hooks';
 import ROUTE_NAMES from '@routers/routeNames';
 import LoadingContainer from '@components/LoadingContainer/LoadingContainer';
-import { LIMIT } from '@screens/DexV2/constants';
 import { ArrowRightGreyIcon } from '@components/Icons';
 import withHistories from '@screens/PoolV2/histories.enhance';
 import withDefaultAccount from '@components/Hoc/withDefaultAccount';
+import { LIMIT } from '@screens/PoolV2/constants';
 import styles from './style';
 
 const History = ({
