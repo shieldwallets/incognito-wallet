@@ -1,21 +1,32 @@
 /* eslint-disable react-native/split-platform-components */
 import codePush from 'react-native-code-push';
-import { ProgressBarAndroid, ProgressViewIOS, Platform } from 'react-native';
+import {
+  ProgressBarAndroid,
+  ProgressViewIOS,
+  Platform,
+} from 'react-native';
 import React, { PureComponent } from 'react';
 import Dialog, { DialogContent } from 'react-native-popup-dialog';
 import { View, Text } from '@components/core';
 import { CONSTANT_CONFIGS } from '@src/constants';
 import { COLORS } from '@src/styles';
 
+import { withNavigation } from 'react-navigation';
+import routeNames from '@src/router/routeNames';
+import { compose } from 'recompose';
+import { connect } from 'react-redux';
+import {
+  isToggleBackupAllKeysSelector,
+  actionToggleBackupAllKeys,
+} from '@src/screens/Setting';
+import { BtnClose, ButtonBasic } from '../Button';
 import styles from './styles';
-import { BtnClose } from '../Button';
 
 let displayedNews = false;
 let ignored = false;
 
 class AppUpdater extends PureComponent {
   static instance = null;
-
   static appVersion = CONSTANT_CONFIGS.BUILD_VERSION;
   static codePushVersion = '';
 
@@ -139,14 +150,21 @@ class AppUpdater extends PureComponent {
     return <Text style={styles.desc}>Installing...</Text>;
   }
 
+  handleRemindBackupAllKeys = () => {
+    const { navigation, toggleBackupAllKeys } = this.props;
+    toggleBackupAllKeys(false);
+    setTimeout(() => {
+      navigation.navigate(routeNames.BackupKeys);
+    }, 200);
+  };
+
   render() {
     const { downloading, updating, news, appVersion } = this.state;
+    const { isToggleBackupAllKeys } = this.props;
+    const disabled = !(updating || downloading) && !news;
     return (
       <View>
-        <Dialog
-          visible={updating || downloading}
-          dialogStyle={styles.dialog}
-        >
+        <Dialog visible={updating || downloading} dialogStyle={styles.dialog}>
           <DialogContent>
             <View style={styles.hook}>
               <Text style={styles.title}>Update new version</Text>
@@ -173,9 +191,50 @@ class AppUpdater extends PureComponent {
             </View>
           </DialogContent>
         </Dialog>
+        <Dialog
+          visible={disabled && isToggleBackupAllKeys}
+          dialogStyle={styles.dialog}
+          onTouchOutside={this.handleRemindBackupAllKeys}
+        >
+          <DialogContent>
+            <BtnClose
+              style={styles.btnClose}
+              onPress={this.handleRemindBackupAllKeys}
+              size={18}
+            />
+            <View style={styles.hook}>
+              <Text style={styles.title}>Updated new version</Text>
+              <Text style={styles.desc}>
+                {
+                  'Congratulation, welcome to the latest Incognito app with Privacy version 2.\n Please back up all keychains in a safe place prior to doing any other actions, it will help you recover funds in unexpected circumstances.\n(Note: take your own risk if you ignore it)'
+                }
+              </Text>
+              <ButtonBasic
+                title="Go to backup"
+                onPress={this.handleRemindBackupAllKeys}
+                btnStyle={{ marginTop: 30 }}
+              />
+            </View>
+          </DialogContent>
+        </Dialog>
       </View>
     );
   }
 }
 
-export default AppUpdater;
+const mapState = (state) => ({
+  isToggleBackupAllKeys: isToggleBackupAllKeysSelector(state),
+});
+
+const mapDispatch = (dispatch) => ({
+  toggleBackupAllKeys: (payload) =>
+    dispatch(actionToggleBackupAllKeys(payload)),
+});
+
+export default compose(
+  withNavigation,
+  connect(
+    mapState,
+    mapDispatch,
+  ),
+)(AppUpdater);
