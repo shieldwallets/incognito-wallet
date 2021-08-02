@@ -19,3 +19,8 @@ export const showWalletBlanceSelector = createSelector(
   settingSelector,
   (setting) => setting?.showWalletBlance,
 );
+
+export const isToggleBackupAllKeysSelector = createSelector(
+  settingSelector,
+  (setting) => setting.toggleBackupAllKeys,
+);

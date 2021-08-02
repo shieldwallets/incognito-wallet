@@ -4,9 +4,10 @@ import serverService from '@src/services/wallet/Server';
 import {
   ACTION_FETCHED_DEVICES,
   ACTION_FETCHED_SERVER,
+  ACTION_TOGGLE_BACKUP_ALL_KEYS,
   ACTION_TOGGLE_CURRENCY,
   ACTION_TOGGLE_DECIMAL_DIGITS,
-  ACTION_UPDATE_SHOW_WALLET_BALANCE
+  ACTION_UPDATE_SHOW_WALLET_BALANCE,
 } from './Setting.constant';
 
 const actionFetchedDevices = (payload) => ({
@@ -53,4 +54,9 @@ export const actionToggleCurrency = () => ({
 
 export const actionUpdateShowWalletBlance = () => ({
   type: ACTION_UPDATE_SHOW_WALLET_BALANCE,
+});
+
+export const actionToggleBackupAllKeys = (payload = false) => ({
+  type: ACTION_TOGGLE_BACKUP_ALL_KEYS,
+  payload,
 });
