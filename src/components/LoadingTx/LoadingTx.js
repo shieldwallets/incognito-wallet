@@ -9,18 +9,20 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
 import { walletSelector } from '@src/redux/selectors/wallet';
+import BtnClose from '@src/components/Button/BtnClose';
 import styleSheet from './style';
 
 const LoadingTx = (props) => {
   const account = props?.account || useSelector(defaultAccountSelector);
   const wallet = props?.wallet || useSelector(walletSelector);
-  const [state, setState] = React.useState({
-    open: true,
+  const initialState = {
+    open: false,
     percent: 0,
     message: '',
     totalTime: 0,
     startTime: null,
-  });
+  };
+  const [state, setState] = React.useState(initialState);
   const [startTime, setStartTime] = React.useState(null);
   const { text, descFactories, currentTime, totalTimes } = props;
   const { open, percent, message } = state;
@@ -46,6 +48,13 @@ const LoadingTx = (props) => {
     return (
       <View style={styleSheet.container}>
         <View style={styleSheet.wrapper}>
+          {percent === 100 && (
+            <BtnClose
+              style={styleSheet.btnClose}
+              onPress={() => handleToggle(false)}
+              size={20}
+            />
+          )}
           <ActivityIndicator size="large" color={COLORS.black} />
           <Text style={styleSheet.percent}>{`${displayPercent}%`}</Text>
           {!!text && (
@@ -55,7 +64,7 @@ const LoadingTx = (props) => {
             descFactories?.map((item) => (
               <Text style={[styleSheet.desc, item?.styled]}>{item?.desc}</Text>
             ))
-          ) : (
+          ) : percent === 100 ? null : (
             <Text style={styleSheet.desc}>
               {'Please do not navigate away till this\nwindow closes.'}
             </Text>
@@ -75,12 +84,20 @@ const LoadingTx = (props) => {
   };
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      progress();
-    }, 100);
-    setStartTime(moment());
-    return () => clearInterval(interval);
+    setState({ ...state, open: true });
   }, []);
+
+  React.useEffect(() => {
+    if (open) {
+      const interval = setInterval(() => {
+        progress();
+      }, 100);
+      setStartTime(moment());
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [open]);
 
   return <PureModal visible={open} content={renderModalContent()} />;
 };
