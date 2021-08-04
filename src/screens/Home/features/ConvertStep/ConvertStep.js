@@ -109,7 +109,6 @@ const ConvertStep = () => {
           title="Faucet"
           btnStyle={{ marginTop: 30, marginBottom: 50, width: '48%' }}
           onPress={handlePress}
-          disabled={isConverting || isConverted}
         />
       </Row>
       {isConverting && (
