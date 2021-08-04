@@ -67,6 +67,7 @@ const ConvertStep = () => {
   };
 
   const handleConvert = () => {
+    if (isConverting || isConverted) return;
     dispatch(actionConvertCoins());
   };
 
