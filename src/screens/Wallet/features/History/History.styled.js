@@ -57,15 +57,15 @@ export const styled = StyleSheet.create({
     lineHeight: 21,
     marginTop: 20,
   },
-  btnResume: {
+  btnResumeOrRetry: {
     height: 30,
-    width: 80,
+    width: 70,
     borderRadius: 15,
     marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.colorGrey,
-    marginRight: 30,
+    marginRight: 25,
   },
   btnChevron: {
     height: '100%',
@@ -73,6 +73,12 @@ export const styled = StyleSheet.create({
     right: 0,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    width: 30,
+    width: 20,
+  },
+  textBtnResumeOrRetry: {
+    fontFamily: FONT.NAME.medium,
+    fontSize: FONT.SIZE.small,
+    lineHeight: FONT.SIZE.small + 5,
+    color: COLORS.black,
   },
 });
