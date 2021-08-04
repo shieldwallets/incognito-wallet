@@ -21,6 +21,13 @@ const styles = StyleSheet.create({
     marginTop: -20,
     marginBottom: 20,
   },
+  warningText: {
+    ...FONT.STYLE.medium,
+    color: COLORS.orange,
+    fontSize: 14,
+    marginTop: -20,
+    marginBottom: 20,
+  },
   warning: {
     ...FONT.STYLE.medium,
     color: COLORS.orange,

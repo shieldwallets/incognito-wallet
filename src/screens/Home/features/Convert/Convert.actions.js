@@ -74,7 +74,8 @@ export const actionFetchCoinsV1 = (isRefresh = false) => async (dispatch, getSta
     let unspentCoins = await accountService.getUnspentCoinsV1({ account, wallet });
     data = { unspentCoins, address };
   } catch (error) {
-    console.log('ACTION FETCH COINS V1 error: ', error);
+    dispatch(actionLogEvent({ desc: error }));
+    console.log('ACTION FETCH COINS V1 error: ', JSON.stringify(error));
     new ExHandler(error).showErrorToast(true);
   } finally {
     dispatch(actionFetched({ data }));

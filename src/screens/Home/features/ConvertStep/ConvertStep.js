@@ -11,14 +11,20 @@ import { ButtonBasic } from '@components/Button';
 import { actionConvertCoins } from '@screens/Home/features/Convert/Convert.actions';
 import { MESSAGES } from '@screens/Dex/constants';
 import { getDefaultAccountWalletSelector } from '@src/redux/selectors/shared';
+import {Row} from '@src/components';
+import {useLinking} from '@components/core/Link/Link';
+import {CONSTANT_CONFIGS} from '@src/constants';
+import {defaultAccountSelector} from '@src/redux/selectors/account';
 
 const ConvertStep = () => {
   const dispatch = useDispatch();
   const { convertStep: currentStep, messages, isConverting, isConverted, percents }= useSelector(convertCoinsDataSelector);
   const steps = useSelector(convertGetConvertStepSelector);
   const accountWallet = useSelector(getDefaultAccountWalletSelector);
+  const defaultAccount = useSelector(defaultAccountSelector);
   const flatListRef = React.useRef(null);
   const [message, setMessage] = React.useState('');
+  const [handlePress] = useLinking({ url: CONSTANT_CONFIGS.FAUCET_URL + `address=${defaultAccount.PaymentAddress}` });
 
   const renderStep = (data) => {
     const { key, name, tokenID } = data?.item;
@@ -47,7 +53,7 @@ const ConvertStep = () => {
             {`${name || 'Incognito Token'} (${percent}%)`}
           </Text>
         </View>
-        {!!error && <Text style={styles.errorText}>{error}</Text>}
+        {!!error && <Text style={styles.warningText}>{error}</Text>}
       </>
     );
   };
@@ -61,6 +67,7 @@ const ConvertStep = () => {
   };
 
   const handleConvert = () => {
+    if (isConverting || isConverted) return;
     dispatch(actionConvertCoins());
   };
 
@@ -92,12 +99,19 @@ const ConvertStep = () => {
         />
       </View>
       <Text style={styles.text}>{message}</Text>
-      <ButtonBasic
-        title={isConverted ? 'Converted' : isConverting ? 'Converting...' : 'Convert'}
-        btnStyle={{ marginTop: 30, marginBottom: 50 }}
-        onPress={handleConvert}
-        disabled={isConverting || isConverted}
-      />
+      <Row style={{ justifyContent: 'space-between' }}>
+        <ButtonBasic
+          title={isConverted ? 'Converted' : isConverting ? 'Converting...' : 'Convert'}
+          btnStyle={{ marginTop: 30, marginBottom: 50, width: '48%' }}
+          onPress={handleConvert}
+          disabled={isConverting || isConverted}
+        />
+        <ButtonBasic
+          title="Faucet"
+          btnStyle={{ marginTop: 30, marginBottom: 50, width: '48%' }}
+          onPress={handlePress}
+        />
+      </Row>
       {isConverting && (
         <Text style={styles.warning}>{MESSAGES.CONVERT_PROCESS}</Text>
       )}
