@@ -95,6 +95,7 @@ const URL_SERVICE_UPDATE_FIRMWARE = `https://${
   global.isMainnet ? '' : 'staging-'
 }api-service.incognito.org/pool/check-lan-setup`;
 
+const FAUCET_URL = 'https://faucet.incognito.org/';
 export default {
   isMainnet,
   CRYPTO_ICON_URL,
@@ -125,4 +126,5 @@ export default {
   URL_SERVICE_UPDATE_FIRMWARE,
   NODE_MONITOR_URL,
   NODE_MONITOR_DETAIL_URL,
+  FAUCET_URL,
 };
