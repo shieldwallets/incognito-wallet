@@ -71,7 +71,7 @@ const SubComponent = React.memo((props) => {
             <Text style={{ ...subStyled.mainText, marginTop: 30 }}>
               This may take a couple of minutes.
             </Text>
-            {statusConfigs === 'Load all master keys' && (
+            {statusConfigs === 'loading' && (
               <Text style={subStyled.mainText}>
                 Please do not navigate away from the app.
               </Text>
@@ -215,21 +215,21 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'CONFIGS_APP',
         }),
       );
-      await setStatusConfigs('Load pin');
+      await setStatusConfigs('load pin');
       await dispatch(loadPin());
       await dispatch(
         actionLogEvent({
           desc: 'LOAD_PIN',
         }),
       );
-      await setStatusConfigs('Get info');
+      await setStatusConfigs('get info');
       await login();
       await dispatch(
         actionLogEvent({
           desc: 'LOGIN',
         }),
       );
-      await setStatusConfigs('Get configs');
+      await setStatusConfigs('get configs');
       const [servers] = await new Promise.all([
         serverService.get(),
         getFunctionConfigs().catch((e) => e),
@@ -246,14 +246,14 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'CONFIGS',
         }),
       );
-      await setStatusConfigs('Load all master keys');
+      await setStatusConfigs('loading');
       await dispatch(loadAllMasterKeys());
       await dispatch(
         actionLogEvent({
           desc: 'LOAD_ALL_MASTER_KEYS',
         }),
       );
-      await setStatusConfigs('Load all master keys keychain');
+      await setStatusConfigs('loading keychain');
       await dispatch(loadAllMasterKeyAccounts());
       await dispatch(
         actionLogEvent({
