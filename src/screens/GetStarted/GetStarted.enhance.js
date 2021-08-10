@@ -71,7 +71,7 @@ const SubComponent = React.memo((props) => {
             <Text style={{ ...subStyled.mainText, marginTop: 30 }}>
               This may take a couple of minutes.
             </Text>
-            {statusConfigs === 'loading' && (
+            {statusConfigs === 'loading all master keys' && (
               <Text style={subStyled.mainText}>
                 Please do not navigate away from the app.
               </Text>
@@ -246,14 +246,14 @@ const enhance = (WrappedComp) => (props) => {
           desc: 'CONFIGS',
         }),
       );
-      await setStatusConfigs('loading');
+      await setStatusConfigs('loading all master keys');
       await dispatch(loadAllMasterKeys());
       await dispatch(
         actionLogEvent({
           desc: 'LOAD_ALL_MASTER_KEYS',
         }),
       );
-      await setStatusConfigs('loading keychain');
+      await setStatusConfigs('loading all master keys keychain');
       await dispatch(loadAllMasterKeyAccounts());
       await dispatch(
         actionLogEvent({
