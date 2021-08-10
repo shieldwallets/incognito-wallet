@@ -32,6 +32,11 @@ const style = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
+  btnClose: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+  },
 });
 
 export default style;
