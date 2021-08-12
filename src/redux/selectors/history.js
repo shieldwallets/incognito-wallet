@@ -11,6 +11,8 @@ import {
   getStatusColorShield,
   getStatusColorUnshield,
   TX_STATUS_COLOR,
+  getPortalStatusColor,
+  getPortalStatusDetail,
 } from '@src/redux/utils/history';
 import { PRV } from '@src/constants/common';
 import { CONSTANT_CONFIGS } from '@src/constants';
@@ -191,14 +193,76 @@ export const historyPTokenSelector = createSelector(
     history.txsPToken.map((txp) => mappingTxPToken(txp)),
 );
 
+export const mappingTxPortalSelector = createSelector(
+  selectedPrivacy,
+  decimalDigitsSelector,
+  ({ pDecimals, symbol }, decimalDigits) => (txp) => {
+
+    const {
+      amount,
+      fee,
+      time,
+      txType,
+      externalFee,
+      txId,
+      reqTxID,
+      externalTxID,
+    } = txp;
+
+    const isShieldTx = txType === ACCOUNT_CONSTANT.TX_TYPE.SHIELDPORTAL;
+    const statusColor = getPortalStatusColor(txp);
+    let inchainTxId = isShieldTx ? reqTxID : txId;
+    const statusDetail =  getPortalStatusDetail(txp);
+    let result = {
+      ...txp,
+      timeStr: formatUtil.formatDateTime(time),
+      amountStr: renderAmount({
+        amount,
+        pDecimals,
+        decimalDigits,
+      }),
+      symbol,
+      statusColor,
+      inchainTx: `${CONSTANT_CONFIGS.EXPLORER_CONSTANT_CHAIN_URL}/tx/${inchainTxId}`,
+      outchainTx: externalTxID ? `${CONSTANT_CONFIGS.BTC_EXPLORER_URL}/tx/${externalTxID}` : '', 
+      statusDetail,
+    };
+
+    if (!isShieldTx) {
+      result = {
+        ...result,
+        inchainFeeStr: renderAmount({
+          amount: fee,
+          pDecimals: PRV.pDecimals,
+          decimalDigits,
+        }),
+        outchainFeeStr: renderAmount({
+          amount: externalFee,
+          pDecimals,
+          decimalDigits,
+        }),
+      };
+    }
+    return result;
+  },
+);
+
+export const historyPortalSelector = createSelector(
+  historySelector,
+  mappingTxPortalSelector,
+  (history, mappingTxPortal) =>
+    history.txsPortal.map((txp) => mappingTxPortal(txp)),
+);
+
 export const historyTxsSelector = createSelector(
   historySelector,
   historyTransactorSelector,
   historyReceiverSelector,
   historyPTokenSelector,
-  (history, txsTransactor, txsReceiver, txsPToken) => {
+  historyPortalSelector,
+  (history, txsTransactor, txsReceiver, txsPToken, txsPortal) => {
     const { isFetching, isFetched } = history;
-    const histories = [...txsTransactor, ...txsReceiver, ...txsPToken] || [];
+    const histories = [...txsTransactor, ...txsReceiver, ...txsPToken, ...txsPortal] || [];
     const sort = orderBy(histories, 'time', 'desc');
     return {
       ...history,
@@ -474,6 +538,138 @@ export const historyDetailFactoriesSelector = createSelector(
             value: memo,
             copyable: true,
             disabled: !memo,
+          },
+          {
+            label: 'Coin',
+            value: symbol,
+            disabled: !symbol,
+          },
+        ];
+      }
+      case ACCOUNT_CONSTANT.TX_TYPE.SHIELDPORTAL: {
+        const {
+          statusStr,
+          timeStr,
+          amountStr,
+          symbol,
+          statusColor,
+          inchainTx,
+          outchainTx,
+          incognitoAddress
+        } = tx;
+        return [
+          {
+            label: 'Shield',
+            value: `${amountStr} ${symbol}`,
+            disabled: !amountStr,
+          },
+          {
+            label: 'Status',
+            value: statusStr,
+            disabled: !statusStr,
+            valueTextStyle: { color: statusColor },
+          },
+          {
+            label: 'Time',
+            value: timeStr,
+            disabled: !timeStr,
+          },
+          {
+            label: 'To address',
+            value: incognitoAddress,
+            disabled: !incognitoAddress,
+            copyable: true,
+          },
+          {
+            label: 'Inchain TxID',
+            value: inchainTx,
+            disabled: !inchainTx,
+            openUrl: !!inchainTx,
+            handleOpenUrl: () => LinkingService.openUrl(inchainTx),
+          },
+          {
+            label: 'Outchain TxID',
+            value: outchainTx,
+            disabled: !outchainTx,
+            openUrl: !!outchainTx,
+            handleOpenUrl: () => LinkingService.openUrl(outchainTx),
+          },
+          {
+            label: 'Coin',
+            value: symbol,
+            disabled: !symbol,
+          },
+        ];
+      }
+      case ACCOUNT_CONSTANT.TX_TYPE.UNSHIELDPORTAL: {
+        const {
+          statusStr,
+          timeStr,
+          amountStr,
+          symbol,
+          statusColor,
+          inchainFeeStr,
+          outchainFeeStr,
+          inchainTx,
+          outchainTx,
+          externalAddress,
+          incognitoAddress,
+          statusDetail
+        } = tx;
+        return [
+          {
+            label: 'Unshield',
+            value: `${amountStr} ${symbol}`,
+            disabled: !amountStr,
+          },
+          {
+            label: 'Inchain fee',
+            value: `${inchainFeeStr} ${PRV.symbol}`,
+            disabled: !inchainFeeStr,
+          },
+          {
+            label: 'Outchain fee',
+            value: `${outchainFeeStr} ${symbol}`,
+            disabled: !outchainFeeStr,
+          },
+          {
+            label: 'Status',
+            value: statusStr,
+            disabled: !statusStr,
+            valueTextStyle: { color: statusColor },
+            // detail: statusDetail,
+            // showDetail: !!statusDetail,
+          },
+          {
+            label: 'Time',
+            value: timeStr,
+            disabled: !timeStr,
+          },
+          {
+            label: 'From address',
+            value: incognitoAddress,
+            disabled: !incognitoAddress,
+            copyable: true,
+          },
+          {
+            label: 'To address',
+            value: externalAddress,
+            disabled: !externalAddress,
+            copyable: true,
+          },
+          {
+            label: 'Inchain TxID',
+            value: inchainTx,
+            disabled: !inchainTx,
+            openUrl: !!inchainTx,
+            handleOpenUrl: () => LinkingService.openUrl(inchainTx),
+          },
+          {
+            label: 'Outchain TxID',
+            value: outchainTx,
+            disabled: !outchainTx,
+            openUrl: !!outchainTx,
+            handleOpenUrl: () => LinkingService.openUrl(outchainTx),
           },
           {
             label: 'Coin',

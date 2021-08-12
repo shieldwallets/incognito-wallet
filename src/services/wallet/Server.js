@@ -84,13 +84,13 @@ const TEST_NET_1_SERVER = {
   name: 'Testnet 1',
   coinServices: 'https://api-coinservice-staging2.incognito.org',
   pubsubServices: 'https://api-coinservice-staging2.incognito.org/txservice',
-  requestServices:
-    'https://api-coinservice-staging2.incognito.org/airdrop-service',
+  requestServices:'https://api-coinservice-staging2.incognito.org/airdrop-service',
   apiServices: 'https://privacyv2-api-service.incognito.org',
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
   IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241',
   explorer: 'https://testnet1.incognito.org',
+  portalServices:  'http://139.162.55.124:8010',
 };
 const DEV_TEST_SERVER = {
   id: 'devtest',

@@ -34,6 +34,7 @@ const asyncMethods = [
   'aesEncrypt',
   'aesDecrypt',
   'setShardCount',
+  'generateBTCMultisigAddress',
 ];
 try {
   console.log('INIT GOMOBILE');

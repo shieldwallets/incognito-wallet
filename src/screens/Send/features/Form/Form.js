@@ -68,6 +68,7 @@ const SendForm = (props) => {
     isExternalAddress,
     textLoadingTx,
     validateMemo,
+    navigation,
   } = props;
   const { titleBtnSubmit, isUnShield, editableInput } = useSelector(
     feeDataSelector,
@@ -86,6 +87,17 @@ const SendForm = (props) => {
       ? ' '
       : ` or ${selectedPrivacy?.rootNetworkName} `
   }address`;
+  const amountValidator = validateAmount;
+  const isDisabled =
+    isUnShield &&
+    ((selectedPrivacy.isCentralized && isCentralizedDisabled) ||
+      (selectedPrivacy.isDecentralized && isDecentralizedDisabled));
+  const handlePressSend = isUnShield
+    ? selectedPrivacy.isCentralized
+      ? onCentralizedPress
+      : onDecentralizedPress
+    : handleSend;
+  const submitHandler = handlePressSend;
 
   const renderMemo = () => {
     if (isUnShield) {
@@ -127,15 +139,17 @@ const SendForm = (props) => {
       />
     );
   };
-  const isDisabled =
-    isUnShield &&
-    ((selectedPrivacy.isCentralized && isCentralizedDisabled) ||
-      (selectedPrivacy.isDecentralized && isDecentralizedDisabled));
-  const handlePressSend = isUnShield
-    ? selectedPrivacy.isCentralized
-      ? onCentralizedPress
-      : onDecentralizedPress
-    : handleSend;
+  
+  React.useEffect(() => {
+    const { toAddress, amount } = navigation.state?.params || {};
+    if (toAddress) {
+      onChangeField(toAddress, 'toAddress');
+    }
+    if (amount) {
+      onChangeField(amount, 'amount');
+    }
+  }, [navigation.state?.params]);
+
   return (
     <View style={styled.container}>
       <KeyboardAwareScrollView>
@@ -157,7 +171,7 @@ const SendForm = (props) => {
                   },
                   editable: editableInput,
                 }}
-                validate={validateAmount}
+                validate={amountValidator}
                 {...generateTestId(SEND.AMOUNT_INPUT)}
               />
               <Field
@@ -194,7 +208,9 @@ const SendForm = (props) => {
                   isUnShield ? styled.submitBtnUnShield : null,
                 ]}
                 disabled={disabledForm || isDisabled}
-                onPress={handleSubmit(handlePressSend)}
+                onPress={handleSubmit(
+                  submitHandler
+                )}
                 {...generateTestId(SEND.SUBMIT_BUTTON)}
               />
             </>
@@ -202,6 +218,7 @@ const SendForm = (props) => {
         </Form>
       </KeyboardAwareScrollView>
       {isSending && <LoadingTx text={textLoadingTx} />}
+      
     </View>
   );
 };
@@ -229,6 +246,7 @@ SendForm.propTypes = {
   isExternalAddress: PropTypes.bool.isRequired,
   textLoadingTx: PropTypes.string.isRequired,
   validateMemo: PropTypes.any.isRequired,
+  navigation: PropTypes.object.isRequired,
 };
 
 export default withSendForm(SendForm);
