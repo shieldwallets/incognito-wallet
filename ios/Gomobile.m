@@ -190,7 +190,7 @@ RCT_EXPORT_METHOD(setShardCount:(NSString *)data time:(NSInteger)shardNum callba
 
 RCT_EXPORT_METHOD(generateBTCMultisigAddress:(NSString *)data callback:(RCTResponseSenderBlock)callback){
   @try{
-    BOOL temp = GomobileGenerateBTCMultisigAddress(data, nil, nil);
+    BOOL temp = GomobileGenerateBTCMultisigAddress(data, nil);
     NSNumber *rs = [NSNumber numberWithBool:temp];
     callback(@[[NSNull null], rs]);
   }
