@@ -47,7 +47,7 @@ export const mappingTxTransactorSelector = createSelector(
   decimalDigitsSelector,
   (selectedPrivacy, decimalDigits) => (txt) => {
     new Validator('txt', txt).required().object();
-    const { pDecimals } = selectedPrivacy;
+    const { pDecimals, symbol } = selectedPrivacy;
     let { time, amount, fee, status } = txt;
     const timeStr = formatUtil.formatDateTime(time);
     const amountStr = renderAmount({
@@ -65,6 +65,7 @@ export const mappingTxTransactorSelector = createSelector(
       amountStr,
       timeStr,
       statusColor: TX_STATUS_COLOR[status],
+      symbol,
     };
     return result;
   },
@@ -197,7 +198,6 @@ export const mappingTxPortalSelector = createSelector(
   selectedPrivacy,
   decimalDigitsSelector,
   ({ pDecimals, symbol }, decimalDigits) => (txp) => {
-
     const {
       amount,
       fee,

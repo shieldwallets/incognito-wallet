@@ -136,20 +136,6 @@ export const enhance = (WrappedComp) => (props) => {
     await setIsSending(false);
   };
 
-  const handlePressUnshieldPortal = async (payload) => {
-    try {
-      if (disabledForm) {
-        return;
-      }
-      await setIsSending(true);
-      await handleUnshieldPortal(payload);
-    } catch (error) {
-      console.debug(error);
-    }
-    await setIsSending(false);
-  };
-
-
   React.useEffect(() => {
     return () => {
       setIsSending(false);
@@ -168,7 +154,6 @@ export const enhance = (WrappedComp) => (props) => {
         onShowFrequentReceivers,
         disabledForm,
         handleSend,
-        handlePressUnshieldPortal,
         isSending,
         memo,
       }}
