@@ -11,6 +11,7 @@ import {
 const initialState = {
   isFetching: false,
   isFetched: false,
+  isFetchFailed: false,
   data: {
     min: null,
     max: null,
@@ -47,6 +48,7 @@ const shieldReducer = (state = initialState, action) => {
       ...state,
       isFetched: false,
       isFetching: false,
+      isFetchFailed: true,
     };
   }
   case ACTION_TOGGLE_GUIDE: {

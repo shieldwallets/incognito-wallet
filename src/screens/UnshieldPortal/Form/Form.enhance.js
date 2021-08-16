@@ -4,8 +4,9 @@ import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
 import { compose } from 'recompose';
 import { useSelector } from 'react-redux';
-import { isValid, formValueSelector } from 'redux-form';
+import { isValid, getFormSyncErrors } from 'redux-form';
 import { selectedPrivacySelector } from '@src/redux/selectors';
+import { CONSTANT_COMMONS } from '@src/constants';
 import format from '@utils/format';
 import { enhanceAddressValidation } from './Form.enhanceAddressValidator';
 import { enhanceInit, formName } from './Form.enhanceInit';
@@ -19,12 +20,11 @@ export const enhance = (WrappedComp) => (props) => {
   const { handleUnshieldPortal, onChangeField } = props;
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const navigation = useNavigation();
-  const selector = formValueSelector(formName);
   const isFormValid = useSelector((state) => isValid(formName)(state));
-  const amount = useSelector((state) => selector(state, 'amount'));
-  const toAddress = useSelector((state) => selector(state, 'toAddress'));
-  const disabledForm = !isFormValid;
-
+  const syncErrors = useSelector((state) => getFormSyncErrors(formName)(state));
+  const disabledForm = Object.keys(syncErrors).length !== 0 || !isFormValid;
+  const { portalData } = props;
+  const { incNetworkFee } = portalData;
   const onPressMax = async () => {
     if (selectedPrivacy.amount) {
       onChangeField(format.amountFull(selectedPrivacy.amount, selectedPrivacy.pDecimals), 'amount');
@@ -67,6 +67,10 @@ export const enhance = (WrappedComp) => (props) => {
     };
   }, []);
 
+  React.useEffect(() => {
+    onChangeField(format.amountFull(incNetworkFee, CONSTANT_COMMONS.DECIMALS['PRV']), 'incognitoNetworkFee');
+  }, [incNetworkFee]);
+
   return (
     <WrappedComp
       {...{
@@ -74,8 +78,6 @@ export const enhance = (WrappedComp) => (props) => {
         onChangeField,
         onPressMax,
         isFormValid,
-        amount,
-        toAddress,
         onShowFrequentReceivers,
         disabledForm,
         handlePressUnshieldPortal,

@@ -63,6 +63,15 @@ export const styledForm = StyleSheet.create({
     lineHeight: FONT.SIZE.medium + 4,
     color: COLORS.black2,
     fontWeight: 'normal'
-  }
+  },
+  spFeeItem: {
+    marginRight: 5,
+  },
+  symbol: {
+    fontFamily: FONT.NAME.medium,
+    fontSize: FONT.SIZE.superMedium,
+    lineHeight: FONT.SIZE.superMedium + 4,
+    color: COLORS.black,
+  },
 });
 

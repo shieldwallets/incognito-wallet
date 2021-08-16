@@ -19,6 +19,8 @@ const INIT_STATUS = {
 export const enhancePortalData = (WrappedComp) => (props) => {
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const accountWallet = useSelector(getDefaultAccountWalletSelector);
+  const { pDecimals } = selectedPrivacy;
+  const { amount } = props;
 
   const [state, setState] = React.useState({
     isPortalToken: true,
@@ -28,6 +30,7 @@ export const enhancePortalData = (WrappedComp) => (props) => {
     maxUnshieldAmount: 0, 
     avgUnshieldFee: 0,                // nano
     incNetworkFee: MAX_FEE_PER_TX,    // nano
+    receivedAmount: 0,
   });
   
   const [initStatus, setInitStatus] = React.useState(INIT_STATUS.INITIALIZING);
@@ -35,6 +38,12 @@ export const enhancePortalData = (WrappedComp) => (props) => {
   React.useEffect(() => {
     getPortalData();
   }, []);
+
+  React.useEffect(() => {
+    if (initStatus === INIT_STATUS.SUCCESS && amount) {
+      getReceivedAmount();
+    }
+  }, [amount, initStatus]);
 
   const getPortalData = async () => {
     try {
@@ -66,6 +75,23 @@ export const enhancePortalData = (WrappedComp) => (props) => {
       console.log(e);
       setInitStatus(INIT_STATUS.FAILED);
     }
+  };
+
+  const getReceivedAmount = () => {
+    const {avgUnshieldFee} = state;
+    const amountToNumber = Math.max(convert.toNumber(Number(amount) || 0, true), 0);
+    const originalAmount = convert.toOriginalAmount(
+      amountToNumber,
+      pDecimals,
+      false,
+    );
+    const receivedAmount = Math.max(originalAmount - avgUnshieldFee, 0);
+    const newState = {
+      ...state,
+      avgUnshieldFee,
+      receivedAmount,
+    };
+    setState(newState);
   };
 
   const DetectUnshieldPortalError = React.memo(({ onRetry }) => {

@@ -6,9 +6,10 @@ import {
 } from '@src/redux/selectors';
 import { Clipboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { change, focus } from 'redux-form';
+import { change, focus, formValueSelector } from 'redux-form';
 import { LoadingContainer } from '@src/components/core';
 import ErrorBoundary from '@src/components/ErrorBoundary';
+import { defaultAccountSelector } from '@src/redux/selectors/account';
 import { removeAllSpace, standardizedAddress } from './Form.utils';
 
 export const formName = 'formUnshieldPortal';
@@ -19,6 +20,10 @@ export const enhanceInit = (WrappedComp) => (props) => {
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const gettingBalance = useSelector(sharedSelector.isGettingBalance);
   const isGettingBalance = gettingBalance.includes(selectedPrivacy?.tokenId);
+  const account = useSelector(defaultAccountSelector);
+  const selector = formValueSelector(formName);
+  const amount = useSelector((state) => selector(state, 'amount'));
+  const toAddress = useSelector((state) => selector(state, 'toAddress'));
 
   const handleStandardizedAddress = async (value) => {
     let _value = value;
@@ -64,8 +69,11 @@ export const enhanceInit = (WrappedComp) => (props) => {
       <WrappedComp
         {...{
           ...props,
+          balancePRV: account?.value,
           onChangeField,
-          handleStandardizedAddress
+          handleStandardizedAddress,
+          amount,
+          toAddress,
         }}
       />
     </ErrorBoundary>

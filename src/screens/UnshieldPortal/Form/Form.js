@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text } from 'react-native';
-import { KeyboardAwareScrollView, Modal } from '@src/components/core';
+import { KeyboardAwareScrollView, Modal, TextInput } from '@src/components/core';
 import { Field } from 'redux-form';
 import {
   createForm,
   InputQRField,
   InputMaxValueField,
   CheckboxField,
+  InputField,
 } from '@components/core/reduxForm';
 import { SEND } from '@src/constants/elements';
 import { generateTestId } from '@src/utils/misc';
-import { EstimateFeePortal } from '@components/EstimateFeePortal';
 import PropTypes from 'prop-types';
 import { ButtonBasic } from '@src/components/Button';
 import { useSelector } from 'react-redux';
 import { selectedPrivacySelector } from '@src/redux/selectors';
-import { getDefaultAccountWalletSelector } from '@src/redux/selectors/shared';
 import LoadingTx from '@src/components/LoadingTx';
 import format from '@src/utils/format';
+import { CONSTANT_COMMONS } from '@src/constants';
 import { styledForm as styled } from './Form.styled';
 import withSendForm from './Form.enhance';
 import { formName } from './Form.enhanceInit';
@@ -54,7 +54,6 @@ const SendForm = (props) => {
   const {
     onChangeField,
     onPressMax,
-    amount,
     onShowFrequentReceivers,
     disabledForm,
     validateAddress,
@@ -65,17 +64,17 @@ const SendForm = (props) => {
     validatePortalAmount,
     validateUnshieldPortalCondition,
     portalData,
+    validateBalancePRV,
   } = props;
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
-
+  const { externalSymbol, pDecimals, } = selectedPrivacy;
 
   const placeholderAddress = `Incognito${
     selectedPrivacy?.isMainCrypto || selectedPrivacy?.isIncognitoToken
       ? ' '
       : ` or ${selectedPrivacy?.rootNetworkName} `
   }address`;
-  const accountWallet = useSelector(getDefaultAccountWalletSelector);
-  const { avgUnshieldFee, incNetworkFee } = portalData;
+  const { avgUnshieldFee, receivedAmount } = portalData;
 
   const amountValidator = validatePortalAmount;
 
@@ -117,13 +116,46 @@ const SendForm = (props) => {
                 shouldStandardized
                 {...generateTestId(SEND.ADDRESS_INPUT)}
               />
-              <EstimateFeePortal
-                unshieldAmount={amount}
-                selectedPrivacy={selectedPrivacy}
-                networkFee={incNetworkFee}
-                accountWallet={accountWallet}
-                avgUnshieldFee={avgUnshieldFee}
+              <Field
+                component={InputField}
+                name="incognitoNetworkFee"
+                label="Incognito network"
+                validate={validateBalancePRV}
+                prependView={(
+                  <View style={[styled.spFeeItem]}>
+                    <Text style={[styled.symbol]}>
+                      {CONSTANT_COMMONS.CRYPTO_SYMBOL.PRV}
+                    </Text>
+                  </View>
+                )}
               />
+
+              <TextInput
+                label="Bitcoin network (est.)"
+                canEditable={false}
+                defaultValue={format.amountFull(avgUnshieldFee, pDecimals) || '0'}
+                prependView={(
+                  <View style={[styled.spFeeItem]}>
+                    <Text style={[styled.symbol]}>
+                      {externalSymbol}
+                    </Text>
+                  </View>
+                )}
+              />
+
+              <TextInput
+                label="Received (est.)"
+                canEditable={false}
+                defaultValue={format.amountFull(receivedAmount, pDecimals) || '0'}
+                prependView={(
+                  <View style={[styled.spFeeItem]}>
+                    <Text style={[styled.symbol]}>
+                      {externalSymbol}
+                    </Text>
+                  </View>
+                )}
+              />  
+             
               <Field
                 component={CheckboxField}
                 name="unshieldCondition"
@@ -192,6 +224,7 @@ SendForm.propTypes = {
   textLoadingTx: PropTypes.string.isRequired,
   validatePortalAmount: PropTypes.any.isRequired,
   validateUnshieldPortalCondition: PropTypes.any.isRequired,
+  validateBalancePRV: PropTypes.any.isRequired,
   handlePressUnshieldPortal: PropTypes.func.isRequired,
   portalData: PropTypes.any.isRequired,
   navigation: PropTypes.object.isRequired,

@@ -238,7 +238,7 @@ const Content = () => {
 };
 
 const GenQRCode = (props) => {
-  const { hasError, handleShield, isFetching } = props;
+  const { handleShield, isFetching, isFetchFailed } = props;
   const [toggle, setToggle] = React.useState(true);
   React.useEffect(() => {
     if (toggle) {
@@ -254,7 +254,7 @@ const GenQRCode = (props) => {
     if (isFetching) {
       return <LoadingContainer />;
     }
-    if (hasError) {
+    if (isFetchFailed) {
       return <ShieldError handleShield={handleShield} />;
     }
     return <Extra {...props} />;
@@ -292,6 +292,7 @@ GenQRCode.propTypes = {
   hasError: PropTypes.bool.isRequired,
   handleShield: PropTypes.func.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  isFetchFailed: PropTypes.bool.isRequired,
 };
 
 export default withGenQRCode(GenQRCode);

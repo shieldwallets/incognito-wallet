@@ -7,7 +7,7 @@ import { detectToken } from '@src/utils/misc';
 
 export const enhancePortalValidation = (WrappedComp) => (props) => {
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
-  const { portalData } = props;
+  const { portalData, balancePRV } = props;
   const { 
     minUnshieldAmount,
     maxUnshieldAmount,
@@ -16,33 +16,35 @@ export const enhancePortalValidation = (WrappedComp) => (props) => {
   const initialState = {
     maxAmountValidator: undefined,
     minAmountValidator: undefined,
+    balancePRVValidator: undefined,
   };
   const [state, setState] = React.useState({ ...initialState });
-  const { maxAmountValidator, minAmountValidator } = state;
-  const setFormValidator = debounce(async () => {
-    let currentState = { ...state };
-    if (Number.isFinite(maxUnshieldAmount)) {
-      currentState = {
-        ...state,
+  const { maxAmountValidator, minAmountValidator, balancePRVValidator } = state;
+
+  const setFormValidator = debounce(() => {
+    setState({
+      ...state,
+      ...Number.isFinite(maxUnshieldAmount) ? {
         maxAmountValidator: validator.maxValue(maxUnshieldAmount, {
           message:
           maxUnshieldAmount > 0
             ? `Max amount you can withdraw is ${maxUnshieldAmount} ${selectedPrivacy?.externalSymbol ||
                   selectedPrivacy?.symbol}`
             : 'Your balance is insufficient.',
-        }),
-      };
-      await setState(currentState);
-    }
-    if (Number.isFinite(minUnshieldAmount)) {
-      await setState({
-        ...currentState,
+        })
+      } : {},
+      ...Number.isFinite(minUnshieldAmount) ? {
         minAmountValidator: validator.minValue(minUnshieldAmount, {
           message: `Amount must be larger than ${minUnshieldAmount} ${selectedPrivacy?.externalSymbol ||
             selectedPrivacy?.symbol}`,
         }),
-      });
-    }
+      } : {},
+      ...Number.isFinite(balancePRV) ? {
+        balancePRVValidator: validator.maxValue(balancePRV, {
+          message: 'Your balance is insufficient.',
+        }),
+      } : {}
+    });
   }, 200);
 
   const getAmountValidator = () => {
@@ -62,11 +64,13 @@ export const enhancePortalValidation = (WrappedComp) => (props) => {
 
   React.useEffect(() => {
     setFormValidator();
-  }, [selectedPrivacy?.tokenId, maxUnshieldAmount, minUnshieldAmount]);
+  }, [selectedPrivacy?.tokenId, maxUnshieldAmount, minUnshieldAmount, balancePRV]);
 
   const validatePortalAmount = getAmountValidator();
 
   const validateUnshieldPortalCondition = validator.equal('true', { message: 'Required' });
+
+  const validateBalancePRV = balancePRVValidator;
 
   return (
     <WrappedComp
@@ -76,6 +80,7 @@ export const enhancePortalValidation = (WrappedComp) => (props) => {
         minAmountValidator,
         maxAmountValidator,
         validateUnshieldPortalCondition,
+        validateBalancePRV,
       }}
     />
   );
