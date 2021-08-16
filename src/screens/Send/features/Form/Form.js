@@ -69,6 +69,7 @@ const SendForm = (props) => {
     textLoadingTx,
     validateMemo,
     navigation,
+    isPortalToken,
   } = props;
   const { titleBtnSubmit, isUnShield, editableInput } = useSelector(
     feeDataSelector,
@@ -198,6 +199,7 @@ const SendForm = (props) => {
                   memo,
                   isIncognitoAddress,
                   isExternalAddress,
+                  isPortalToken,
                 }}
               />
               {renderMemo()}
