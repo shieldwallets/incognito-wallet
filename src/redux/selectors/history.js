@@ -614,8 +614,10 @@ export const historyDetailFactoriesSelector = createSelector(
           outchainTx,
           externalAddress,
           incognitoAddress,
-          statusDetail
+          statusDetail,
+          txId,
         } = tx;
+      
         return [
           {
             label: 'Unshield',
@@ -657,13 +659,20 @@ export const historyDetailFactoriesSelector = createSelector(
             disabled: !externalAddress,
             copyable: true,
           },
-          {
-            label: 'Inchain TxID',
-            value: inchainTx,
-            disabled: !inchainTx,
-            openUrl: !!inchainTx,
-            handleOpenUrl: () => LinkingService.openUrl(inchainTx),
-          },
+          inchainTx ? 
+            {
+              label: 'Inchain TxID',
+              value: inchainTx,
+              disabled: !inchainTx,
+              openUrl: !!inchainTx,
+              handleOpenUrl: () => LinkingService.openUrl(inchainTx),
+            } :
+            {
+              label: 'TxID',
+              value: txId,
+              disabled: !txId,
+              copyable: true,
+            },
           {
             label: 'Outchain TxID',
             value: outchainTx,

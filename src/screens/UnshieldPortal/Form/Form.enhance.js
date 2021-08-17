@@ -12,7 +12,6 @@ import { enhanceAddressValidation } from './Form.enhanceAddressValidator';
 import { enhanceInit, formName } from './Form.enhanceInit';
 import { enhancePortalUnshield } from './Form.enhancePortalUnShield';
 import { enhancePortalValidation } from './Form.enhancePortalValidator';
-import { enhancePortalData } from './Form.enhancePortalData';
 import { enhanceSwitchSend } from './Form.enhanceSwitchSend';
 
 export const enhance = (WrappedComp) => (props) => {
@@ -70,7 +69,6 @@ export const enhance = (WrappedComp) => (props) => {
   React.useEffect(() => {
     onChangeField(format.amountFull(incNetworkFee, CONSTANT_COMMONS.DECIMALS['PRV']), 'incognitoNetworkFee');
   }, [incNetworkFee]);
-
   return (
     <WrappedComp
       {...{
@@ -90,7 +88,6 @@ export const enhance = (WrappedComp) => (props) => {
 export default compose(
   enhanceInit,
   enhanceAddressValidation,
-  enhancePortalData,
   enhancePortalUnshield,
   enhancePortalValidation,
   enhance,
