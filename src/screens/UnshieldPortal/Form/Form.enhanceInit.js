@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { change, focus, formValueSelector } from 'redux-form';
 import { LoadingContainer } from '@src/components/core';
 import convert from '@src/utils/convert';
+import { actionLogEvent } from '@screens/Performance';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import { MAX_FEE_PER_TX } from '@src/components/EstimateFee/EstimateFee.utils';
 import { defaultAccountSelector } from '@src/redux/selectors/account';
@@ -106,7 +107,7 @@ export const enhanceInit = (WrappedComp) => (props) => {
   };
 
   const getReceivedAmount = () => {
-    const {avgUnshieldFee} = state;
+    const { avgUnshieldFee } = state;
     const amountToNumber = Math.max(convert.toNumber(Number(amount) || 0, true), 0);
     const originalAmount = convert.toOriginalAmount(
       amountToNumber,
@@ -119,6 +120,8 @@ export const enhanceInit = (WrappedComp) => (props) => {
       avgUnshieldFee,
       receivedAmount,
     };
+
+    dispatch(actionLogEvent({ desc: { avgUnshieldFee, amount, amountToNumber, originalAmount, receivedAmount, newState }}));
     setState(newState);
   };
 
@@ -172,7 +175,10 @@ export const enhanceInit = (WrappedComp) => (props) => {
 
   React.useEffect(() => {
     if (initStatus === INIT_STATUS.SUCCESS && amount) {
+      dispatch(actionLogEvent({ desc: { msg: 'Calling getReceivedAmount', initStatus, amount }}));
       getReceivedAmount();
+    } else {
+      dispatch(actionLogEvent({ desc: { msg: 'Not Calling getReceivedAmount', initStatus, amount }}));
     }
   }, [amount, initStatus]);
 
