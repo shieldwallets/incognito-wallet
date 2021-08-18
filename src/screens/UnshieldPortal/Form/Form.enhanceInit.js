@@ -108,7 +108,7 @@ export const enhanceInit = (WrappedComp) => (props) => {
 
   const getReceivedAmount = () => {
     const { avgUnshieldFee } = state;
-    const amountToNumber = Math.max(convert.toNumber(Number(amount) || 0, true), 0);
+    const amountToNumber = Math.max(convert.toNumber(amount, true), 0);
     const originalAmount = convert.toOriginalAmount(
       amountToNumber,
       pDecimals,
