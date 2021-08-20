@@ -33,6 +33,7 @@ const shieldReducer = (state = initialState, action) => {
     return {
       ...state,
       isFetching: true,
+      isFetchFailed: false,
     };
   }
   case ACTION_FETCHED: {
@@ -40,6 +41,7 @@ const shieldReducer = (state = initialState, action) => {
       ...state,
       isFetching: false,
       isFetched: true,
+      isFetchFailed: false,
       data: { ...action.payload },
     };
   }
