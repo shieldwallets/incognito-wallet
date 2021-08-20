@@ -83,6 +83,27 @@ const Extra = () => {
     return minComp;
   };
 
+  const renderMinPortalShieldAmount = () => {
+    let minComp;
+    const symbol = selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol;
+    if (min) {
+      minComp = (
+        <>
+          <NormalText text="Minimum: ">
+            <Text style={[styled.boldText]}>
+              {`${min} ${symbol}`}
+            </Text>
+          </NormalText>
+          <NormalText
+            text={'Smaller amounts will be rejected\nby the network and lost.'}
+            style={styled.smallText}
+          />
+        </>
+      );
+    }
+    return minComp;
+  };
+
   const renderEstimateFee = () => {
     const isNativeToken =
       selectedPrivacy?.currencyType ===
@@ -192,21 +213,9 @@ const Extra = () => {
         <QrCodeGenerate value={address} size={175} />
       </View>
       <View style={styled.hook}>
-        {renderMinShieldAmount()}
+        {renderMinPortalShieldAmount()}
       </View>
       <CopiableText data={address} />
-      <NormalText
-        text={
-          'If sending from an exchange, please take\nwithdrawal times into account.'
-        }
-        style={{ marginTop: 30 }}
-      />
-      <NormalText
-        text={
-          'It may be more reliable to use a normal\nwallet as an intermediary.'
-        }
-        style={{ marginTop: 10 }}
-      />
     </>
   );
 

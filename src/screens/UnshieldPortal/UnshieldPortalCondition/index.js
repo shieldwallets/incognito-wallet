@@ -17,7 +17,7 @@ export const UnshieldPortalCondition = (props) => {
     },
     {
       id: 'to_exchange',
-      label: 'I will unshield to another platform (e.g. exchange, lending service). I accept that any refunds to the sending address will not be processed, and that funds may be lost if the receiving address is time-sensitive.',
+      label: 'I will unshield to another platform (e.g. exchange, lending service). I accept that any refunds will not be routed back to me, due to the random elements of the shielding and unshielding process. I also accept that funds may be lost if the receiving address is time-sensitive.',
       warning: ''
     }
   ];
