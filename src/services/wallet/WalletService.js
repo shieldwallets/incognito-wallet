@@ -79,6 +79,7 @@ export async function configsWallet(wallet) {
     wallet.RpcRequestService = server?.requestServices;
     wallet.AuthToken = await getToken();
     wallet.RpcApiService = server?.apiServices;
+    wallet.PortalService = server?.portalServices;
     if (typeof setShardNumber === 'function') {
       await setShardNumber(server?.shardNumber);
     }

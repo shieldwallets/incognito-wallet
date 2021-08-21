@@ -58,6 +58,7 @@ const Extra = () => {
     decentralized,
     estimateFee,
     tokenFee,
+    isPortal,
   } = useSelector(shieldDataSelector);
   const selectedPrivacy = useSelector(selectedPrivacySelector.selectedPrivacy);
   const navigation = useNavigation();
@@ -74,6 +75,27 @@ const Extra = () => {
           </NormalText>
           <NormalText
             text="Smaller amounts will not be processed."
+            style={styled.smallText}
+          />
+        </>
+      );
+    }
+    return minComp;
+  };
+
+  const renderMinPortalShieldAmount = () => {
+    let minComp;
+    const symbol = selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol;
+    if (min) {
+      minComp = (
+        <>
+          <NormalText text="Minimum: ">
+            <Text style={[styled.boldText]}>
+              {`${min} ${symbol}`}
+            </Text>
+          </NormalText>
+          <NormalText
+            text={'Smaller amounts will be rejected\nby the network and lost.'}
             style={styled.smallText}
           />
         </>
@@ -182,12 +204,33 @@ const Extra = () => {
     </>
   );
 
+  const renderShieldPortalAddress = () => (
+    <>
+      <NormalText style={styled.title}>
+        {`Send only ${selectedPrivacy?.externalSymbol || selectedPrivacy?.symbol} \nto this shielding address.`}
+      </NormalText>
+      <View style={styled.qrCode}>
+        <QrCodeGenerate value={address} size={175} />
+      </View>
+      <View style={styled.hook}>
+        {renderMinPortalShieldAmount()}
+      </View>
+      <CopiableText data={address} />
+    </>
+  );
+
   return (
     <ScrollView style={styled.scrollview}>
       <View style={styled.extra}>
-        {decentralized === 2 || decentralized === 3
-          ? renderShieldUserAddress()
-          : renderShieldIncAddress()}
+        {
+          isPortal
+            ? renderShieldPortalAddress()
+            : (
+              decentralized === 2 || decentralized === 3
+                ? renderShieldUserAddress()
+                : renderShieldIncAddress()
+            )
+        }
       </View>
     </ScrollView>
   );
@@ -204,7 +247,7 @@ const Content = () => {
 };
 
 const GenQRCode = (props) => {
-  const { hasError, handleShield, isFetching } = props;
+  const { handleShield, isFetching, isFetchFailed } = props;
   const [toggle, setToggle] = React.useState(true);
   React.useEffect(() => {
     if (toggle) {
@@ -220,7 +263,7 @@ const GenQRCode = (props) => {
     if (isFetching) {
       return <LoadingContainer />;
     }
-    if (hasError) {
+    if (isFetchFailed) {
       return <ShieldError handleShield={handleShield} />;
     }
     return <Extra {...props} />;
@@ -258,6 +301,7 @@ GenQRCode.propTypes = {
   hasError: PropTypes.bool.isRequired,
   handleShield: PropTypes.func.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  isFetchFailed: PropTypes.bool.isRequired,
 };
 
 export default withGenQRCode(GenQRCode);

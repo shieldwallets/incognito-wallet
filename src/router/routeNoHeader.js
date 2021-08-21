@@ -12,6 +12,7 @@ import AddManually from '@screens/AddManually';
 import WalletDetail from '@screens/Wallet/features/Detail';
 import ReceiveCrypto from '@screens/Wallet/features/ReceiveCrypto';
 import Send from '@screens/Send';
+import UnshieldPortal from '@screens/UnshieldPortal';
 import TokenSelectScreen from '@components/TokenSelectScreen';
 import Trade from '@screens/DexV2';
 import TradeConfirm from '@screens/DexV2/components/TradeConfirm';
@@ -188,6 +189,10 @@ const routes = [
   {
     screen: Send,
     name: routeNames.Send,
+  },
+  {
+    screen: UnshieldPortal,
+    name: routeNames.UnshieldPortal,
   },
   {
     screen: UnShieldModal,

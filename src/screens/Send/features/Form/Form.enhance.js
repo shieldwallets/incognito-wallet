@@ -16,16 +16,17 @@ import { enhanceInit } from './Form.enhanceInit';
 import { enhanceSend } from './Form.enhanceSend';
 import { enhanceUnshield } from './Form.enhanceUnShield';
 import { enhanceMemoValidation } from './Form.enhanceMemoValidator';
+import { enhanceSwitchPortal } from './Form.enhanceSwitchPortal';
 import { removeAllSpace, standardizedAddress } from './Form.utils';
 
 export const formName = 'formSend';
 
 export const enhance = (WrappedComp) => (props) => {
   const [isSending, setIsSending] = React.useState(false);
-  const { handleSendAnonymously, handleUnShieldCrypto } = props;
   const isFormEstimateFeeValid = useSelector((state) =>
     isValid(formEstimateFee)(state),
   );
+  const { handleSendAnonymously, handleUnShieldCrypto, handleUnshieldPortal } = props;
   const navigation = useNavigation();
   const {
     fee,
@@ -63,6 +64,7 @@ export const enhance = (WrappedComp) => (props) => {
     if (field === 'toAddress') {
       _value = await handleStandardizedAddress(value);
     }
+
     dispatch(change(formName, field, String(_value)));
     dispatch(focus(formName, field));
   };
@@ -167,4 +169,5 @@ export default compose(
   enhanceSend,
   enhanceUnshield,
   enhance,
+  enhanceSwitchPortal,
 );

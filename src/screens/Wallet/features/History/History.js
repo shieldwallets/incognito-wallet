@@ -37,18 +37,20 @@ const Hook = React.memo((props) => {
     fullText = false,
     showDetail = false,
     detail = '',
-    canRetryExpiredShield = false,
+    canResumeExpiredShield = false,
+    canRetryInvalidAmountShield = false,
   } = props || {};
   const accountWallet = useSelector(getDefaultAccountWalletSelector);
   const { tx } = useSelector(historyDetailSelector);
   const [toggle, setToggle] = React.useState(false);
   const [resume, setResume] = React.useState(false);
+  const [retry, setRetry] = React.useState(false);
   const navigation = useNavigation();
   const handleCopyText = () => {
     Clipboard.setString(value);
     Toast.showInfo('Copied');
   };
-  const handleRetryExpiredShield = async () => {
+  const handleResumeExpiredShield = async () => {
     try {
       if (resume) {
         return;
@@ -66,6 +68,27 @@ const Hook = React.memo((props) => {
       new ExHandler(error).showErrorToast();
     } finally {
       await setResume(false);
+      navigation.goBack();
+    }
+  };
+  const handleRetryInvalidAmountShield = async () => {
+    try {
+      if (retry) {
+        return;
+      }
+      await setRetry(true);
+      const result = await accountWallet.handleRetryExpiredShield({
+        history: tx,
+      });
+      if (result) {
+        Toast.showInfo(
+          'Your request has been sent, we will process it soon. The history status will be updated',
+        );
+      }
+    } catch (error) {
+      new ExHandler(error).showErrorToast();
+    } finally {
+      await setRetry(false);
       navigation.goBack();
     }
   };
@@ -90,12 +113,25 @@ const Hook = React.memo((props) => {
           >
             {value}
           </Text>
-          {canRetryExpiredShield && (
-            <BtnResume
-              style={styled.btnResume}
-              onPress={handleRetryExpiredShield}
-              resuming={resume}
-            />
+          {canResumeExpiredShield && (
+            <TouchableOpacity
+              style={styled.btnResumeOrRetry}
+              onPress={handleResumeExpiredShield}
+            >
+              <Text style={styled.textBtnResumeOrRetry}>
+                {`Resume${resume ? '...' : ''}`}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {canRetryInvalidAmountShield && (
+            <TouchableOpacity
+              style={styled.btnResumeOrRetry}
+              onPress={handleRetryInvalidAmountShield}
+            >
+              <Text style={styled.textBtnResumeOrRetry}>
+                {`Retry${retry ? '...' : ''}`}
+              </Text>
+            </TouchableOpacity>
           )}
           {copyable && (
             <TouchableOpacity

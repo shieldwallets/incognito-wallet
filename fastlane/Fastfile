@@ -10,11 +10,10 @@ platform :ios do
    desc 'Fetch certificates and provisioning profiles'
 
    lane :release do
-     setup_circle_ci 
+     setup_circle_ci
       setupCodeSigning(ENV["MATCH_PASSWORD"], ENV["MATCH_PASSWORD"],
-      './fastlane/AppStore_com.incognito.wallet.mobileprovision', 
-      './fastlane/cert.p12') 
-    
+      './fastlane/AppStore_com.incognito.wallet.mobileprovision',
+      './fastlane/cert.p12')
        #match(type: 'appstore', readonly: true ,api_key_path: "fastlane/develop.json"
        build_app(
        workspace: './ios/Incognito.xcworkspace',

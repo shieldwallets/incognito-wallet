@@ -32,7 +32,8 @@ const MAIN_NET_SERVER = {
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
   IncBSCContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
-  explorer: 'https://incscan.io'
+  explorer: 'https://incscan.io',
+  portalServices: 'https://api-portalv4.incognito.org',
 };
 const BETA_SERVER = {
   id: 'beta',
@@ -48,7 +49,8 @@ const BETA_SERVER = {
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
   IncBSCContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
-  explorer: 'https://incscan.io'
+  explorer: 'https://incscan.io',
+  portalServices:  'http://139.162.55.124:8010',
 };
 const TEST_NET_SERVER = {
   id: 'testnet',
@@ -59,12 +61,14 @@ const TEST_NET_SERVER = {
   name: 'Testnet',
   coinServices: 'https://api-coinservice-staging.incognito.org',
   pubsubServices: 'https://api-coinservice-staging.incognito.org/txservice',
-  requestServices: 'http://51.161.119.66:4000',
+  requestServices:
+    'https://api-coinservice-staging.incognito.org/airdrop-service',
   apiServices: 'https://staging-api-service.incognito.org',
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
   IncBSCContractAddress: '0x2f6F03F1b43Eab22f7952bd617A24AB46E970dF7',
-  explorer: 'https://testnet.incognito.org'
+  explorer: 'https://testnet.incognito.org',
+  portalServices: 'http://139.162.55.124:8020',
 };
 const LOCAL_SERVER = {
   id: 'local',
@@ -73,6 +77,7 @@ const LOCAL_SERVER = {
   username: '',
   password: '',
   name: 'Local',
+  portalServices:  'http://139.162.55.124:8010',
 };
 const TEST_NET_1_SERVER = {
   id: 'testnet1',
@@ -83,12 +88,13 @@ const TEST_NET_1_SERVER = {
   name: 'Testnet 1',
   coinServices: 'https://api-coinservice-staging2.incognito.org',
   pubsubServices: 'https://api-coinservice-staging2.incognito.org/txservice',
-  requestServices: 'http://51.161.119.66:6000',
+  requestServices:'https://api-coinservice-staging2.incognito.org/airdrop-service',
   apiServices: 'https://privacyv2-api-service.incognito.org',
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
   IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241',
-  explorer: 'https://testnet1.incognito.org'
+  explorer: 'https://testnet1.incognito.org',
+  portalServices:  'http://139.162.55.124:8010',
 };
 const DEV_TEST_SERVER = {
   id: 'devtest',
@@ -104,7 +110,8 @@ const DEV_TEST_SERVER = {
   shardNumber: 2,
   IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
   IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241',
-  explorer: 'https://testnet1.incognito.org'
+  explorer: 'https://testnet1.incognito.org',
+  portalServices:  'http://139.162.55.124:8010',
 };
 
 const DEFAULT_LIST_SERVER = [
@@ -124,8 +131,8 @@ export const KEY = {
 
 const combineCachedListWithDefaultList = (_cachedList) => {
   if (!_cachedList) return DEFAULT_LIST_SERVER;
-  return DEFAULT_LIST_SERVER.map(server => {
-    const cachedServer = _cachedList.find(item => item.id === server.id);
+  return DEFAULT_LIST_SERVER.map((server) => {
+    const cachedServer = _cachedList.find((item) => item.id === server.id);
     return {
       ...server,
       default: cachedServer?.default,
@@ -185,7 +192,7 @@ export default class Server {
               apiServices: server?.apiServices || '',
               shardNumber: server?.shardNumber || '',
               IncContractAddress: server?.IncContractAddress,
-              IncBSCContractAddress: server?.IncContractAddress
+              IncBSCContractAddress: server?.IncContractAddress,
             };
           }
         }
