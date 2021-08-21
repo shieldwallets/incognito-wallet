@@ -22,7 +22,7 @@ export const enhanceAddressValidation = (WrappedComp) => (props) => {
   const isIncognitoAddress =
     accountService.checkPaymentAddress(toAddress) || isMainCrypto;
   const isExternalAddress =
-    !isIncognitoAddress && selectedPrivacy?.isWithdrawable;
+    (!!toAddress && !isIncognitoAddress) && selectedPrivacy?.isWithdrawable;
   const { isAddressValidated, isValidETHAddress } = useSelector(
     feeDataSelector,
   );

@@ -15,6 +15,7 @@ const enhance = (WrappedComp) => (props) => {
     memo,
     isExternalAddress,
     isIncognitoAddress,
+    isPortalToken,
   } = props;
   const dispatch = useDispatch();
   const [isKeyboardVisible] = useKeyboard();
@@ -35,6 +36,10 @@ const enhance = (WrappedComp) => (props) => {
       } else if (isIncognitoAddress) {
         screen = 'Send';
       }
+      if (isPortalToken && screen === 'UnShield') {
+        return;
+      }
+    
       await dispatch(
         actionFetchFee({
           amount,

@@ -11,6 +11,7 @@ import {
 const initialState = {
   isFetching: false,
   isFetched: false,
+  isFetchFailed: false,
   data: {
     min: null,
     max: null,
@@ -19,6 +20,7 @@ const initialState = {
     decentralized: undefined,
     tokenFee: 0,
     estimateFee: 0,
+    isPortal: false,
   },
   storage: {
     guide: false,
@@ -31,6 +33,7 @@ const shieldReducer = (state = initialState, action) => {
     return {
       ...state,
       isFetching: true,
+      isFetchFailed: false,
     };
   }
   case ACTION_FETCHED: {
@@ -38,6 +41,7 @@ const shieldReducer = (state = initialState, action) => {
       ...state,
       isFetching: false,
       isFetched: true,
+      isFetchFailed: false,
       data: { ...action.payload },
     };
   }
@@ -46,6 +50,7 @@ const shieldReducer = (state = initialState, action) => {
       ...state,
       isFetched: false,
       isFetching: false,
+      isFetchFailed: true,
     };
   }
   case ACTION_TOGGLE_GUIDE: {

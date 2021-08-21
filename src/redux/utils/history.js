@@ -10,7 +10,17 @@ export const {
   STATUS_CODE_SHIELD_CENTRALIZED,
   STATUS_CODE_UNSHIELD_DECENTRALIZED,
   STATUS_CODE_UNSHIELD_CENTRALIZED,
+  TX_TYPE,
+  STATUS_CODE_SHIELD_PORTAL,
+  STATUS_CODE_UNSHIELD_PORTAL,
 } = ACCOUNT_CONSTANT;
+
+const PORTAL_STATUS_DETAIL = {
+  [STATUS_CODE_UNSHIELD_PORTAL.PENDING]: 'The unshielding request is waiting to process.',
+  [STATUS_CODE_UNSHIELD_PORTAL.PROCESSING]: 'Your token is being sent out to your address.',
+  [STATUS_CODE_UNSHIELD_PORTAL.COMPLETE]: '',
+  [STATUS_CODE_UNSHIELD_PORTAL.REFUND]: 'The unshielding request was refunded to your account. Please try again.'
+};
 
 export const TX_STATUS_COLOR = {
   [TX_STATUS.PROCESSING]: COLORS.colorGreyBold,
@@ -89,4 +99,61 @@ export const getStatusColorUnshield = (history) => {
   }
 
   return statusColor;
+};
+
+export const getPortalStatusColor = (history) => {
+  let statusColor = '';
+  try {
+    new Validator('getPortalStatusColor-history', history).required().object();
+    const { txType, status } = history;
+    switch (txType) {
+    case TX_TYPE.SHIELDPORTAL: {
+      // shield
+      if (status === STATUS_CODE_SHIELD_PORTAL.SUCCESS) {
+        statusColor = COLORS.green;
+      } else {
+        statusColor = COLORS.colorGreyBold;
+      }
+      break;
+    }
+    case TX_TYPE.UNSHIELDPORTAL: {
+      // unshield
+      if (status === STATUS_CODE_UNSHIELD_PORTAL.COMPLETE) {
+        statusColor = COLORS.green;
+      } else if (status === STATUS_CODE_UNSHIELD_PORTAL.REFUND) {
+        statusColor = COLORS.red;
+      } else {
+        statusColor = COLORS.colorGreyBold;
+      }
+      break;
+    }
+    default:
+      break;
+    }
+  } catch (error) {
+    console.log('getPortalStatusColor', error);
+  }
+  return statusColor;
+};
+
+export const getPortalStatusDetail = (history) => {
+  let statusDetail = '';
+  try {
+    new Validator('getPortalStatusColor-history', history).required().object();
+    const { txType, status } = history;
+    switch (txType) {
+    case TX_TYPE.SHIELDPORTAL: {
+      break;
+    }
+    case TX_TYPE.UNSHIELDPORTAL: {
+      statusDetail = PORTAL_STATUS_DETAIL[status];
+      break;
+    }
+    default:
+      break;
+    }
+  } catch (error) {
+    console.log('getPortalStatusDetail', error);
+  }
+  return statusDetail;
 };
