@@ -148,4 +148,6 @@ export default {
   SelectTokenStreamline: 'SelectTokenStreamline',
   ConvertTokenList: 'ConvertTokenList',
   HistoryConvert: 'HistoryConvert',
+
+  Standby: 'Standby',
 };

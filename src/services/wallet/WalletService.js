@@ -14,6 +14,7 @@ import { randomBytes } from 'react-native-randombytes';
 import { DEX } from '@utils/dex';
 import accountService from '@services/wallet/accountService';
 import { updateWalletAccounts } from '@services/api/masterKey';
+import { cachePromise } from '@src/services/cache';
 import { getToken } from '@src/services/auth';
 import { getPassphrase } from './passwordService';
 import Server from './Server';
@@ -52,12 +53,13 @@ export async function loadListAccountWithBLSPubKey(wallet) {
   }
 }
 
-export async function loadWallet(passphrase, name = 'Wallet') {
+export async function loadWallet(passphrase, name = 'Wallet', rootName = '') {
   try {
     let wallet = new Wallet();
     wallet.Name = name;
+    wallet.RootName = rootName;
     await configsWallet(wallet);
-    wallet = await wallet.loadWallet(passphrase, name);
+    wallet = await wallet.loadWallet(passphrase);
     return wallet?.Name ? wallet : false;
   } catch (error) {
     console.log('ERROR WHEN LOAD WALLET', error);
@@ -77,9 +79,14 @@ export async function configsWallet(wallet) {
     wallet.UseLegacyEncoding = true;
     wallet.PubsubService = server?.pubsubServices;
     wallet.RpcRequestService = server?.requestServices;
-    wallet.AuthToken = await getToken();
+    wallet.AuthToken = await cachePromise(
+      'wallet.AuthToken',
+      () => getToken(),
+      1e9,
+    );
     wallet.RpcApiService = server?.apiServices;
     wallet.PortalService = server?.portalServices;
+    wallet.Network = server?.id;
     if (typeof setShardNumber === 'function') {
       await setShardNumber(server?.shardNumber);
     }

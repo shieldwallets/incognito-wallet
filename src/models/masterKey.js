@@ -25,15 +25,17 @@ class MasterKeyModel {
    * @returns {Promise<Wallet>}
    */
   async loadWallet() {
+    const rootName = this.name;
     const storageName = this.getStorageName();
     const rawData = await storage.getItem(storageName);
     const passphrase = await getPassphrase();
     let wallet;
     if (rawData) {
-      wallet = await loadWallet(passphrase, storageName);
+      wallet = await loadWallet(passphrase, storageName, rootName);
     }
     if (!wallet) {
       wallet = await this.initWallet();
+      wallet = await loadWallet(passphrase, storageName, rootName);
     }
     this.mnemonic = wallet.Mnemonic;
     this.wallet = wallet;

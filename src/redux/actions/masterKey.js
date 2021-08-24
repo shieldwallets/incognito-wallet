@@ -1,17 +1,16 @@
+/* eslint-disable import/no-cycle */
 import { Validator } from 'incognito-chain-web-js/build/wallet';
 import LocalDatabase from '@utils/LocalDatabase';
 import types from '@src/redux/types/masterKey';
-// eslint-disable-next-line import/no-cycle
 import MasterKeyModel from '@models/masterKey';
 import storage from '@src/services/storage';
-// eslint-disable-next-line import/no-cycle
 import {
   importWallet,
   saveWallet,
   storeWalletAccountIdsOnAPI,
   configsWallet,
+  loadWallet,
 } from '@services/wallet/WalletService';
-// eslint-disable-next-line import/no-cycle
 import {
   actionSubmitOTAKeyForListAccount,
   reloadWallet,
@@ -23,12 +22,12 @@ import {
   masterlessKeyChainSelector,
   noMasterLessSelector,
 } from '@src/redux/selectors/masterKey';
-import _, { flatten } from 'lodash';
+import _ from 'lodash';
 import { clearWalletCaches } from '@services/cache';
 import accountService from '@services/wallet/accountService';
 import { actionLogEvent } from '@src/screens/Performance';
-import { devSelector } from '@src/screens/Dev';
 import { performance } from '@src/screens/Performance/Performance.utils';
+import { getPassphrase } from '@src/services/wallet/passwordService';
 
 const DEFAULT_MASTER_KEY = new MasterKeyModel({
   name: 'Wallet',
@@ -124,6 +123,12 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
     await dispatch(switchMasterKey(defaultMasterKey.name));
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
+    try {
+      const passphrase = await getPassphrase();
+      await loadWallet(passphrase, wallet.Name, masterKeyName);
+    } catch (error) {
+      console.log('initMasterKey-error', error);
+    }
     await Promise.all([
       storeWalletAccountIdsOnAPI(wallet),
       saveWallet(masterlessWallet),
@@ -281,6 +286,12 @@ export const createMasterKey = (data) => async (dispatch) => {
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
     await storeWalletAccountIdsOnAPI(wallet);
+    try {
+      const passphrase = await getPassphrase();
+      await loadWallet(passphrase, wallet.Name, newMasterKey.name);
+    } catch (error) {
+      console.log('createMasterKey-error', error);
+    }
     const listAccount = await wallet.listAccount();
     await dispatch(reloadWallet(listAccount[0]?.accountName));
   } catch (error) {
@@ -386,6 +397,12 @@ export const importMasterKey = (data) => async (dispatch, getState) => {
     await dispatch(syncUnlinkWithNewMasterKey(newMasterKey));
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
+    try {
+      const passphrase = await getPassphrase();
+      await loadWallet(passphrase, wallet.Name, newMasterKey.name);
+    } catch (error) {
+      console.log('importMasterKey-error', error);
+    }
     const listAccount = await wallet.listAccount();
     await dispatch(actionSubmitOTAKeyForListAccount(wallet));
     await dispatch(reloadWallet(listAccount[0]?.name));
