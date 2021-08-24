@@ -18,6 +18,7 @@ yarn
 
 ```
 yarn postinstall
+yarn start:reset
 ```
 
 Start project in development
