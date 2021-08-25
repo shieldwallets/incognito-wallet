@@ -118,17 +118,12 @@ export const initMasterKey = (masterKeyName, mnemonic) => async (dispatch) => {
     await syncServerAccounts(wallet);
     defaultMasterKey.mnemonic = wallet.Mnemonic;
     defaultMasterKey.wallet = wallet;
+    wallet.RootName = masterKeyName;
     const masterKeys = [defaultMasterKey, masterlessMasterKey];
     await dispatch(initMasterKeySuccess(masterKeys));
     await dispatch(switchMasterKey(defaultMasterKey.name));
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
-    try {
-      const passphrase = await getPassphrase();
-      await loadWallet(passphrase, wallet.Name, masterKeyName);
-    } catch (error) {
-      console.log('initMasterKey-error', error);
-    }
     await Promise.all([
       storeWalletAccountIdsOnAPI(wallet),
       saveWallet(masterlessWallet),
@@ -281,17 +276,12 @@ export const createMasterKey = (data) => async (dispatch) => {
     );
     newMasterKey.wallet = wallet;
     newMasterKey.mnemonic = wallet.Mnemonic;
+    wallet.RootName = newMasterKey.name;
     await dispatch(createMasterKeySuccess(newMasterKey));
     await dispatch(switchMasterKey(data.name));
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
     await storeWalletAccountIdsOnAPI(wallet);
-    try {
-      const passphrase = await getPassphrase();
-      await loadWallet(passphrase, wallet.Name, newMasterKey.name);
-    } catch (error) {
-      console.log('createMasterKey-error', error);
-    }
     const listAccount = await wallet.listAccount();
     await dispatch(reloadWallet(listAccount[0]?.accountName));
   } catch (error) {
@@ -392,17 +382,12 @@ export const importMasterKey = (data) => async (dispatch, getState) => {
     await syncServerAccounts(wallet, dispatch);
     newMasterKey.wallet = wallet;
     newMasterKey.mnemonic = wallet.Mnemonic;
+    wallet.RootName = newMasterKey.name;
     await dispatch(importMasterKeySuccess(newMasterKey));
     await dispatch(switchMasterKey(data.name));
     await dispatch(syncUnlinkWithNewMasterKey(newMasterKey));
     await dispatch(followDefaultTokenForWallet(wallet));
     await saveWallet(wallet);
-    try {
-      const passphrase = await getPassphrase();
-      await loadWallet(passphrase, wallet.Name, newMasterKey.name);
-    } catch (error) {
-      console.log('importMasterKey-error', error);
-    }
     const listAccount = await wallet.listAccount();
     await dispatch(actionSubmitOTAKeyForListAccount(wallet));
     await dispatch(reloadWallet(listAccount[0]?.name));

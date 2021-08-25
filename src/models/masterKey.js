@@ -1,3 +1,4 @@
+import { Wallet } from 'incognito-chain-web-js/build/wallet';
 import { initWallet, loadWallet } from '@services/wallet/WalletService';
 import storage from '@services/storage';
 import { getPassphrase } from '@services/wallet/passwordService';
@@ -34,8 +35,7 @@ class MasterKeyModel {
       wallet = await loadWallet(passphrase, storageName, rootName);
     }
     if (!wallet) {
-      wallet = await this.initWallet();
-      wallet = await loadWallet(passphrase, storageName, rootName);
+      wallet = await initWallet(storageName, rootName);
     }
     this.mnemonic = wallet.Mnemonic;
     this.wallet = wallet;
@@ -46,12 +46,6 @@ class MasterKeyModel {
       wallet.save();
     }
     wallet.Name = this.getStorageName();
-    return wallet;
-  }
-
-  async initWallet() {
-    const storageName = this.getStorageName();
-    const wallet = await initWallet(storageName);
     return wallet;
   }
 

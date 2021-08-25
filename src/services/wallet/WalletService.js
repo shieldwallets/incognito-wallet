@@ -14,7 +14,6 @@ import { randomBytes } from 'react-native-randombytes';
 import { DEX } from '@utils/dex';
 import accountService from '@services/wallet/accountService';
 import { updateWalletAccounts } from '@services/api/masterKey';
-import { cachePromise } from '@src/services/cache';
 import { getToken } from '@src/services/auth';
 import { getPassphrase } from './passwordService';
 import Server from './Server';
@@ -79,11 +78,7 @@ export async function configsWallet(wallet) {
     wallet.UseLegacyEncoding = true;
     wallet.PubsubService = server?.pubsubServices;
     wallet.RpcRequestService = server?.requestServices;
-    wallet.AuthToken = await cachePromise(
-      'wallet.AuthToken',
-      () => getToken(),
-      1e9,
-    );
+    wallet.AuthToken = await getToken();
     wallet.RpcApiService = server?.apiServices;
     wallet.PortalService = server?.portalServices;
     wallet.Network = server?.id;
@@ -97,10 +92,11 @@ export async function configsWallet(wallet) {
   return wallet;
 }
 
-export async function initWallet(walletName = 'Wallet') {
+export async function initWallet(walletName = 'Wallet', rootName) {
   try {
     const { aesKey } = await getPassphrase();
     let wallet = new Wallet();
+    wallet.RootName = rootName;
     await configsWallet(wallet);
     await wallet.init(aesKey, storage, walletName, 'Anon');
     await wallet.save(aesKey);

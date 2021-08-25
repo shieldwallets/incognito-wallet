@@ -117,20 +117,18 @@ const Standby = (props) => {
       await configsWallet(wallet);
       const passphrase = await getPassphrase();
       const list = await wallet.getListStorageBackup(passphrase);
-      const masterLess = list
-        .filter((wallet) => wallet.isMasterless)
-        .reduce((prev, current) =>
-          prev.accounts?.length > current.accounts?.length ? prev : current,
-        );
-      masterLess.key = masterLess.accounts.reduce(
-        (result, account) =>
-          (result += `AccountName: ${account?.accountName}\nPrivateKey: ${account?.privateKey}\n\n`),
-        '',
-      );
+      let masterLesses = list.filter((wallet) => !!wallet.isMasterless);
+      let masterlessAccounts = [];
+      masterLesses.map((w) => {
+        console.log(w?.accounts);
+        return (masterlessAccounts = masterlessAccounts.concat(
+          w?.accounts || [],
+        ));
+      });
       const masterKeys = list
         .filter((wallet) => !wallet.isMasterless)
         .map((w) => ({ ...w, key: w?.mnemonic }));
-      setListMasterless(masterLess);
+      setListMasterless({ accounts: masterlessAccounts });
       setListMasterKeys(masterKeys);
     } catch (error) {
       new ExHandler(error).showErrorToast();
