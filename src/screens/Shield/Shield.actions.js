@@ -15,8 +15,13 @@ import {
   ACTION_FETCHED,
   ACTION_FETCH_FAIL,
   ACTION_TOGGLE_GUIDE,
+  ACTION_RESET,
 } from './Shield.constant';
 import { shieldSelector } from './Shield.selector';
+
+export const actionReset = () => ({
+  type: ACTION_RESET,
+});
 
 export const actionFetching = () => ({
   type: ACTION_FETCHING,

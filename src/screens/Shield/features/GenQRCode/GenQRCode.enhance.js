@@ -20,7 +20,6 @@ const enhance = (WrappedComp) => (props) => {
     decentralized,
     isFetched,
     isFetching,
-    loading,
     selectedPrivacy,
     handleShield,
   } = props;
@@ -76,7 +75,7 @@ const enhance = (WrappedComp) => (props) => {
   }, [selectedTerm]);
 
   /** render loading */
-  if (isFetching || loading) {
+  if (isFetching) {
     return renderLoading();
   }
 

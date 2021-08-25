@@ -6,6 +6,7 @@ import {
   ACTION_FETCHED,
   ACTION_FETCH_FAIL,
   ACTION_TOGGLE_GUIDE,
+  ACTION_RESET,
 } from './Shield.constant';
 
 const initialState = {
@@ -61,6 +62,9 @@ const shieldReducer = (state = initialState, action) => {
         guide: true,
       },
     };
+  }
+  case ACTION_RESET: {
+    return { ...initialState };
   }
   default:
     return state;
