@@ -11,10 +11,11 @@ import Portfolio, {
   actionFetch as actionFetchListShare,
 } from '@src/screens/PDexV3/features/Portfolio';
 import { View, RefreshControl } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import {batch, useDispatch, useSelector} from 'react-redux';
 import { ButtonTrade } from '@src/components/Button';
 import { useNavigation } from 'react-navigation-hooks';
 import routeNames from '@src/router/routeNames';
+import {contributeActions} from '@screens/PDexV3/features/Contribute';
 import withHome from './Home.enhance';
 import { styled } from './Home.styled';
 import { ROOT_TAB_HOME, TAB_POOLS_ID, TAB_PORTFOLIO_ID } from './Home.constant';
@@ -41,11 +42,19 @@ const GroupButton = React.memo(() => {
 
 const TabPools = React.memo(() => {
   const tradingVolume24h = useSelector(tradingVolume24hSelector);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const onNavigateContribute = (poolId) => {
+    batch(() => {
+      dispatch(contributeActions.actionUpdateContributePoolID({ poolId }));
+      navigation.navigate(routeNames.ContributePool);
+    });
+  };
   return (
     <>
       <HomeTabHeader title="Trading Volume 24h" desc={tradingVolume24h} />
       <GroupButton />
-      <FollowingPools />
+      <FollowingPools handlePressPool={onNavigateContribute} />
     </>
   );
 });

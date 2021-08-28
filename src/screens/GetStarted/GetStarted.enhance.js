@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { compose } from 'recompose';
 import ErrorBoundary from '@src/components/ErrorBoundary';
 import Wizard from '@screens/Wizard';
-import { useSelector, useDispatch } from 'react-redux';
+import {useSelector, useDispatch, batch} from 'react-redux';
 import { login } from '@src/services/auth';
 import { ANALYTICS, CONSTANT_KEYS } from '@src/constants';
 import { reloadWallet } from '@src/redux/actions/wallet';
@@ -33,6 +33,7 @@ import { COLORS, FONT } from '@src/styles';
 import { accountServices } from '@src/services/wallet';
 import { actionLogEvent } from '@src/screens/Performance';
 import { requestUpdateMetrics } from '@src/redux/actions/app';
+import contributeActions from '@screens/PDexV3/features/Contribute/Contribute.actions';
 import {
   wizardSelector,
   isFollowedDefaultPTokensSelector,

@@ -47,6 +47,7 @@ export const actionRefresh = () => async (dispatch, getState) => {
       task = [
         dispatch(actionFetchTradingVolume24h()),
         dispatch(actionFetchListPools()),
+        dispatch(actionFetchListShare()),
       ];
       break;
     }
@@ -58,6 +59,7 @@ export const actionRefresh = () => async (dispatch, getState) => {
       task = [
         dispatch(actionFetchTradingVolume24h()),
         dispatch(actionFetchListPools()),
+        dispatch(actionFetchListShare()),
       ];
       break;
     }

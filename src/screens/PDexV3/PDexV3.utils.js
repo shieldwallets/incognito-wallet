@@ -4,6 +4,8 @@ import storage from '@src/services/storage';
 import { PDexV3, Validator } from 'incognito-chain-web-js/build/wallet';
 import BigNumber from 'bignumber.js';
 import format from '@src/utils/format';
+import convertUtil from '@utils/convert';
+import {ceil, floor, isNaN, isNumber} from 'lodash';
 
 export const getPDexV3Instance = async ({ account }) => {
   try {
@@ -69,6 +71,49 @@ export const getShareStr = (share, totalShare) => {
 };
 
 export const getReward = (token1, token2, token1Value, token2Value) => {
+  const token1Str = `${format.amount(token1Value, token1.pDecimals)} ${
+    token1.symbol
+  }`;
+  const token2Str = `${format.amount(token2Value, token2.pDecimals)} ${
+    token2.symbol
+  }`;
+  return `${token1Str} + ${token2Str}`;
+};
+
+export const getPoolSize = (token1, token2, token1PoolValue, token2PoolValue) => {
+  const formattedToken1Pool = format.amount(
+    token1PoolValue,
+    token1?.pDecimals,
+    true,
+  );
+  const formattedToken2Pool = format.amount(
+    token2PoolValue,
+    token2?.pDecimals,
+    true,
+  );
+  return `${formattedToken1Pool} ${token1?.symbol} + ${formattedToken2Pool} ${token2?.symbol}`;
+};
+
+export const parseInputWithText = ({ text, token }) => {
+  let number = convertUtil.toNumber(text, true);
+  number = convertUtil.toOriginalAmount(number, token.pDecimals, token.pDecimals !== 0);
+  return number;
+};
+
+export const calculateContributeValue = ({ inputValue, outputToken, inputPool, outputPool, isInput }) => {
+  if (!inputPool || !outputPool) return;
+  if (!outputToken || !isNumber(inputValue) || isNaN(inputValue) || !inputValue) {
+    return '';
+  }
+  const rate = format.toFixed(new BigNumber(outputPool).dividedBy(inputPool).toNumber(), outputToken.pDecimals);
+  const number = new BigNumber(inputValue).multipliedBy(rate).toNumber();
+  const outputValue = isInput ? floor(number) : ceil(number);
+  const outputText = format.amountFull(outputValue, outputToken.pDecimals);
+  return outputText;
+};
+
+export const formatBalance = (token1, token2, token1Value, token2Value) => {
+  if (!token1 || !token2 || token1Value === undefined || token2Value === undefined) return '';
   const token1Str = `${format.amount(token1Value, token1.pDecimals)} ${
     token1.symbol
   }`;

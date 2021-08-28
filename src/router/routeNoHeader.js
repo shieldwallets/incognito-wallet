@@ -99,12 +99,17 @@ import HomePDexV3 from '@screens/PDexV3/features/Home';
 import { PoolsList } from '@screens/PDexV3/features/Pools';
 import Trade, { ReviewOrder } from '@screens/PDexV3/features/Trade';
 import CreatePool from '@screens/PDexV3/features/CreatePool';
-import ContributePool from '@screens/PDexV3/features/ContributePool';
+import ContributePool from '@screens/PDexV3/features/Contribute';
 import RemovePool from '@screens/PDexV3/features/RemovePool';
 import OrderLimit from '@src/screens/PDexV3/features/OrderLimit';
 import SelectTokenTrade from '@screens/PDexV3/features/SelectToken';
 import Chart from '@screens/PDexV3/features/Chart';
 import WebView from '@screens/WebView';
+import HomeLiquidityHistories from '@screens/PDexV3/features/HomeLiquidityHistories';
+import ContributeHistoryDetail from '@screens/PDexV3/features/ContributeHistoryDetail';
+import RemovePoolHistoriesDetail from '@screens/PDexV3/features/RemovePoolHistoriesDetail';
+import WithdrawRewardHistoriesDetail from '@screens/PDexV3/features/WithdrawRewardHistoriesDetail';
+import ProvideHome from '@screens/PDexV3/features/ProvideHome';
 
 const masterKeyRoutes = [
   {
@@ -158,10 +163,6 @@ const pDexV3Routes = [
     name: routeNames.PoolsList,
   },
   {
-    screen: LiquidityV3,
-    name: routeNames.Dex,
-  },
-  {
     screen: Trade,
     name: routeNames.Trade,
   },
@@ -193,6 +194,26 @@ const pDexV3Routes = [
     screen: Chart,
     name: routeNames.Chart,
   },
+  {
+    screen: HomeLiquidityHistories,
+    name: routeNames.HomeLiquidityHistories,
+  },
+  {
+    screen: ContributeHistoryDetail,
+    name: routeNames.ContributeHistoryDetail,
+  },
+  {
+    screen: RemovePoolHistoriesDetail,
+    name: routeNames.RemovePoolHistoriesDetail,
+  },
+  {
+    screen: WithdrawRewardHistoriesDetail,
+    name: routeNames.WithdrawRewardHistoriesDetail,
+  },
+  {
+    screen: ProvideHome,
+    name: routeNames.ProvideHome,
+  }
 ];
 
 const routes = [

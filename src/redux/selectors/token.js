@@ -1,4 +1,4 @@
-import { PRV, PRV_ID } from '@src/constants/common';
+import { PRV_ID } from '@src/constants/common';
 import uniq from 'lodash/uniq';
 import { createSelector } from 'reselect';
 
@@ -93,7 +93,7 @@ export const allTokensIDsSelector = createSelector(
   (pTokens, internalTokens) => {
     let result =
       uniq(
-        [...pTokens, ...internalTokens, { tokenID: PRV_ID }]
+        [{ tokenID: PRV_ID }, ...pTokens, ...internalTokens]
           .filter((token) => !!token?.tokenID)
           .map((token) => token?.tokenID),
       ) || [];

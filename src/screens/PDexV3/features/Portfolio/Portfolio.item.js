@@ -6,8 +6,9 @@ import { View } from 'react-native';
 import {batch, useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from 'react-navigation-hooks';
 import routeNames from '@routers/routeNames';
-import {actionUpdateContributePoolID} from '@screens/PDexV3/features/ContributePool/Contribute.actions';
-import { getDataByShareIdSelector } from './Portfolio.selector';
+import {contributeActions} from '@screens/PDexV3/features/Contribute';
+import {removePoolActions} from '@screens/PDexV3/features/RemovePool';
+import {getDataByShareIdSelector} from './Portfolio.selector';
 import { portfolioItemStyled as styled } from './Portfolio.styled';
 
 const Hook = React.memo((props) => {
@@ -45,11 +46,17 @@ const Extra = React.memo((props) => {
   const { token1, token2, poolId } = data || {};
   const onInvestPress = () => {
     batch(() => {
-      dispatch(actionUpdateContributePoolID({ poolId }));
+      dispatch(contributeActions.actionUpdateContributePoolID({ poolId }));
       navigation.navigate(routeNames.ContributePool);
     });
   };
-  const onWithdrawPress = () => navigation.navigate(routeNames.RemovePool, { shareId });
+  const onWithdrawPress = () => {
+    batch(() => {
+      removePoolActions.actionSetToken({ inputTokenID: token1.tokenId, outputTokenID: token2.tokenId });
+      removePoolActions.actionSetPoolID(poolId);
+      navigation.navigate(routeNames.RemovePool, { shareId });
+    });
+  };
 
   return (
     <Row style={styled.extraContainer}>

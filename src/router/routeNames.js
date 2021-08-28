@@ -166,4 +166,9 @@ export default {
   Standby: 'Standby',
   Chart: 'Chart',
   WebView: 'WebView',
+  HomeLiquidityHistories: 'HomeLiquidityHistories',
+  ContributeHistoryDetail: 'ContributeHistoryDetail',
+  RemovePoolHistoriesDetail: 'RemovePoolHistoriesDetail',
+  WithdrawRewardHistoriesDetail: 'WithdrawRewardHistoriesDetail',
+  ProvideHome: 'ProvideHome'
 };
