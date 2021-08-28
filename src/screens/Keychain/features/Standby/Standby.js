@@ -15,6 +15,9 @@ import routeNames from '@src/router/routeNames';
 import { COLORS, FONT } from '@src/styles';
 import { withLayout_2 } from '@src/components/Layout';
 import clipboard from '@src/services/clipboard';
+import uniqBy from 'lodash/uniqBy';
+import toLower from 'lodash/toLower';
+import isEqual from 'lodash/isEqual';
 
 const styled = StyleSheet.create({
   container: {
@@ -88,7 +91,7 @@ const Item = React.memo(({ label, value }) => {
   };
   return (
     <CopiableText
-      text={`${label}: ${value}`}
+      text={value}
       copiedMessage={`"${label}" private key was copied`}
       style={styled.accountItemContainer}
     >
@@ -120,11 +123,16 @@ const Standby = (props) => {
       let masterLesses = list.filter((wallet) => !!wallet.isMasterless);
       let masterlessAccounts = [];
       masterLesses.map((w) => {
-        console.log(w?.accounts);
         return (masterlessAccounts = masterlessAccounts.concat(
           w?.accounts || [],
         ));
       });
+      masterlessAccounts = uniqBy(masterlessAccounts, 'privateKey');
+      masterlessAccounts = masterlessAccounts.map((account, index) =>
+        isEqual(account?.accountName, 'Anon')
+          ? { ...account, accountName: `${account?.accountName}-${index}` }
+          : account,
+      );
       const masterKeys = list
         .filter((wallet) => !wallet.isMasterless)
         .map((w) => ({ ...w, key: w?.mnemonic }));
@@ -163,7 +171,7 @@ const Standby = (props) => {
   }, []);
   return (
     <SafeAreaView style={styled.container}>
-      <Header title="Standy private keys" />
+      <Header title="Standby private keys" />
       <ScrollView style={styled.scrollview}>
         {loading && <LoadingContainer />}
         {masterKeys.length > 0 && (
