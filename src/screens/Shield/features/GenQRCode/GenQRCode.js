@@ -44,7 +44,7 @@ const ShieldError = React.memo(({ handleShield }) => {
         title="Try again"
       />
       <Text style={styled.errorText}>
-        {'If that doesn’t work,\n please come back in 60 minutes.'}
+        {'If that doesn’t work,\ncheck the bulletin board for scheduled maintenance.\n\nIf there is none,\nplease come back in an hour.'}
       </Text>
     </View>
   );
