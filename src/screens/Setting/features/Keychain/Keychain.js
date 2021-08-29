@@ -77,8 +77,8 @@ const Keychain = () => {
     handlePress: () => navigation.navigate(routeNames.BackupKeys),
   });
   sectionItemFactories.push({
-    title: 'Standby',
-    desc: 'Standby all master keys and masterless private keys',
+    title: 'Restore',
+    desc: 'Restore all master keys and masterless private keys',
     handlePress: () => navigation.navigate(routeNames.Standby),
   });
   return (

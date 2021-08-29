@@ -171,7 +171,7 @@ const Standby = (props) => {
   }, []);
   return (
     <SafeAreaView style={styled.container}>
-      <Header title="Standby private keys" />
+      <Header title="Restore private keys" />
       <ScrollView style={styled.scrollview}>
         {loading && <LoadingContainer />}
         {masterKeys.length > 0 && (
@@ -191,7 +191,7 @@ const Standby = (props) => {
           </View>
         )}
         <View>
-          <Text style={styled.title}>Back up all keys</Text>
+          <Text style={styled.title}>Restore all keys</Text>
           <ButtonBasic
             btnStyle={[styled.copyAllButton]}
             title="Copy all keys"
