@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {COLORS} from '@src/styles';
+import {UTILS} from '@src/styles';
 
 export const styled = StyleSheet.create({
   container: {
@@ -10,5 +10,8 @@ export const styled = StyleSheet.create({
   button: {
     marginVertical: 50,
     height: 50,
+  },
+  scrollView: {
+    marginBottom: UTILS.heightScale(70),
   },
 });

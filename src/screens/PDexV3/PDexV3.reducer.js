@@ -12,6 +12,7 @@ import { contributeHistoriesReducer as contributeHistories } from './features/Co
 import { removePoolHistoriesReducer as removePoolHistories } from './features/RemovePoolHistories';
 import { withdrawRewardHistoriesReducer as withdrawRewardHistories } from './features/WithdrawRewardHistories';
 import { removePoolReducer as removePool } from './features/RemovePool';
+import { provideHomeReducer as provide } from './features/ProvideHome';
 
 const pDexV3Reducer = combineReducers({
   home,
@@ -27,6 +28,7 @@ const pDexV3Reducer = combineReducers({
   removePoolHistories,
   withdrawRewardHistories,
   removePool,
+  provide,
 });
 
 export default pDexV3Reducer;
