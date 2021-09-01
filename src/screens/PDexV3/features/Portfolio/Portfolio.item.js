@@ -52,9 +52,9 @@ const Extra = React.memo((props) => {
   };
   const onWithdrawPress = () => {
     batch(() => {
-      removePoolActions.actionSetToken({ inputTokenID: token1.tokenId, outputTokenID: token2.tokenId });
-      removePoolActions.actionSetPoolID(poolId);
-      navigation.navigate(routeNames.RemovePool, { shareId });
+      dispatch(removePoolActions.actionSetToken({ inputTokenID: token1.tokenId, outputTokenID: token2.tokenId }));
+      dispatch(removePoolActions.actionSetPoolID(poolId));
+      navigation.navigate(routeNames.RemovePool);
     });
   };
 

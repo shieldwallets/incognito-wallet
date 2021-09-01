@@ -37,7 +37,7 @@ export const coinStyles = StyleSheet.create({
     fontFamily: FONT.NAME.medium,
     color: COLORS.newGrey,
     fontSize: 18,
-    marginBottom: UTILS.heightScale(8),
+    marginTop: UTILS.heightScale(8),
   },
   textRight: {
     textAlign: 'right',
@@ -47,6 +47,7 @@ export const coinStyles = StyleSheet.create({
   },
   button: {
     backgroundColor: COLORS.green2,
+    marginTop: 30,
   },
   error: {
     color: COLORS.red,

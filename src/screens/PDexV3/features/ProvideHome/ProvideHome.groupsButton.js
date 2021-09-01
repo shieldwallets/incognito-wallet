@@ -18,7 +18,7 @@ const GroupsButton = ({ withdrawable }) => {
   };
 
   const handleProvide = () => {
-    navigation.navigate(ROUTE_NAMES.PoolV2ProvideSelectCoin);
+    navigation.navigate(ROUTE_NAMES.ProvideMoreCoins);
   };
 
   const provideButton = (

@@ -170,5 +170,7 @@ export default {
   ContributeHistoryDetail: 'ContributeHistoryDetail',
   RemovePoolHistoriesDetail: 'RemovePoolHistoriesDetail',
   WithdrawRewardHistoriesDetail: 'WithdrawRewardHistoriesDetail',
-  ProvideHome: 'ProvideHome'
+  ProvideHome: 'ProvideHome',
+  ProvideMoreCoins: 'ProvideMoreCoins',
+  ProvideMoreInput: 'ProvideMoreInput',
 };

@@ -1,5 +1,5 @@
 import {createSelector} from 'reselect';
-import {selectedPrivacySelector as selectedPrivacy} from '@src/redux/selectors';
+import {selectedPrivacySelector as selectedPrivacy, sharedSelector} from '@src/redux/selectors';
 import formatUtil from '@utils/format';
 
 export const provideSelector = createSelector(
@@ -24,17 +24,25 @@ export const statusProvideSelector = createSelector(
 export const provideDataSelector = createSelector(
   provideSelector,
   selectedPrivacy.getPrivacyDataByTokenID,
-  ({ data }, getPrivacyDataByTokenID) => {
+  sharedSelector.isGettingBalance,
+  ({ data }, getPrivacyDataByTokenID, isGettingBalance) => {
     return (data || []).map(item => {
       const { tokenId, apy, balance } = item;
       const token = getPrivacyDataByTokenID(tokenId);
+      const userBalance = token.amount;
+      const userBalanceStr = formatUtil.amountFull(token.amount, token.pDecimals, true);
+      const isLoadingBalance = isGettingBalance.includes(tokenId);
       const hooks = {
         displayInterest: `${formatUtil.toFixed(apy || 21, 2)}%  APY`,
         displayBalance: formatUtil.amountFull(balance, token.pDecimals, true),
+        userBalance,
+        userBalanceStr,
+        isLoadingBalance,
       };
       return {
         token,
-        ...data,
+        tokenId,
+        ...item,
         ...hooks,
       };
     });

@@ -110,6 +110,7 @@ import ContributeHistoryDetail from '@screens/PDexV3/features/ContributeHistoryD
 import RemovePoolHistoriesDetail from '@screens/PDexV3/features/RemovePoolHistoriesDetail';
 import WithdrawRewardHistoriesDetail from '@screens/PDexV3/features/WithdrawRewardHistoriesDetail';
 import ProvideHome from '@screens/PDexV3/features/ProvideHome';
+import {ProvideMoreCoins, ProvideMoreInput} from '@screens/PDexV3/features/ProvideMore';
 
 const masterKeyRoutes = [
   {
@@ -213,6 +214,14 @@ const pDexV3Routes = [
   {
     screen: ProvideHome,
     name: routeNames.ProvideHome,
+  },
+  {
+    screen: ProvideMoreCoins,
+    name: routeNames.ProvideMoreCoins,
+  },
+  {
+    screen: ProvideMoreInput,
+    name: routeNames.ProvideMoreInput,
   }
 ];
 
