@@ -8,7 +8,7 @@ export const TESTNET1_FULLNODE = 'https://testnet1.incognito.org/fullnode';
 export const DEV_TEST_FULLNODE = 'http://139.162.55.124:8334';
 export const DEFAULT_SHARD_NUMBER = 8;
 
-let cachedList = null;
+let cachedList = [];
 
 const TEST_NODE_SERVER = {
   id: 'testnode',
@@ -50,7 +50,7 @@ const BETA_SERVER = {
   IncContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
   IncBSCContractAddress: '0x43D037A562099A4C2c95b1E2120cc43054450629',
   explorer: 'https://incscan.io',
-  portalServices:  'http://139.162.55.124:8010',
+  portalServices: 'http://139.162.55.124:8010',
 };
 const TEST_NET_SERVER = {
   id: 'testnet',
@@ -77,7 +77,7 @@ const LOCAL_SERVER = {
   username: '',
   password: '',
   name: 'Local',
-  portalServices:  'http://139.162.55.124:8010',
+  portalServices: 'http://139.162.55.124:8010',
 };
 const TEST_NET_1_SERVER = {
   id: 'testnet1',
@@ -88,13 +88,14 @@ const TEST_NET_1_SERVER = {
   name: 'Testnet 1',
   coinServices: 'https://api-coinservice-staging2.incognito.org',
   pubsubServices: 'https://api-coinservice-staging2.incognito.org/txservice',
-  requestServices:'https://api-coinservice-staging2.incognito.org/airdrop-service',
+  requestServices:
+    'https://api-coinservice-staging2.incognito.org/airdrop-service',
   apiServices: 'https://privacyv2-api-service.incognito.org',
   shardNumber: DEFAULT_SHARD_NUMBER,
   IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
   IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241',
   explorer: 'https://testnet1.incognito.org',
-  portalServices:  'http://139.162.55.124:8010',
+  portalServices: 'http://139.162.55.124:8010',
 };
 const DEV_TEST_SERVER = {
   id: 'devtest',
@@ -111,7 +112,7 @@ const DEV_TEST_SERVER = {
   IncContractAddress: '0xE0D5e7217c6C4bc475404b26d763fAD3F14D2b86',
   IncBSCContractAddress: '0x1ce57B254DC2DBB41e1aeA296Dc7dBD6fb549241',
   explorer: 'https://testnet1.incognito.org',
-  portalServices:  'http://139.162.55.124:8010',
+  portalServices: 'http://139.162.55.124:8010',
 };
 
 const DEFAULT_LIST_SERVER = [
@@ -142,13 +143,13 @@ const combineCachedListWithDefaultList = (_cachedList) => {
 
 export default class Server {
   static get() {
-    if (cachedList) {
+    if (cachedList.length > 0) {
       const servers = combineCachedListWithDefaultList(cachedList);
       return Promise.resolve(servers);
     }
     return storage.getItem(KEY.SERVER).then((strData) => {
       cachedList = combineCachedListWithDefaultList(JSON.parse(strData) || []);
-      if (!cachedList || cachedList.length === 0) {
+      if (!cachedList || cachedList?.length === 0) {
         return DEFAULT_LIST_SERVER;
       }
 
